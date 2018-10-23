@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1539587351157.000,
+    "dirty" : false,
+    "encoding" : "CP932",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "DF6D1317",
+    "lastKnownWriteTime" : 1539587449,
+    "last_content_update" : 1539587450021,
+    "path" : "Z:/experiments/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/2018_10_15_make_variances.R",
+    "project_path" : "2018_10_15_make_variances.R",
+    "properties" : {
+        "cursorPosition" : "5,0",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

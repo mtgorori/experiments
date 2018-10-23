@@ -1,0 +1,412 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>compute_pathLength_by_bentRay</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-07-25"><meta name="DC.source" content="compute_pathLength_by_bentRay.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">&#27010;&#35201;</a></li><li><a href="#2">&#21021;&#26399;&#21270;</a></li><li><a href="#3">&#12475;&#12531;&#12469;&#35373;&#32622;</a></li><li><a href="#4">&#12475;&#12523;&#35373;&#23450;</a></li><li><a href="#5">&#23186;&#36074;&#35373;&#23450;</a></li><li><a href="#6">&#26368;&#36895;&#32076;&#36335;&#12434;&#12392;&#12427;&#32032;&#23376;&#12506;&#12450;&#21628;&#12403;&#20986;&#12375;</a></li><li><a href="#7">&#21336;&#32020;&#29031;&#23556;&#27861;&#12434;&#29992;&#12356;&#12383;&#26368;&#36895;&#32076;&#36335;&#12398;&#25512;&#23450;</a></li></ul></div><h2 id="1">&#27010;&#35201;</h2><pre class="codeinput"><span class="comment">%EMCL&#29575;&#12364;16 %, IMCL&#29575;&#12364;2 %, EMCL&#12463;&#12521;&#12473;&#12479;&#12364;&#65299;&#12388;&#12398;&#12514;&#12487;&#12523;&#12395;&#23550;&#12375;&#12390;</span>
+<span class="comment">%&#24179;&#22343;&#38899;&#36895;&#20516;&#12434;bent-ray&#12395;&#22522;&#12389;&#12356;&#12390;&#31639;&#20986;&#12377;&#12427;&#12383;&#12417;&#12398;&#12503;&#12525;&#12464;&#12521;&#12512;&#12288;2018/07/25</span>
+</pre><h2 id="2">&#21021;&#26399;&#21270;</h2><pre class="codeinput">close <span class="string">all</span>;
+clear;
+clc;
+</pre><h2 id="3">&#12475;&#12531;&#12469;&#35373;&#32622;</h2><pre class="codeinput">t_size = 100.e-3;<span class="comment">%&#12488;&#12521;&#12531;&#12473;&#12487;&#12517;&#12540;&#12469;&#12398;&#12469;&#12452;&#12474;</span>
+t_num = 256;<span class="comment">%&#12488;&#12521;&#12531;&#12473;&#12487;&#12517;&#12540;&#12469;&#25968;</span>
+t_pos = zeros(2, t_num);<span class="comment">%&#12475;&#12531;&#12469;&#20301;&#32622;&#12505;&#12463;&#12488;&#12523;</span>
+t_pos(1,1:t_num/2) = -t_size/2:t_size/(t_num/2-1):t_size/2 ;<span class="comment">%&#32032;&#23376;&#27700;&#24179;&#26041;&#21521;&#36317;&#38626;[m]</span>
+t_pos(2,1:t_num/2) = t_size/2;
+t_pos(1,t_num/2+1:t_num) = t_pos(1,1:t_num/2);
+t_pos(2,t_num/2+1:t_num) = -t_size/2;
+</pre><h2 id="4">&#12475;&#12523;&#35373;&#23450;</h2><pre class="codeinput">cell_num = 2048;
+p_size = 150.e-3;<span class="comment">%&#35336;&#31639;&#38936;&#22495;&#12398;&#38263;&#12373;</span>
+cell_size = p_size / (cell_num-1);
+x_grid = -p_size/2 : cell_size : p_size/2;
+y_grid = -p_size/2 : cell_size : p_size/2;
+[X, Y] = meshgrid(x_grid, y_grid);<span class="comment">%&#34920;&#31034;&#29992;</span>
+ds = cell_size/2;<span class="comment">%&#24359;&#38263;&#65288;&#38899;&#32218;&#65289;&#12398;&#24494;&#23567;&#22793;&#21270;&#20998;</span>
+t_angle = atan2(t_pos(2,:), t_pos(1,:));<span class="comment">%&#12475;&#12531;&#12469;&#20301;&#32622;&#35282;</span>
+</pre><h2 id="5">&#23186;&#36074;&#35373;&#23450;</h2><p>&#38899;&#36895;&#20998;&#24067;</p><pre class="codeinput">v_water = 1540;
+v_fat = 1420;
+w_fat = (-50.e-3&lt;Y) &amp; (Y&lt;0);
+w_water = not(w_fat);
+v_dist = v_water.*w_water + v_fat.*w_fat;<span class="comment">%&#34920;&#31034;&#29992;</span>
+<span class="comment">% &#23624;&#25240;&#29575;&#20998;&#24067;</span>
+n = v_water./v_dist;<span class="comment">%&#34920;&#31034;&#29992;</span>
+n_cal = n';<span class="comment">%&#35336;&#31639;&#29992;</span>
+<span class="comment">% 3x3&#12398;&#24179;&#22343;&#20516;&#12501;&#12451;&#12523;&#12479;&#12540;&#12434;&#12363;&#12369;&#12473;&#12512;&#8208;&#12471;&#12531;&#12464;</span>
+<span class="comment">% h = ones(5,5)*1/25;</span>
+<span class="comment">% n_cal = filter2(h,n_cal);</span>
+<span class="comment">% &#23186;&#36074;&#34920;&#31034;1(&#38899;&#36895;&#20998;&#24067;)</span>
+figure;
+imagesc(x_grid*1e3,y_grid*1e3,v_dist);
+hold <span class="string">on</span>
+plot(t_pos(1,1:t_num/2)*1000,t_pos(2,1:t_num/2)*1000,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,3);
+plot(t_pos(1,t_num/2+1:end)*1000,t_pos(2,t_num/2+1:end)*1000,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,3);
+hold <span class="string">off</span>
+colorbar;
+c = colorbar;
+c.Label.String = <span class="string">'[m/s]'</span>;
+set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>);
+xlabel(<span class="string">'x&#26041;&#21521;[mm]'</span>)
+ylabel(<span class="string">'y&#26041;&#21521;[mm]'</span>)
+<span class="comment">% &#23186;&#36074;&#34920;&#31034;2(&#23624;&#25240;&#29575;&#20998;&#24067;)</span>
+figure;
+imagesc(x_grid*1e3,y_grid*1e3,n);
+hold <span class="string">on</span>
+plot(t_pos(1,1:t_num/2)*1000,t_pos(2,1:t_num/2)*1000,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,3);
+plot(t_pos(1,t_num/2+1:end)*1000,t_pos(2,t_num/2+1:end)*1000,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,3);
+hold <span class="string">off</span>
+colorbar;
+c = colorbar;
+c.Label.String = <span class="string">'[m/s]'</span>;
+set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>);
+xlabel(<span class="string">'x&#26041;&#21521;[mm]'</span>)
+ylabel(<span class="string">'y&#26041;&#21521;[mm]'</span>)
+</pre><img vspace="5" hspace="5" src="compute_pathLength_by_bentRay_01.png" alt=""> <img vspace="5" hspace="5" src="compute_pathLength_by_bentRay_02.png" alt=""> <h2 id="6">&#26368;&#36895;&#32076;&#36335;&#12434;&#12392;&#12427;&#32032;&#23376;&#12506;&#12450;&#21628;&#12403;&#20986;&#12375;</h2><pre class="codeinput">cd(<span class="string">'\\Azlab-fs01\&#26481;&#30740;&#31350;&#23460;\&#20491;&#20154;work\&#31481;&#20869;(&#12402;)\result\2018_02_28_-kwave'</span>);
+myfilename = sprintf(<span class="string">'2018_04_26_Group1ERate5IRate02Num3-2'</span>);
+cd(myfilename);
+load(<span class="string">'kgrid.mat'</span>)
+i = 16;
+cd(<span class="string">'\\Azlab-fs01\&#26481;&#30740;&#31350;&#23460;\&#20491;&#20154;work\&#31481;&#20869;(&#12402;)\data\kwave\medium\2018_04_26_randomScatter'</span>)
+myfilename = sprintf(<span class="string">'Group1ERate%dIRate02Num3-2'</span>, i);
+load(myfilename);
+cd(<span class="string">'\\Azlab-fs01\&#26481;&#30740;&#31350;&#23460;\&#20491;&#20154;work\&#31481;&#20869;(&#12402;)\result\2018_04_27_analyzeLipidModel'</span>)
+myfilename = sprintf(<span class="string">'2018_04_27_TOFdata_Group1ERate%dIRate02Num3-2'</span>,i);
+load(myfilename)
+</pre><h2 id="7">&#21336;&#32020;&#29031;&#23556;&#27861;&#12434;&#29992;&#12356;&#12383;&#26368;&#36895;&#32076;&#36335;&#12398;&#25512;&#23450;</h2><pre class="codeinput">pos_re = [t_pos(1,:); t_pos(2,:)];<span class="comment">%&#21463;&#20449;&#32032;&#23376;&#20301;&#32622;&#12505;&#12463;&#12488;&#12523;</span>
+<span class="keyword">for</span> ii = 1:1
+    <span class="comment">%&#21021;&#26399;&#26465;&#20214;</span>
+    pos_tr = [t_pos(1,ii), t_pos(2,ii)];<span class="comment">%&#36865;&#20449;&#32032;&#23376;&#20301;&#32622;&#12505;&#12463;&#12488;&#12523;</span>
+    num_angle = 100;<span class="comment">%&#23556;&#20986;&#35282;&#12398;&#32207;&#25968;(&#21021;&#26399;&#21270;)&#65306;&#12523;&#12540;&#12503;&#12372;&#12392;&#12395;&#22679;&#21152;&#12377;&#12427;</span>
+    condition_1 = (ii&lt;=t_num/2);<span class="comment">%&#36865;&#20449;&#32032;&#23376;&#12364;&#19978;&#37096;&#12395;&#20301;&#32622;&#12377;&#12427;&#12392;&#12365;True</span>
+    condition_2 = (ii &gt; t_num/2);<span class="comment">%&#36865;&#20449;&#32032;&#23376;&#12364;&#19979;&#37096;&#12395;&#20301;&#32622;&#12377;&#12427;&#12392;&#12365;True</span>
+    ind_re = ones(1,t_num/2);<span class="comment">%&#21463;&#20449;&#32032;&#23376;&#12506;&#12450;&#12364;&#35211;&#12388;&#12363;&#12428;&#12400;&#12371;&#12428;&#12425;&#35201;&#32032;&#12364;&#38543;&#26178;0&#12395;&#32622;&#12365;&#25563;&#12431;&#12427;</span>
+    <span class="comment">%&#32972;&#26223;&#25551;&#20889;&#29992;</span>
+    figure;
+    imagesc(x_grid*1e3,y_grid*1e3,n);
+    hold <span class="string">on</span>
+    plot(t_pos(1,1:t_num/2)*1e3,t_pos(2,1:t_num/2)*1e3,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,3);
+    plot(t_pos(1,t_num/2+1:end)*1e3,t_pos(2,t_num/2+1:end)*1e3,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,3);
+    plot(pos_tr(1)*1e3,pos_tr(2)*1e3,<span class="string">'*'</span>);
+    caxis([0.9 1.1]);set(gca,<span class="string">'Ydir'</span>,<span class="string">'Normal'</span>);
+    colorbar;
+    xlabel(<span class="string">'x&#26041;&#21521;[mm]'</span>)
+    ylabel(<span class="string">'y&#26041;&#21521;[mm]'</span>)
+
+    <span class="keyword">while</span>(1)<span class="comment">%&#36208;&#26619;&#35282;&#24230;&#20869;&#25407;&#12523;&#12540;&#12503;</span>
+        initial_angle = condition_1*linspace(pi,2*pi,num_angle)+<span class="keyword">...</span>
+            condition_2*linspace(0,pi,num_angle);<span class="comment">%&#21021;&#26399;&#23556;&#20986;&#35282;[rad]&#65306;&#36865;&#20449;&#32032;&#23376;&#12398;&#23646;&#12377;&#12427;&#24179;&#26495;&#12395;&#12424;&#12387;&#12390;&#35282;&#24230;&#12398;&#31684;&#22258;&#12364;&#30064;&#12394;&#12427;</span>
+        <span class="keyword">for</span> ind_angle = 1:num_angle
+            pos_ray = pos_tr; <span class="comment">%&#38899;&#32218;&#20301;&#32622;&#12505;&#12463;&#12488;&#12523;&#65288;&#21021;&#26399;&#21270;&#65289;</span>
+            num_ray_head = 1; <span class="comment">%&#38899;&#32218;&#20808;&#38957;&#26356;&#26032;&#22238;&#25968;(&#21021;&#26399;&#21270;)</span>
+            <span class="keyword">while</span>(1)<span class="comment">%&#38899;&#32218;&#20316;&#25104;&#12523;&#12540;&#12503;</span>
+                x(num_ray_head) = pos_ray(1);
+                y(num_ray_head) = pos_ray(2);
+                <span class="keyword">if</span> num_ray_head&gt;1 <span class="comment">%&#12371;&#12398;&#22580;&#21512;&#20998;&#12369;&#12434;&#34892;&#12431;&#12394;&#12356;&#12392;&#38899;&#32218;&#26041;&#21521;&#12505;&#12463;&#12488;&#12523;&#12364;&#26356;&#26032;&#12373;&#12428;&#12394;&#12356;&#65294;</span>
+                    <span class="comment">%dx,dy : the change of x and y</span>
+                    dx = x(num_ray_head)-x(num_ray_head-1);
+                    dy = y(num_ray_head)-y(num_ray_head-1);
+                <span class="keyword">else</span>
+                    dx = ds*cos(initial_angle(ind_angle));<span class="comment">%&#12371;&#12398;&#37096;&#20998;&#12399;&#12523;&#12540;&#12503;&#12398;&#26368;&#24460;&#12395;&#25345;&#12387;&#12390;&#12367;&#12428;&#12400;&#26465;&#20214;&#20998;&#23696;&#12434;&#30465;&#30053;&#12391;&#12365;&#12427;&#12392;&#24605;&#12358;&#65294;2018/06/21</span>
+                    dy = ds*sin(initial_angle(ind_angle));
+                <span class="keyword">end</span>
+<span class="comment">%                 det_theta = atan(abs(dy/dx));%&#38899;&#32218;&#12473;&#12486;&#12483;&#12503;&#26041;&#21521;&#12398;&#35282;&#24230;&#24773;&#22577;</span>
+<span class="comment">%                 if (det_theta &lt; pi/10)</span>
+<span class="comment">%                     clear x y</span>
+<span class="comment">%                     break</span>
+<span class="comment">%                 end</span>
+                ix = round((x(num_ray_head)+p_size/2)/cell_size+1);<span class="comment">%&#12523;&#12540;&#12503;&#12372;&#12392;&#12395;&#22793;&#21270;&#12375;&#12390;&#12356;&#12427;&#65294;&#20999;&#12426;&#19978;&#12370;&#12434;&#34892;&#12387;&#12390;&#12356;&#12427;&#65294;</span>
+                jy = round((y(num_ray_head)+p_size/2)/cell_size+1);<span class="comment">%&#38899;&#32218;&#27083;&#31689;&#12523;&#12540;&#12503;&#12398;&#21508;&#12473;&#12486;&#12483;&#12503;&#12395;&#12362;&#12369;&#12427;&#38899;&#32218;&#19978;&#12398;&#28857;&#12434;&#31034;&#12377;&#12464;&#12522;&#12483;&#12489;&#30058;&#21495;</span>
+                <span class="keyword">if</span> (ix &lt;=5  || ix &gt;= cell_num-5 || jy &lt;=5 || jy &gt;= cell_num-5)<span class="comment">%&#38899;&#32218;&#12364;&#24819;&#23450;&#22806;&#12398;&#38936;&#22495;&#12395;&#36914;&#20986;&#12375;&#12383;&#22580;&#21512;&#65292;&#24773;&#22577;&#12434;&#30772;&#26820;&#12375;&#12390;&#12523;&#12540;&#12503;&#12375;&#30452;&#12377;&#65294;</span>
+                    clear <span class="string">x</span> <span class="string">y</span>
+                    <span class="keyword">break</span>
+                <span class="keyword">end</span>
+                nx = (n_cal(ix+1,jy)-n_cal(ix-1,jy))/2/cell_size;
+                ny = (n_cal(ix,jy+1)-n_cal(ix,jy-1))/2/cell_size;<span class="comment">%nx,ny : the partial difference of n</span>
+                detx = (x(num_ray_head)+p_size/2)/cell_size+1-ix;
+                dety = (y(num_ray_head)+p_size/2)/cell_size+1-jy;
+                <span class="keyword">if</span> detx&gt;=0
+                    ix2 = ix+1;
+                <span class="keyword">else</span>
+                    ix2 = ix-1;
+                <span class="keyword">end</span>
+                <span class="keyword">if</span> dety&gt;=0
+                    jy2 = jy+1;
+                <span class="keyword">else</span>
+                    jy2 = jy-1;
+                <span class="keyword">end</span>
+                lx1 = abs((x(num_ray_head)+p_size/2)/cell_size+1-ix);
+                lx2 = abs((x(num_ray_head)+p_size/2)/cell_size+1-ix2);
+                ly1 = abs((y(num_ray_head)+p_size/2)/cell_size+1-jy);
+                ly2 = abs((y(num_ray_head)+p_size/2)/cell_size+1-jy2);
+                n_inter = n(ix,jy)*lx2*ly2+n(ix2,jy)*lx1*ly2+n(ix,jy2)*lx2*ly1+n(ix2,jy2)*lx1*ly1;
+                DS = sqrt((dx+1/2/n_inter*(nx-(nx*dx/ds)*dx/ds)*cell_size^2)^2+<span class="keyword">...</span>
+                    (dy+1/2/n_inter*(ny-(ny*dy/ds)*dy/ds)*cell_size^2)^2);
+                dsx = (dx+1/2/n_inter*(nx-(nx*dx/ds)*dx/ds)*cell_size^2)/DS*ds;
+                dsy = (dy+1/2/n_inter*(ny-(ny*dy/ds)*dy/ds)*cell_size^2)/DS*ds;
+                pos_ray(1) = x(num_ray_head)+dsx;
+                pos_ray(2) = y(num_ray_head)+dsy;
+                <span class="comment">%&#22659;&#30028;&#12398;&#35373;&#23450;&#65288;&#35336;&#31639;&#12398;&#32066;&#20102;&#26465;&#20214;&#65289;</span>
+                <span class="keyword">if</span> (condition_1&amp;&amp;(pos_ray(2)&lt;=-t_size/2+ds/2)) || (condition_2&amp;&amp;(pos_ray(2)&gt;=t_size/2-ds/2))
+                    distance2re = abs(pos_ray(1)-pos_re(1,1:t_num/2));
+                    [min_distance2re, I] = min(distance2re);
+                    <span class="keyword">if</span> (min_distance2re &lt; 3.e-4) &amp;&amp; (ind_re(I) == 1)
+                        <span class="comment">%&#26465;&#20214;&#20998;&#23696;&#29992;</span>
+                        ind_re(I) = 0;
+                        <span class="comment">%&#25551;&#20889;&#29992;</span>
+                        x(num_ray_head+1) = pos_ray(1);
+                        y(num_ray_head+1) = pos_ray(2);
+                        plot(pos_ray(1)*1e3,pos_ray(2)*1e3,<span class="string">'+'</span>);
+                        plot(x*1e3,y*1e3,<span class="string">'k'</span>);
+                    <span class="keyword">end</span>
+                    clear <span class="string">x</span> <span class="string">y</span>
+                    <span class="keyword">break</span>
+                <span class="keyword">end</span>
+                num_ray_head = num_ray_head+1;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        <span class="keyword">if</span> sum(ind_re)==0<span class="comment">%&#20840;&#21463;&#20449;&#32032;&#23376;&#12395;&#23550;&#24540;&#12377;&#12427;&#38899;&#32218;&#12364;&#35211;&#12388;&#12363;&#12387;&#12390;&#12356;&#12428;&#12400;&#12371;&#12371;&#12391;&#12523;&#12540;&#12503;&#12434;&#25244;&#12369;&#12427;&#65294;</span>
+            <span class="keyword">break</span>
+        <span class="keyword">end</span>
+        num_angle = num_angle + 100;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="compute_pathLength_by_bentRay_03.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% 概要
+%EMCL率が16 %, IMCL率が2 %, EMCLクラスタが３つのモデルに対して
+%平均音速値をbent-rayに基づいて算出するためのプログラム　2018/07/25
+%% 初期化
+close all;
+clear;
+clc;
+%% センサ設置
+t_size = 100.e-3;%トランスデューサのサイズ
+t_num = 256;%トランスデューサ数
+t_pos = zeros(2, t_num);%センサ位置ベクトル
+t_pos(1,1:t_num/2) = -t_size/2:t_size/(t_num/2-1):t_size/2 ;%素子水平方向距離[m]
+t_pos(2,1:t_num/2) = t_size/2;
+t_pos(1,t_num/2+1:t_num) = t_pos(1,1:t_num/2);
+t_pos(2,t_num/2+1:t_num) = -t_size/2;
+%% セル設定
+cell_num = 2048;
+p_size = 150.e-3;%計算領域の長さ
+cell_size = p_size / (cell_num-1);
+x_grid = -p_size/2 : cell_size : p_size/2;
+y_grid = -p_size/2 : cell_size : p_size/2;
+[X, Y] = meshgrid(x_grid, y_grid);%表示用
+ds = cell_size/2;%弧長（音線）の微小変化分
+t_angle = atan2(t_pos(2,:), t_pos(1,:));%センサ位置角
+%% 媒質設定
+% 音速分布
+v_water = 1540;
+v_fat = 1420;
+w_fat = (-50.e-3<Y) & (Y<0);
+w_water = not(w_fat);
+v_dist = v_water.*w_water + v_fat.*w_fat;%表示用
+% 屈折率分布
+n = v_water./v_dist;%表示用
+n_cal = n';%計算用
+% 3x3の平均値フィルターをかけスム‐シング
+% h = ones(5,5)*1/25;
+% n_cal = filter2(h,n_cal);
+% 媒質表示1(音速分布)
+figure;
+imagesc(x_grid*1e3,y_grid*1e3,v_dist);
+hold on
+plot(t_pos(1,1:t_num/2)*1000,t_pos(2,1:t_num/2)*1000,'r','LineWidth',3);
+plot(t_pos(1,t_num/2+1:end)*1000,t_pos(2,t_num/2+1:end)*1000,'r','LineWidth',3);
+hold off
+colorbar;
+c = colorbar;
+c.Label.String = '[m/s]';
+set(gca,'YDir','normal');
+xlabel('x方向[mm]')
+ylabel('y方向[mm]')
+% 媒質表示2(屈折率分布)
+figure;
+imagesc(x_grid*1e3,y_grid*1e3,n);
+hold on
+plot(t_pos(1,1:t_num/2)*1000,t_pos(2,1:t_num/2)*1000,'r','LineWidth',3);
+plot(t_pos(1,t_num/2+1:end)*1000,t_pos(2,t_num/2+1:end)*1000,'r','LineWidth',3);
+hold off
+colorbar;
+c = colorbar;
+c.Label.String = '[m/s]';
+set(gca,'YDir','normal');
+xlabel('x方向[mm]')
+ylabel('y方向[mm]')
+%% 最速経路をとる素子ペア呼び出し
+cd('\\Azlab-fs01\東研究室\個人work\竹内(ひ)\result\2018_02_28_-kwave');
+myfilename = sprintf('2018_04_26_Group1ERate5IRate02Num3-2');
+cd(myfilename);
+load('kgrid.mat')
+i = 16;
+cd('\\Azlab-fs01\東研究室\個人work\竹内(ひ)\data\kwave\medium\2018_04_26_randomScatter')
+myfilename = sprintf('Group1ERate%dIRate02Num3-2', i);
+load(myfilename);
+cd('\\Azlab-fs01\東研究室\個人work\竹内(ひ)\result\2018_04_27_analyzeLipidModel')
+myfilename = sprintf('2018_04_27_TOFdata_Group1ERate%dIRate02Num3-2',i);
+load(myfilename)
+%% 単純照射法を用いた最速経路の推定
+pos_re = [t_pos(1,:); t_pos(2,:)];%受信素子位置ベクトル
+for ii = 1:1
+    %初期条件
+    pos_tr = [t_pos(1,ii), t_pos(2,ii)];%送信素子位置ベクトル
+    num_angle = 100;%射出角の総数(初期化)：ループごとに増加する
+    condition_1 = (ii<=t_num/2);%送信素子が上部に位置するときTrue
+    condition_2 = (ii > t_num/2);%送信素子が下部に位置するときTrue
+    ind_re = ones(1,t_num/2);%受信素子ペアが見つかればこれら要素が随時0に置き換わる
+    %背景描写用
+    figure;
+    imagesc(x_grid*1e3,y_grid*1e3,n);
+    hold on
+    plot(t_pos(1,1:t_num/2)*1e3,t_pos(2,1:t_num/2)*1e3,'r','LineWidth',3);
+    plot(t_pos(1,t_num/2+1:end)*1e3,t_pos(2,t_num/2+1:end)*1e3,'r','LineWidth',3);
+    plot(pos_tr(1)*1e3,pos_tr(2)*1e3,'*');
+    caxis([0.9 1.1]);set(gca,'Ydir','Normal');
+    colorbar;
+    xlabel('x方向[mm]')
+    ylabel('y方向[mm]')
+    
+    while(1)%走査角度内挿ループ
+        initial_angle = condition_1*linspace(pi,2*pi,num_angle)+...
+            condition_2*linspace(0,pi,num_angle);%初期射出角[rad]：送信素子の属する平板によって角度の範囲が異なる
+        for ind_angle = 1:num_angle
+            pos_ray = pos_tr; %音線位置ベクトル（初期化）
+            num_ray_head = 1; %音線先頭更新回数(初期化)
+            while(1)%音線作成ループ
+                x(num_ray_head) = pos_ray(1);
+                y(num_ray_head) = pos_ray(2);
+                if num_ray_head>1 %この場合分けを行わないと音線方向ベクトルが更新されない．
+                    %dx,dy : the change of x and y
+                    dx = x(num_ray_head)-x(num_ray_head-1);
+                    dy = y(num_ray_head)-y(num_ray_head-1);
+                else
+                    dx = ds*cos(initial_angle(ind_angle));%この部分はループの最後に持ってくれば条件分岐を省略できると思う．2018/06/21
+                    dy = ds*sin(initial_angle(ind_angle));
+                end
+%                 det_theta = atan(abs(dy/dx));%音線ステップ方向の角度情報
+%                 if (det_theta < pi/10)
+%                     clear x y
+%                     break
+%                 end
+                ix = round((x(num_ray_head)+p_size/2)/cell_size+1);%ループごとに変化している．切り上げを行っている．
+                jy = round((y(num_ray_head)+p_size/2)/cell_size+1);%音線構築ループの各ステップにおける音線上の点を示すグリッド番号
+                if (ix <=5  || ix >= cell_num-5 || jy <=5 || jy >= cell_num-5)%音線が想定外の領域に進出した場合，情報を破棄してループし直す．
+                    clear x y
+                    break
+                end
+                nx = (n_cal(ix+1,jy)-n_cal(ix-1,jy))/2/cell_size;
+                ny = (n_cal(ix,jy+1)-n_cal(ix,jy-1))/2/cell_size;%nx,ny : the partial difference of n
+                detx = (x(num_ray_head)+p_size/2)/cell_size+1-ix;
+                dety = (y(num_ray_head)+p_size/2)/cell_size+1-jy;
+                if detx>=0
+                    ix2 = ix+1;
+                else
+                    ix2 = ix-1;
+                end
+                if dety>=0
+                    jy2 = jy+1;
+                else
+                    jy2 = jy-1;
+                end
+                lx1 = abs((x(num_ray_head)+p_size/2)/cell_size+1-ix);
+                lx2 = abs((x(num_ray_head)+p_size/2)/cell_size+1-ix2);
+                ly1 = abs((y(num_ray_head)+p_size/2)/cell_size+1-jy);
+                ly2 = abs((y(num_ray_head)+p_size/2)/cell_size+1-jy2);
+                n_inter = n(ix,jy)*lx2*ly2+n(ix2,jy)*lx1*ly2+n(ix,jy2)*lx2*ly1+n(ix2,jy2)*lx1*ly1;
+                DS = sqrt((dx+1/2/n_inter*(nx-(nx*dx/ds)*dx/ds)*cell_size^2)^2+...
+                    (dy+1/2/n_inter*(ny-(ny*dy/ds)*dy/ds)*cell_size^2)^2);
+                dsx = (dx+1/2/n_inter*(nx-(nx*dx/ds)*dx/ds)*cell_size^2)/DS*ds;
+                dsy = (dy+1/2/n_inter*(ny-(ny*dy/ds)*dy/ds)*cell_size^2)/DS*ds;
+                pos_ray(1) = x(num_ray_head)+dsx;
+                pos_ray(2) = y(num_ray_head)+dsy;
+                %境界の設定（計算の終了条件）
+                if (condition_1&&(pos_ray(2)<=-t_size/2+ds/2)) || (condition_2&&(pos_ray(2)>=t_size/2-ds/2))
+                    distance2re = abs(pos_ray(1)-pos_re(1,1:t_num/2));
+                    [min_distance2re, I] = min(distance2re);
+                    if (min_distance2re < 3.e-4) && (ind_re(I) == 1)
+                        %条件分岐用
+                        ind_re(I) = 0;
+                        %描写用
+                        x(num_ray_head+1) = pos_ray(1);
+                        y(num_ray_head+1) = pos_ray(2);
+                        plot(pos_ray(1)*1e3,pos_ray(2)*1e3,'+');
+                        plot(x*1e3,y*1e3,'k');
+                    end
+                    clear x y
+                    break
+                end
+                num_ray_head = num_ray_head+1;
+            end
+        end
+        if sum(ind_re)==0%全受信素子に対応する音線が見つかっていればここでループを抜ける．
+            break
+        end
+        num_angle = num_angle + 100;
+    end
+end
+##### SOURCE END #####
+--></body></html>

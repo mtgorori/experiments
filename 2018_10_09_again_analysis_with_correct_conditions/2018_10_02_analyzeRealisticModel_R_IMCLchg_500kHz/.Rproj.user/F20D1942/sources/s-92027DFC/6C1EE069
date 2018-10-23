@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1538456369360.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "6C1EE069",
+    "lastKnownWriteTime" : 0,
+    "last_content_update" : 1538456369360,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "FCD5688D",
+        "caption" : "rate_EMCLs",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=rate_EMCLs&cache_key=FCD5688D",
+        "displayedObservations" : "10",
+        "environment" : "",
+        "object" : "rate_EMCLs",
+        "preview" : "0",
+        "totalObservations" : "10",
+        "variables" : "75"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

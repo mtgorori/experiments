@@ -1,0 +1,7 @@
+aveSOS <- read.csv(file = 'data/aveSOS.csv',header = FALSE)
+aveSOS2 <- read.csv(file = 'data/aveSOS2.csv',header = FALSE)
+rate_EMCLs <- read.csv(file = 'data/rate_EMCLs.csv',header = FALSE)
+steSOS <- read.csv(file = 'data/steSOS.csv',header = FALSE)
+steSOS2 <- read.csv(file = 'data/steSOS2.csv',header = FALSE)
+varDiff_Point <- read.csv(file = 'data/varDiff_Point.csv',header = FALSE)
+rate_IMCLs <- read.csv(file = 'data/rate_IMCLs.csv',header = FALSE)

@@ -1,0 +1,4 @@
+aveSOS <- read.csv("data/aveSOS.csv",header = FALSE)
+aveSOS2 <- read.csv("data/aveSOS2.csv",header = FALSE)
+frq <- read.csv("data/frq.csv",header = FALSE)
+rate_EMCLs <- read.csv("data/rate_EMCLs.csv",header = FALSE)

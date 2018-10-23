@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1539582955858.000,
+    "dirty" : false,
+    "encoding" : "CP932",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "87E74692",
+    "lastKnownWriteTime" : 1539597523,
+    "last_content_update" : 1539597523,
+    "path" : "Z:/experiments/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/2018_09_19_ols_error.R",
+    "project_path" : "2018_09_19_ols_error.R",
+    "properties" : {
+        "cursorPosition" : "17,16",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
