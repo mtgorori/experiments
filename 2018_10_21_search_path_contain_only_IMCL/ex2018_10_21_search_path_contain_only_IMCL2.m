@@ -36,12 +36,14 @@ num_echo_receiver = num_transmitter;
 reference_point = zeros(num_echo_receiver,num_depth);
 reference_point_lowerlimit = zeros(num_echo_receiver,num_depth);%均質性評価のためのRFデータマスキングに使う
 reference_point_upperlimit = zeros(num_echo_receiver,num_depth);%均質性評価のためのRFデータマスキングに使う
-point_maxAmp_in_mask =
+point_maxAmp_in_mask = zeros(num_echo_receiver,num_depth);%マスク処理後のRFデータで振幅最大のサンプル点情報
 distance_from_focal_point_all = zeros(1,num_echo_receiver);
 focal_signal_total = zeros(length(rate_IMCL),num_depth);
 focal_phase_total = zeros(length(rate_IMCL),num_depth);
 focal_amp = zeros(length(rate_IMCL),num_depth,num_echo_receiver);
 focal_phase = zeros(length(rate_IMCL),num_depth,num_echo_receiver);
+homogeneity_percel = zeros(length(rate_IMCL),num_depth,num_echo_receiver);
+homogeneity_total = zeros(length(rate_IMCL),num_depth);
 
 for kk = 1:length(rate_IMCL)
     v_reference = v_muscle*(1-rate_IMCL(kk)/100) + v_fat*(rate_IMCL(kk)/100);
@@ -83,19 +85,21 @@ for kk = 1:length(rate_IMCL)
         for jj = 1:num_echo_receiver
             focused_rfdata_amp_masked(1:reference_point_lowerlimit(jj,ii),jj,ii) = 0;
             focused_rfdata_amp_masked(reference_point_upperlimit(jj,ii):end,jj,ii) = 0;
-            
         end
-        %受信ビームフォーミング（整相加算のため）
+        [~,point_maxAmp_in_mask(:,ii)] = max(focused_rfdata_amp_masked(:,:,ii),[],1);
         for jj = 1:length(target_element)
-            %             tmp = focused_rfdata(reference_point(2,target_element(1,jj),ii),target_element(1,jj),ii)/length(target_element);
-            tmp = focused_rfdata_amp(reference_point(target_element(1,jj),ii),target_element(1,jj),ii)/length(target_element);
-            focal_signal_total(kk,ii) = focal_signal_total(kk,ii)+ tmp;
+            %受信ビームフォーミング（整相加算のため）
+            focal_signal_total(kk,ii) = focal_signal_total(kk,ii)+ ...
+                focused_rfdata_amp(reference_point(target_element(1,jj),ii),target_element(1,jj),ii)/length(target_element);
             focal_amp(kk,ii,target_element(jj)) = ...
                 focused_rfdata_amp(reference_point(target_element(1,jj),ii),target_element(1,jj),ii)/length(target_element);
-            tmp2 = focused_rfdata_phase(reference_point(target_element(1,jj),ii),target_element(1,jj),ii);
-            focal_phase(kk,ii,target_element(jj)) = tmp2;
-            focal_phase_total(kk,ii) = focal_phase_total(kk,ii) + sin(tmp2);
+            tmp = focused_rfdata_phase(reference_point(target_element(1,jj),ii),target_element(1,jj),ii);
+            focal_phase(kk,ii,target_element(jj)) = tmp;
+            focal_phase_total(kk,ii) = focal_phase_total(kk,ii) + sin(tmp);
+            %均質性評価指標
+            homogeneity_percel(kk,ii,jj) = abs(point_maxAmp_in_mask(jj,ii) - reference_point(jj,ii));
         end
+        homogeneity_total(kk,ii) = sum(homogeneity_percel(kk,ii,:))/length(target_element);
         %         focal_signal(kk,ii) = abs(hilbert(focal_signal(kk,ii)));
     end
 end
