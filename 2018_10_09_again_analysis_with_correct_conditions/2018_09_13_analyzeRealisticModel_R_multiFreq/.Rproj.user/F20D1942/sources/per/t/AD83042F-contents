@@ -1,0 +1,45 @@
+rate_EMCLs <- read.csv("data/rate_EMCLs.csv",header = FALSE)
+source('Z:/experiments/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/2018_10_15_make_variances.R', echo=TRUE)
+save.image("Z:/experiments/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/data/workspace.RData")
+# 谿句ｷｮ蟷ｳ譁ｹ蜥檎ｮ怜?ｺ
+RSS <- numeric(6)
+for (i in 1:6) {
+x_tmp = t(rate_EMCLs[i,])
+y_tmp = t(aveSOS2[i,])
+lm_tmp = lm(y_tmp ~ x_tmp)
+RSS[i]<- deviance(lm_tmp)
+}
+frq2 <- frq/1e3
+# 谿句ｷｮ蟷ｳ譁ｹ蜥後→蜻ｨ豕｢謨ｰ縺ｮ繝励Ο繝?繝?
+windows()
+par(ps=20,mex=1.5)
+plot(RSS ~ frq2[,1],
+xlab = '蜻ｨ豕｢謨ｰ [kHz]',
+ylab = '谿句ｷｮ蟷ｳ譁ｹ蜥後縲[(m/s)^2]',
+log = 'x',
+type = 'o',
+ylim = c(0 ,30))
+savePlot(filename = "//Azlab-fs01/譚ｱ遐皮ｩｶ螳､/蛟倶ｺｺwork/遶ｹ蜀?(縺ｲ)/result/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/RSS.png",type="png")
+dev.off()
+source('//Azlab-fs01/譚ｱ遐皮ｩｶ螳､/蛟倶ｺｺwork/遶ｹ蜀?(縺ｲ)/experiments/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/2018_10_15_make_variances.R', echo=TRUE)
+save.image("//azlab-fs01/譚ｱ遐皮ｩｶ螳､/蛟倶ｺｺwork/遶ｹ蜀?(縺ｲ)/experiments/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/data/workspace.RData")
+# 谿句ｷｮ蟷ｳ譁ｹ蜥檎ｮ怜?ｺ
+RSS <- numeric(6)
+for (i in 1:6) {
+x_tmp = t(rate_EMCLs[i,])
+y_tmp = t(aveSOS2[i,])
+lm_tmp = lm(y_tmp ~ x_tmp)
+RSS[i]<- deviance(lm_tmp)
+}
+frq2 <- frq/1e3
+# 谿句ｷｮ蟷ｳ譁ｹ蜥後→蜻ｨ豕｢謨ｰ縺ｮ繝励Ο繝?繝?
+windows()
+par(ps=20,mex=1.5)
+plot(RSS ~ frq2[,1],
+xlab = '蜻ｨ豕｢謨ｰ [kHz]',
+ylab = '谿句ｷｮ蟷ｳ譁ｹ蜥後縲[(m/s)^2]',
+log = 'x',
+type = 'o',
+ylim = c(0 ,30))
+savePlot(filename = "//Azlab-fs01/譚ｱ遐皮ｩｶ螳､/蛟倶ｺｺwork/遶ｹ蜀?(縺ｲ)/result/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/RSS.png",type="png")
+dev.off()

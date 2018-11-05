@@ -23,6 +23,72 @@ for (i in 1:6) {
 savePlot(filename = "//Azlab-fs01/東研究室/個人work/竹内(ひ)/result/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/linear_regression_multi_frq.png",type="png")
 dev.off()
 
+# load(file = "data/workspace.RData")
+# 単回帰プロット
+windows()
+r_single_reg_multifrq <- matrix(nrow = 6,ncol = 1)
+par(mfrow=c(2,3),ps=14,mex=0.7,pty='s')
+for (i in 1:6) {
+  x_tmp <- t(rate_EMCLs[i,])
+  y_tmp <- t(aveSOS2[i,])
+  plot(y_tmp ~ x_tmp,
+       xlab = 'IMAT[%]',
+       ylab = 'Area Average SOS[m/s]',
+       main = sprintf('Center frequency =%d kHz',frq[i,1]/1e3),
+       ylim = c(1525 ,1565))
+  abline(lm(y_tmp ~ x_tmp))
+  result <- lm(y_tmp ~ x_tmp)
+  conf.interval <- predict(result, interval="confidence", level = 0.95)
+  conf.predict <- predict(result, interval="prediction", level = 0.95)
+  lines(x_tmp[order(x_tmp)], conf.interval[order(x_tmp), 2], col = "blue")
+  lines(x_tmp[order(x_tmp)], conf.interval[order(x_tmp), 3], col = "darkgreen")
+  lines(x_tmp[order(x_tmp)], conf.predict[order(x_tmp), 2], col = "blue",lty=2)
+  lines(x_tmp[order(x_tmp)], conf.predict[order(x_tmp), 3], col = "darkgreen",lty=2)
+}
+savePlot(filename = "H:/result/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/linear_regression_multi_frq_eng.png",type="png")
+dev.off()
+
+# 単回帰プロット
+# 500 kHzで経路平均音速と平面波送信(単一ch送受信)とのIMAT推定精度比較を行なう．
+windows()
+r_single_reg_multifrq <- matrix(nrow = 6,ncol = 1)
+par(ps=20,mex=1.0,pty='s')
+for (i in 3) {
+  # each path
+  x_tmp <- t(rate_EMCLs[i,])
+  y_tmp <- t(aveSOS2[i,])
+  plot(y_tmp ~ x_tmp,
+       xlab = 'IMAT[%]',
+       ylab = 'Area Average SOS[m/s]',
+       main = sprintf('Center frequency =%d kHz',frq[i,1]/1e3),
+       ylim = c(1530 ,1570),
+       col = 'blue')
+  abline(lm(y_tmp ~ x_tmp))
+  result <- lm(y_tmp ~ x_tmp)
+  conf.interval <- predict(result, interval="confidence", level = 0.95)
+  conf.predict <- predict(result, interval="prediction", level = 0.95)
+  lines(x_tmp[order(x_tmp)], conf.interval[order(x_tmp), 2], col = "blue")
+  lines(x_tmp[order(x_tmp)], conf.interval[order(x_tmp), 3], col = "blue")
+  lines(x_tmp[order(x_tmp)], conf.predict[order(x_tmp), 2], col = "blue",lty=2)
+  lines(x_tmp[order(x_tmp)], conf.predict[order(x_tmp), 3], col = "blue",lty=2)
+  # single transimit-receive [plane wave]
+  par(new=T)
+  x_tmp <- t(rate_EMCLs[i,])
+  y_tmp <- t(aveSOS_plwv[i,])
+  plot(y_tmp ~ x_tmp, ann = F, ylim = c(1530 ,1570),col='darkgreen')
+  abline(lm(y_tmp ~ x_tmp))
+  result2 <- lm(y_tmp ~ x_tmp)
+  conf.interval <- predict(result2, interval="confidence", level = 0.95)
+  conf.predict <- predict(result2, interval="prediction", level = 0.95)
+  lines(x_tmp[order(x_tmp)], conf.interval[order(x_tmp), 2], col = "darkgreen")
+  lines(x_tmp[order(x_tmp)], conf.interval[order(x_tmp), 3], col = "darkgreen")
+  lines(x_tmp[order(x_tmp)], conf.predict[order(x_tmp), 2], col = "darkgreen",lty=2)
+  lines(x_tmp[order(x_tmp)], conf.predict[order(x_tmp), 3], col = "darkgreen",lty=2)
+}
+legend("bottomleft",legend = c("proposed","single-channel"),col = c("blue","darkgreen"),pch = c(1,1))
+savePlot(filename = "H:/result/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/linear_regression_multi_frq_eng_vs_plwv.png",type="png")
+dev.off()
+
 #残差ヒストグラム表示
 windows()
 residuals_multifrq <- matrix(nrow = 6,ncol = 25)

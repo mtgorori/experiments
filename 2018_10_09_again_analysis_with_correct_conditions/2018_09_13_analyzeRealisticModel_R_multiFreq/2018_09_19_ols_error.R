@@ -20,6 +20,18 @@ plot(RSS ~ frq2[,1],
 savePlot(filename = "//Azlab-fs01/東研究室/個人work/竹内(ひ)/result/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/RSS.png",type="png")
 dev.off()
 
+# 残差平方和と周波数のプロット
+windows()
+par(ps=20,mex=1.2,xpd = T,pin = c(4,4))
+plot(RSS ~ frq2[,1],
+     xlab = 'Center frequency[kHz]',
+     ylab = expression(paste("Residual sum of squares"," [",m^2/s^2,"]")),
+     log = 'x',
+     type = 'o',
+     ylim = c(0 ,30))
+savePlot(filename = "H:/result/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/RSS_eng.png",type="png")
+dev.off()
+
 # 残差プロット
 windows()
 plot(lm_tmp)
@@ -32,6 +44,18 @@ for (i in 1:6) {
   lm_tmp = lm(y_tmp ~ x_tmp)
   residuals[i,]<- residuals(lm_tmp)
 }
+
+# 500 kHzで経路平均音速と平面波送信(単一ch送受信)とのIMAT回帰の残差平方和をバーで比較
+windows()
+par(ps=20,mex=1.5)
+RMSE_proposed_vs_singleChannel <- numeric(2) #1:proposed, 2:single-channel
+RMSE_proposed_vs_singleChannel[1] <- sqrt((1/25)*deviance(result))
+RMSE_proposed_vs_singleChannel[2] <- sqrt((1/25)*deviance(result2))
+names(RMSE_proposed_vs_singleChannel) <- c("proposed","single-channel")
+barplot(RMSE_proposed_vs_singleChannel, ylab = expression(paste("Root mean square error"," [",m/s,"]")) ,ylim = c(0,6.0))
+savePlot(filename = "H:/result/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/RMSE_eng_proposed_vs_sigleChannel.png",type="png")
+dev.off()
+
 # 
 # # 残差と到達点ズレのプロット
 # windows()
