@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>readme.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
+	font-size: 14px;
+	padding: 0 12px;
+	line-height: 22px;
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	color: #4080D0;
+	text-decoration: none;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
+	font-size: inherit;
+	line-height: auto;
+}
+
+a:hover {
+	color: #4080D0;
+	text-decoration: underline;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left: 5px solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 14px;
+	line-height: 19px;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+.mac code {
+	font-size: 12px;
+	line-height: 18px;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+/** Theming */
+
+.vscode-light,
+.vscode-light pre code {
+	color: rgb(30, 30, 30);
+}
+
+.vscode-dark,
+.vscode-dark pre code {
+	color: #DDD;
+}
+
+.vscode-high-contrast,
+.vscode-high-contrast pre code {
+	color: white;
+}
+
+.vscode-light code {
+	color: #A31515;
+}
+
+.vscode-dark code {
+	color: #D7BA7D;
+}
+
+.vscode-light pre:not(.hljs),
+.vscode-light code > div {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre:not(.hljs),
+.vscode-dark code > div {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre:not(.hljs),
+.vscode-high-contrast code > div {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+.vscode-light blockquote,
+.vscode-dark blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.vscode-high-contrast blockquote {
+	background: transparent;
+	border-color: #fff;
+}
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family:  "Meiryo", "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+</head>
+<body>
+<h1 id="20181105">2018/11/05</h1>
+<h2 id="%E3%81%AF%E3%81%98%E3%82%81%E3%81%AB">はじめに</h2>
+<p>Q: ex2018_10_21_search_path_contain_only_IMCL4.mなどがどの結果出しに用いられたかはどこで分かる？
+A：ex2018_10_21_search_path_contain_only_IMCL3.mlxなどのように名前で紐づけてあったり，discuss_2018_10_21-_search_path_contain_only_IMCL.mlxの中に「コード→結果→議論」のような流れで紐付けられていたりする．mlxファイルを見ることで分かる．</p>
+<h2 id="%E3%81%9D%E3%82%82%E3%81%9D%E3%82%82%E9%80%81%E5%8F%97%E4%BF%A1%E3%83%95%E3%82%A9%E3%83%BC%E3%82%AB%E3%82%B9%E3%81%AF%E6%AD%A3%E3%81%97%E3%81%8F%E6%A9%9F%E8%83%BD%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E3%81%8B%EF%BC%9F">そもそも送受信フォーカスは正しく機能しているか？</h2>
+<ul>
+<li>問題点
+<ul>
+<li>焦点深度が音響境界と一致したときに信号強度がピークをとった事により，整相加算が適切に機能しているとみなしていたことが問題である．信号を加算する前に参照点と波形のピークが一致しているかどうかを確認する必要がある．</li>
+</ul>
+</li>
+<li>確認方法
+<ol>
+<li>IMAT領域を1 pixel分の点として作成した媒質データに対して送受信フォーカスをかけた．</li>
+<li>参照点とRF信号の振幅ピークが一致するかを，焦点深度を変化させながら，参照点(赤点),RF信号の振幅ピーク(青点)で逐次示すムービーを作成して目視で確認した．</li>
+</ol>
+</li>
+<li>結果
+<ul>
+<li>IMAT領域に到達する焦点深度において，参照点とRF信号の信号ピークが良好に一致したことが認められた．</li>
+</ul>
+</li>
+</ul>
+<h2 id="%E5%8F%97%E4%BF%A1%E6%B3%A2%E9%9D%A2%E3%81%AE%E6%95%B4%E3%81%86%E6%99%82%E5%88%BB%E3%81%8C%E6%83%B3%E5%AE%9A%E3%82%88%E3%82%8A%E3%82%82%E6%97%A9%E3%81%84%E3%81%93%E3%81%A8%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">受信波面の整う時刻が想定よりも早いことについて</h2>
+<ol>
+<li><strong>受信波面が整っている時刻において<br>波形包絡線最大位置と参照点がどれだけの遅延をしているのか確認．</strong>
+<ul>
+<li>焦点深度が7.3 mmにおいて目視で波形の乱れがほとんどないことを確認．<br>（IMCLとIMATの境界位置は奥行方向7.9 mm）</li>
+<li>このときの遅延を確認．
+<ul>
+<li>確認されたこと
+<ul>
+<li>中央のch50における遅延は，焦点深度と領域境界との変位によるものとして説明できる．</li>
+</ul>
+</li>
+<li>考察
+<ul>
+<li>かならずしも境界位置に焦点を合わせないと波面が整わないわけではない．</li>
+<li>伝播経路内に混在するIMATにより焦点ずれが生じ，領域境界に焦点を合わせたときの反射波が歪んだと考えられる．</li>
+<li>むしろ境界に焦点を合わせないことにより，媒質の細かな不均一さによる波面歪みの影響が偶然小さくなることがある．</li>
+</ul>
+</li>
+<li>提起できる仮説
+<ul>
+<li>境界に焦点を合わせても波面歪みが生じている原因は，伝播経路中に混在するIMATによるものである．</li>
+<li>境界に焦点を合わせずとも，整っている波面と仮定音速により定まる参照点列とを比較して，最も当てはまるような仮定音速によりIMCL量が推定できる.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="20181106">2018/11/06</h1>
+<h2 id="%E5%8F%97%E4%BF%A1%E6%B3%A2%E9%9D%A2%E3%81%AE%E6%95%B4%E3%81%86%E6%99%82%E5%88%BB%E3%81%8C%E6%83%B3%E5%AE%9A%E3%82%88%E3%82%8A%E3%82%82%E6%97%A9%E3%81%84%E3%81%93%E3%81%A8%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6%EF%BC%88%E7%B6%9A%EF%BC%89">受信波面の整う時刻が想定よりも早いことについて（続）</h2>
+<ol start="2">
+<li><strong>IMCLとIMATの境界を焦点とする条件下で伝播経路内にIMAT領域が混在しているかを確認．</strong>
+<ul>
+<li>伝播経路で囲まれた領域内でのIMAT面積比を確認．経路の不均質さの目安として．</li>
+<li>確認方法
+<ol>
+<li>焦点深度に対応した開口径をなすための駆動素子の各位置と焦点位置とを結ぶ線分を<br>音速分布イメージに上書きする．(目視の確認)</li>
+<li>実際にカウントして占有率を確認．
+<ul>
+<li><strong>内挿</strong><br>焦点と駆動素子のうち最端の素子のインデックスが分かり，x軸方向に何グリッドだけ離れているかの情報があれば，内挿処理ができる．<br>
+①内挿処理で，両側端点のインデックスが分かる．<br>
+(２点参照の線形内挿．非整数に対しては開口中心から下部の駆動素子についてfloor, 上部の駆動素子についてはceilを用いる．)<br>
+②y軸方向に着目して，その間にあるIMATをカウントする．<br>
+③最後にカウント数を総探索数で割る．</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>結果
+<ul>
+<li>焦点深度7.9 mm（IMATとMTとの境界位置）における，伝播経路で囲まれた領域内（領域A）でのIMAT面積比は，2.58 %であった．</li>
+</ul>
+</li>
+<li>考察
+<ul>
+<li>領域Aにおいて不均質性が生じているために，波形歪みが生じた可能性がある．</li>
+<li>そこで，領域Aに存在するIMATを除去した媒質を用いてRFデータを取得し，同様に焦点深度7.9 mmでの波形形状を確認する．</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>領域Aに存在するIMATを除去した条件で受信波形形状の時間変動を確認する．</strong>
+<ul>
+<li>結果
+<ul>
+<li>IMATを除去する前よりもIMATを除去した方が，反射強度から判別した領域境界に一致する焦点深度での波形形状が整っており，また振幅のコントラストも若干高くなっていた．</li>
+<li>一方で，IMATを除去したのにも関わらず，波形形状の変化がわずかなものであった．</li>
+<li>また，反射強度から判別した領域境界は，IMAT除去前では焦点深度7.9 mmの位置であったのが，IMAT除去後では焦点深度8.0 mmの位置へと変動した．</li>
+</ul>
+</li>
+<li>考察
+<ul>
+<li>点音源で送受信しているため，全周囲からの反射波を均等に受けている．それによって仮想点音源以外からの波形が混在して波形が乱れているのではないだろうか．</li>
+<li>全周囲からの影響を受けないようなIMATの除去をすることによる変化をみることで，その仮説の有用性が確認できると思われる．</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="20181107">2018/11/07</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E6%96%B9%E6%B3%95%E3%81%AE%E7%82%B9%E5%AA%92%E8%B3%AA%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E5%8E%9F%E7%90%86%E6%A4%9C%E8%A8%BC">IMCL推定方法の点媒質を用いた原理検証</h2>
+<ul>
+<li>2018/11/06の3.における考察で，全周囲からの影響を受けないようなIMATの除去を行なうことで，焦点位置に存在する領域境界からの影響のみを受けるような状況をつくり，波形形状の変化を観察することが次にやることとして定まった．</li>
+<li>一方で，そもそも波形形状を評価すること，および，適切な仮定音速を求めることが実際にIMCL推定に繋がりうるのかを確認せずに，仮定ありきで話をすすめてしまっていた．</li>
+<li>そこで，伝搬経路上に確実にIMATが存在しない系のうち，最も簡素と考えられる系として，単一の点媒質を埋め込んだ系を用いて，IMCL推定精度を評価する．実際の筋肉・脂肪系に対してはここで得られる精度よりも劣った精度となるはずである．まず，簡素な系で本手法が機能するかどうかを確認することは重要であると考える．</li>
+</ul>
+
+</body>
+</html>
