@@ -32,7 +32,7 @@ v_muscle = 1580;%[m/s]
 rate_IMCL = linspace(1,20,20);
 v_reference = zeros(1,length(rate_IMCL));
 t_facing_distance = 0.04;%[m]
-[num_sample,num_receiver,num_transmitter] = size(rfdata);
+[~,num_receiver,num_transmitter] = size(rfdata);
 num_echo_receiver = num_transmitter;
 num_rate_IMCL = length(rate_IMCL);
 num_medium  = num_rate_IMCL;
@@ -64,6 +64,7 @@ for ll = 1:20
     cd(pathname);
     load('rfdata.mat');
     load('kgrid.mat');
+    [num_sample,~,~] = size(rfdata);
     focused_rfdata = zeros(num_sample,num_echo_receiver);
     focused_rfdata_masked = zeros(num_sample,num_echo_receiver);
     focused_rfdata_amp = zeros(num_sample,num_echo_receiver);
@@ -77,12 +78,12 @@ for ll = 1:20
             for jj = 1:num_echo_receiver
                 distance_from_focal_point_all(1,jj) = norm(t_pos(:,jj) - focal_point(:,ii));
                 delay_time_all = round(((distance_from_focal_point_all - focal_depth(1,ii))/v_reference(1,kk))/kgrid.dt);%[sample]
-                reference_point(1,jj) = round(delay_time_all(1,jj)+1+(2*focal_depth(1,ii)/v_reference(1,kk))/kgrid.dt+25);
+                reference_point(1,jj) = round(delay_time_all(1,jj)+(2*focal_depth(1,ii)/v_reference(1,kk))/kgrid.dt+25-1);
                 %25はfocal_amplitudeを最大にするオフセット．
                 reference_point_lowerlimit(1,jj) ...
-                    = round(delay_time_all(1,jj)*(v_reference(1,kk)/v_muscle)+1+(2*focal_depth(1,ii)/v_muscle)/kgrid.dt+25-1);
+                    = round(delay_time_all(1,jj)*(v_reference(1,kk)/v_muscle)+1+(2*focal_depth(1,ii)/v_muscle)/kgrid.dt+25-1-1);
                 reference_point_upperlimit(1,jj) ...
-                    = round(delay_time_all(1,jj)*(v_reference(1,kk)/v_fat)+1+(2*focal_depth(1,ii)/v_fat)/kgrid.dt+25);
+                    = round(delay_time_all(1,jj)*(v_reference(1,kk)/v_fat)+(2*focal_depth(1,ii)/v_fat)/kgrid.dt+25-1);
                 %どんなに遅延しても早く到達してもこの範囲内に焦点位置からのエコーパルスが入っているであろう上限・下限
             end
             %送信ビームフォーミング（共通）
@@ -106,7 +107,7 @@ for ll = 1:20
                 focused_rfdata_masked(1:reference_point_lowerlimit(1,jj),jj) = 0;
                 focused_rfdata_masked(reference_point_upperlimit(1,jj):end,jj) = 0;
             end
-            [~,point_maxAmp_in_mask] = max(focused_rfdata_amp_masked,[],1);
+            [~,point_maxAmp_in_mask] = max(focused_rfdata_masked,[],1);
             for jj = 1:length(target_element)
                 %受信ビームフォーミング（整相加算のため）
                 %                 focal_signal_total(kk,ii) = focal_signal_total(kk,ii)+ ...
@@ -122,3 +123,4 @@ for ll = 1:20
         end
     end
 end
+

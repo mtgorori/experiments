@@ -41,7 +41,7 @@ num_medium  = num_rate_IMCL;
 reference_point = zeros(1,num_echo_receiver);
 reference_point_lowerlimit = zeros(1,num_echo_receiver);%均質性評価のためのRFデータマスキングに使う
 reference_point_upperlimit = zeros(1,num_echo_receiver);%均質性評価のためのRFデータマスキングに使う
-point_maxAmp_in_mask = zeros(1,num_echo_receiver);%マスク処理後のRFデータで振幅最大のサンプル点情報
+point_max_in_mask = zeros(1,num_echo_receiver);%マスク処理後のRFデータで振幅最大のサンプル点情報
 distance_from_focal_point_all = zeros(1,num_echo_receiver);
 
 num_depth = (t_pos(2,1)-t_pos(2,101))/kgrid.dx - 3;%'3'とあるのは，最近接距離が0.4 mmであることを考慮している．
@@ -58,18 +58,17 @@ ind_max_signal = zeros(num_rate_IMCL,num_medium);
 max_signal = zeros(num_rate_IMCL,num_medium);
 homogeneity_percel = zeros(num_rate_IMCL,num_echo_receiver);
 homogeneity_total = zeros(num_rate_IMCL,num_medium);
-
-for ll = 1:num_medium
+focal_signal_total = zeros(num_depth,num_rate_IMCL,num_medium);
+for ll = 10
     pathname = sprintf('H:/data/kwave/result/2018_11_07_layer_medium/Layer_medium_boundary_7.9mm_ IMCL%d%%',ll);
     cd(pathname);
     load('rfdata.mat');
     load('kgrid.mat');
     [num_sample,~,~] = size(rfdata);
-    focal_signal_total = zeros(num_rate_IMCL,num_depth);
+
     
-    for kk = 1:num_rate_IMCL
+    for kk = 10:6:16
         %% 反射強度プロファイルを求める．
-        
         v_reference(1,kk) = v_muscle*(1-rate_IMCL(1,kk)/100) + v_fat*(rate_IMCL(1,kk)/100);
         for ii = 1:num_depth
             focused_rfdata = zeros(num_sample,num_echo_receiver);
@@ -93,18 +92,18 @@ for ll = 1:num_medium
             end
             for jj = 1:length(target_element)
                 %受信ビームフォーミング（整相加算のため）
-                focal_signal_total(kk,ii) = focal_signal_total(kk,ii)+ ...
+                focal_signal_total(ii,kk,ll) = focal_signal_total(ii,kk,ll)+ ...
                     focused_rfdata(reference_point(1,target_element(1,jj)),target_element(1,jj))/length(target_element);
             end
         end
         %% 反射強度が最大の焦点位置を探索．
-        [max_tmp,ind_tmp] = findpeaks(abs(focal_signal_total(kk,:)),'Npeaks',1,'SortStr','descend');
+        [max_tmp,ind_tmp] = findpeaks(abs(focal_signal_total(:,kk,ll)),'Npeaks',1,'SortStr','descend');
         ind_max_signal(kk,ll) = ind_tmp;
         max_signal(kk,ll) = max_tmp;
         ii = ind_tmp;
         %% 参照点と波面との誤差を評価．
         focused_rfdata = zeros(num_sample,num_echo_receiver);
-        %         focused_rfdata_masked = zeros(num_sample,num_echo_receiver);
+%         focused_rfdata_masked = zeros(num_sample,num_echo_receiver);
         target_element = find((-focal_depth(1,ii)/2<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2)));
         distance_from_focal_point = zeros(1,length(target_element));
         %受信用の参照点算出
@@ -128,21 +127,18 @@ for ll = 1:num_medium
             focused_rfdata(1:read_range_rfdata,:) = focused_rfdata(1:read_range_rfdata,:)...
                 +  rfdata(delay_time+1:num_sample,1:100,target_element(jj));%整相加算
         end
-        %         hilb_rfdata = hilbert(focused_rfdata);
-        %         focused_rfdata_amp = abs(hilb_rfdata);
-        %         focused_rfdata_amp_masked = focused_rfdata_amp;
         focused_rfdata_masked = focused_rfdata;
         %RFデータマスキング（均質性評価のため）
         for jj = 1:num_echo_receiver
-            %             focused_rfdata_amp_masked(1:reference_point_lowerlimit(1,jj),jj) = 0;
-            %             focused_rfdata_amp_masked(reference_point_upperlimit(1,jj):end,jj) = 0;
+%             focused_rfdata_amp_masked(1:reference_point_lowerlimit(1,jj),jj) = 0;
+%             focused_rfdata_amp_masked(reference_point_upperlimit(1,jj):end,jj) = 0;
             focused_rfdata_masked(1:reference_point_lowerlimit(1,jj),jj) = 0;
             focused_rfdata_masked(reference_point_upperlimit(1,jj):end,jj) = 0;
         end
-        [~,point_maxAmp_in_mask] = max(focused_rfdata_masked,[],1);
+        [~,point_max_in_mask] = max(focused_rfdata_masked,[],1);
         for jj = 1:length(target_element)
             %均質性評価指標
-            homogeneity_percel(kk,jj) = abs(point_maxAmp_in_mask(1,target_element(jj)) - reference_point(1,target_element(jj)));
+            homogeneity_percel(kk,jj) = abs(point_max_in_mask(1,target_element(jj)) - reference_point(1,target_element(jj)));
         end
         homogeneity_total(kk,ll) = sum(homogeneity_percel(kk,:))/length(target_element);
     end

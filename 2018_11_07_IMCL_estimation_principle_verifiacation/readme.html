@@ -509,6 +509,9 @@ A：ex2018_10_21_search_path_contain_only_IMCL3.mlxなどのように名前で�
 <li>アルゴリズムのフローが，境界面を検出→参照点の妥当性評価である以上は，反射強度プロファイルを確認する必要がある．</li>
 <li>仮定音速が大きく異なると，フォーカスがかからなくなるため，境界面の位置を正確に推定できなくなることが可能性として残ったままの状態で焦点深さを7.9 mmに固定するのは話が飛躍しているように思われる．</li>
 <li>なるべく配列のサイズを過大にしないようなプログラムに整えていく必要がある．</li>
+<li>
+<h2 id="%E5%A2%83%E7%95%8C%E9%9D%A2%E3%81%AE%E6%B7%B1%E5%BA%A6%E3%82%92%E8%B5%B0%E6%9F%BB%E3%81%97%E3%81%9F%E5%A0%B4%E5%90%88%E3%81%AE%E8%A7%A3%E6%9E%90%E6%9D%A1%E4%BB%B6">境界面の深度を走査した場合の解析条件</h2>
+</li>
 </ul>
 </li>
 </ul>
@@ -523,9 +526,109 @@ A：ex2018_10_21_search_path_contain_only_IMCL3.mlxなどのように名前で�
 <ul>
 <li>精度良く推定できていることが確認された．</li>
 <li>一方で，配列の参照の仕方が不適切であった可能性がデバッグの時点で出てきた．</li>
-<li>焦点深さを固定する前の大きい配列を保存しながら行ったIMCL占有率推定プログラムの見直しが必要である．</li>
+<li>焦点深さを固定する前の大きい配列を保存しながら行ったIMCL占有率推定プログラムの見直しが必要である．
+<ul>
+<li>原理上うまくいきそうという見通しが立ってよかったのは確か．</li>
 </ul>
 </li>
+</ul>
+</li>
+<li>反射強度から媒質境界を推定．その推定境界位置について参照点とRF信号の正の最大値のインデックスとの距離から適切なIMCL占有率を反映した仮定音速を推定した場合．
+<ul>
+<li>計算に時間がかかることが問題であるが，所要時間を控えていなかった．</li>
+<li>推定誤差が±0.5 %と，非常に高い精度となった．</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>メモ: 【主にアルゴリズムの修正について】<br>
+Q: 反射強度が焦点深度0.4 mmで最大となる場合があるが，これはフォーカスがかかっているというよりもむしろ，隣の素子にそのまま音波が透過・到達した事によるものである．よって，反射強度が最大の位置が焦点深度0.4 mmにあるときは，そのピークよりも深部にあるピークを参照させるようにしなければならない．peak関数を使って対処できないだろうか．<br>
+A:</p>
+<pre class="hljs"><code><div>[~,ind_max_signal(kk,ll)] = findpeaks(<span class="hljs-built_in">abs</span>(focal_signal_total(kk,:)),<span class="hljs-string">'Npeaks'</span>,<span class="hljs-number">1</span>,<span class="hljs-string">'SortStr'</span>,<span class="hljs-string">'descend'</span>);
+</div></code></pre>
+<p>これで解決できた．<br>
+Q: 正解IMCL占有率，予測IMCL占有率(これにより仮定音速が求まる)が一致した場合，媒質の境界面の位置＝反射強度が最も大きい焦点深度であるはずが，0.1 mm分ズレていた．これから考えられることは？<br>
+A:そもそも受信フォーカスで適用するオフセットが適切ではない．このオフセットはどのように決めたのだったかを見直す．<br></p>
+<pre class="hljs"><code><div><span class="hljs-comment">%受信用の参照点算出</span>
+<span class="hljs-keyword">for</span> jj = <span class="hljs-number">1</span>:num_echo_receiver
+    distance_from_focal_point_all(<span class="hljs-number">1</span>,jj) = norm(t_pos(:,jj) - focal_point(:,ii));
+    delay_time_all = <span class="hljs-built_in">round</span>(((distance_from_focal_point_all - focal_depth(<span class="hljs-number">1</span>,ii))/v_reference(<span class="hljs-number">1</span>,kk))/kgrid.dt);<span class="hljs-comment">%[sample]</span>
+    reference_point(<span class="hljs-number">1</span>,jj) = <span class="hljs-built_in">round</span>(delay_time_all(<span class="hljs-number">1</span>,jj)+<span class="hljs-number">1</span>+(<span class="hljs-number">2</span>*focal_depth(<span class="hljs-number">1</span>,ii)/v_reference(<span class="hljs-number">1</span>,kk))/kgrid.dt+<span class="hljs-number">25</span>);
+    <span class="hljs-comment">%25はfocal_amplitudeを最大にするオフセット．</span>
+    reference_point_lowerlimit(<span class="hljs-number">1</span>,jj) ...
+    = <span class="hljs-built_in">round</span>(delay_time_all(<span class="hljs-number">1</span>,jj)*(v_reference(<span class="hljs-number">1</span>,kk)/v_muscle)+<span class="hljs-number">1</span>+(<span class="hljs-number">2</span>*focal_depth(<span class="hljs-number">1</span>,ii)/v_muscle)/kgrid.dt+<span class="hljs-number">25</span><span class="hljs-number">-1</span>);
+    reference_point_upperlimit(<span class="hljs-number">1</span>,jj) ...
+    = <span class="hljs-built_in">round</span>(delay_time_all(<span class="hljs-number">1</span>,jj)*(v_reference(<span class="hljs-number">1</span>,kk)/v_fat)+<span class="hljs-number">1</span>+(<span class="hljs-number">2</span>*focal_depth(<span class="hljs-number">1</span>,ii)/v_fat)/kgrid.dt+<span class="hljs-number">25</span>);
+    <span class="hljs-comment">%どんなに遅延しても早く到達してもこの範囲内に焦点位置からのエコーパルスが入っているであろう上限・下限</span>
+ <span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>この参照インデックスを，<br></p>
+<ol>
+<li>rfデータそのものの整相加算に用いて反射強度を計算，境界位置を推定．</li>
+<li>rfデータに包絡線処理をしてその最大値と参照インデックスとの距離を測っている．<br>
+　2.が特に致命的なミス．包絡線処理をすることで，データのピークの位置が変わってしまう．このミスは，どちらもrfデータorその絶対値を用いて議論することで対策できる．<br></li>
+</ol>
+<ul>
+<li>オフセットの決め方
+<ul>
+<li>source_wave.matから，初期条件での圧力時間プロファイルにおける，RF信号の正の最大値のインデックスが25である．デフォルトでは遅延をかけた後参照しているのは1番目のインデックスであるから，25-1=24だけオフセットを設けた．参照インデックスと干渉後のRF信号の正の最大値のインデックスが良好に一致していることを目視で確認した．<br></li>
+</ul>
+</li>
+</ul>
+<p>Q: 干渉前後で信号周期は変動するはず．確認したか？<br>
+A: 思ったより変動していなかった．1サンプル程度のズレであった．<br>
+<br>
+<br></p>
+<h1 id="20181109">2018/11/09</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E6%96%B9%E6%B3%95%E3%81%AE%E4%BA%8C%E5%B1%A4%E5%AA%92%E8%B3%AA%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E5%8E%9F%E7%90%86%E6%A4%9C%E8%A8%BC%E7%B6%9A">IMCL推定方法の二層媒質を用いた原理検証(続)</h2>
+<ul>
+<li><input type="checkbox" id="checkbox0" checked="true"><label for="checkbox0">反射強度により境界位置を決めているが，誤検出が見られた．これへの対応．</label></li>
+<li><input type="checkbox" id="checkbox1"><label for="checkbox1">もう一度case26の複雑な構造をした媒質に対してIMCL推定手法を適用する．</label>
+<ul>
+<li>コードを書き直したことにより，問題点が解決した可能性がある．
+<ul>
+<li><input type="checkbox" id="checkbox2"><label for="checkbox2">駆動素子数を限定しているのに関わらず，最後に全素子において波形形状評価をしていた可能性がある．これについて確認をする．</label></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li>反射強度による境界位置検出におけるエラーの調査
+<ul>
+<li>正解IMCL占有率: 10 %, 予測IMCL占有率: 16 %において誤検出が見られた．このときと，検出が正しく機能した，正解IMCL占有率： 10 %, 予測IMCL占有率: 10 %での結果(focal_signal_total[dim={20,20}])を比較して，上述したピーク関数を用いる推定方法の問題点を明らかにする．</li>
+<li>仮定音速が正解音速と大きく異なると，媒質境界位置が0.4 mm~0.5 mmと顕著に外れた位置として検出された．
+<ul>
+<li>考えられる原因：素子間隔は約0.4 mmである．一方で誤検出された媒質境界深度は0.4 mm程度である．すなわち，反射波ではなく透過波を加算した結果であると考えられる．</li>
+<li>改善案<br>
+<ol>
+<li>0.4 mm - 0.5 mmの信号強度を参照しないようにする．
+<ul>
+<li>問題点として，0.4 mm程度の箇所に領域境界があったときに誤判別してしまう可能性がある．</li>
+<li>それほどの近距離では正確に音速を予測することがもともと困難であるようなら参照しないことに問題はないはずである．</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>確認プロセスにおいて気づいた他の点
+<ul>
+<li>
+<p>信号強度(要修正：正の値のはずなのに信号振幅に対して用いてしまっている)の絶対値が最大の箇所を探索しているが，整相加算して信号が最大化されるのは正の方向にであるので，絶対値を使うことは適切でない．位相の情報を捨てて振幅の大きさだけに注目しているために推定精度の低下に寄与している可能性がある．この点を改良をして結果を比較する．</p>
+<ul>
+<li>例えば，実際のIMCL率よりもIMCL率を多く見積もっているとする．そのとき，仮定音速が小さくなっているのだから，仮定のl/cが大きく見積もられていることになる．このとき，送信フォーカスでの実質の焦点は想定した焦点位置よりも深い箇所に位置することになる．&quot;H:\result\2018_11_07_IMCL_estimation_principle_verifiacation\2018_11_09_focased_signal_comparison_TorF.png&quot;を参照すれば，現に信号強度のピーク位置が奥側にシフトしていることが確認できる．しかしながら，強度の絶対値で境界位置を検出しているため，手前に焦点位置があるものと誤判定してしまっていることが現状の問題点である．そこで，上のようなアルゴリズムの変更を行なう．</li>
+<li>差分<br>
+&quot;H:\experiments\2018_11_07_IMCL_estimation_principle_verifiacation\ex2018_11_08_path_only_including_MT_2layers_stroke2.m&quot;<br>
+↓<br></li>
+</ul>
+</li>
+<li></li>
 </ul>
 </li>
 </ul>
