@@ -135,6 +135,6 @@ A: 思ったより変動していなかった．1サンプル程度のズレで�
         - 差分<br>
         "H:\experiments\2018_11_07_IMCL_estimation_principle_verifiacation\ex2018_11_08_path_only_including_MT_2layers_stroke2.m"<br>
         ↓<br>
-        
+        "H:\experiments\2018_11_07_IMCL_estimation_principle_verifiacation\ex2018_11_08_path_only_including_MT_2layers_stroke3.m"
 
     - 

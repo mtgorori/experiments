@@ -1,6 +1,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%％％％％％％％%%%%%
+% 対象：case26
+% 焦点水平位置固定：y=0
 % 境界面を検出→参照点の妥当性評価
 % ch 50直下のピクセルにフォーカスをかける．
+% 参照点：整相加算における参照点
+% 比較する点：各chでのrf信号最大値(絶対値はとらない)
+%誤検出が見られるが，反射強度を考慮して誤検出と判別できるようにする．
 % フォーカス深度を１グリッドずつ変化させて，開口合成受信データを生成する．
 % F値を固定する．最近接距離をいくつに設定する？
 % x-axis: 20 mmのときに全素子を使うという前提を設ける．
@@ -15,11 +20,11 @@
 % 整相加算の前に参照点と受信chごとの振幅(ヒルベルト変換後絶対値)最大値との距離の
 % 合計を評価関数として媒質の均質性を評価することも同時に行う．
 % update:rf-dataの配列サイズが大きくなってきたので，変数区分を細分化して各変数の呼び出し速度を上げる．[2018/11/05]
+% update:for文ごとにフォルダを作成するようにする．フォルダごとにrfデータを保存する．
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear;
 load("H:/data/kwave/config/t_pos_2board.mat");
-load("H:/data/kwave/medium/2018_11_07_layer_medium/reference.mat")
 pathname = sprintf('H:/data/kwave/result/2018_11_07_layer_medium/Layer_medium_boundary_7.9mm_ IMCL%d%%',1);
 cd(pathname);
 load('rfdata.mat');
@@ -53,7 +58,6 @@ for ii = 1:num_depth
     focal_point(1,ii) = 0;
 end
 
-
 ind_max_signal = zeros(num_rate_IMCL,num_medium);
 max_signal = zeros(num_rate_IMCL,num_medium);
 homogeneity_percel = zeros(num_rate_IMCL,num_echo_receiver);
@@ -69,9 +73,7 @@ for ll = 1:num_medium
         %% 反射強度プロファイルを求める．
         v_reference(1,kk) = v_muscle*(1-rate_IMCL(1,kk)/100) + v_fat*(rate_IMCL(1,kk)/100);
         for ii = 1:num_depth
-            focused_rfdata = zeros(num_sample,num_echo_receiver);
             target_element = find((-focal_depth(1,ii)/2<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2)));
-            distance_from_focal_point = zeros(1,length(target_element));
             %受信用の参照点算出
             for jj = 1:num_echo_receiver
                 distance_from_focal_point_all(1,jj) = norm(t_pos(:,jj) - focal_point(:,ii));
@@ -79,19 +81,9 @@ for ll = 1:num_medium
                 reference_point(1,jj) = round(delay_time_all(1,jj)+(2*focal_depth(1,ii)/v_reference(1,kk))/kgrid.dt+25-1);
             end
             %送信ビームフォーミング（共通）
-            for jj = 1:length(target_element)
-                distance_from_focal_point(1,jj) = distance_from_focal_point_all(1,target_element(jj));
-                % 遅延処理
-                delay_time = delay_time_all(1,target_element(jj));%[sample]
-                read_range_rfdata = length(delay_time+1:num_sample);
-                focused_rfdata(1:read_range_rfdata,:) = focused_rfdata(1:read_range_rfdata,:)...
-                    +  rfdata(delay_time+1:num_sample,1:100,target_element(jj));%整相加算
-            end
-            for jj = 1:length(target_element)
-                %受信ビームフォーミング（整相加算のため）
-                focal_signal_total(ii,kk,ll) = focal_signal_total(ii,kk,ll)+ ...
-                    focused_rfdata(reference_point(1,target_element(1,jj)),target_element(1,jj))/length(target_element);
-            end
+            focused_rfdata = transmit_focus(rfdata,target_element,num_sample,delay_time_all,num_echo_receiver);
+            %受信ビームフォーカシング
+            focal_signal_total(ii,kk,ll) =  receive_focus(focused_rfdata,target_element,reference_point);
         end
         %% 反射強度が最大の焦点位置を探索．
         [max_tmp,ind_tmp] = findpeaks(focal_signal_total(:,kk,ll),'Npeaks',1,'SortStr','descend');
@@ -99,9 +91,8 @@ for ll = 1:num_medium
         max_signal(kk,ll) = max_tmp;
         ii = ind_tmp;
         %% 参照点と波面との誤差を評価．
-        focused_rfdata = zeros(num_sample,num_echo_receiver);
+        %         focused_rfdata = zeros(num_sample,num_echo_receiver);
         target_element = find((-focal_depth(1,ii)/2<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2)));
-        distance_from_focal_point = zeros(1,length(target_element));
         %受信用の参照点算出
         for jj = 1:num_echo_receiver
             distance_from_focal_point_all(1,jj) = norm(t_pos(:,jj) - focal_point(:,ii));
@@ -115,14 +106,7 @@ for ll = 1:num_medium
             %どんなに遅延しても早く到達してもこの範囲内に焦点位置からのエコーパルスが入っているであろう上限・下限
         end
         %送信ビームフォーミング（共通）
-        for jj = 1:length(target_element)
-            distance_from_focal_point(1,jj) = distance_from_focal_point_all(1,target_element(jj));
-            % 遅延処理
-            delay_time = delay_time_all(1,target_element(jj));%[sample]
-            read_range_rfdata = length(delay_time+1:num_sample);
-            focused_rfdata(1:read_range_rfdata,:) = focused_rfdata(1:read_range_rfdata,:)...
-                +  rfdata(delay_time+1:num_sample,1:100,target_element(jj));%整相加算
-        end
+        focused_rfdata = transmit_focus(rfdata,target_element,num_sample,delay_time_all,num_echo_receiver);
         focused_rfdata_masked = focused_rfdata;
         %RFデータマスキング（均質性評価のため）
         for jj = 1:num_echo_receiver
@@ -134,9 +118,83 @@ for ll = 1:num_medium
             %均質性評価指標
             homogeneity_percel(kk,jj) = abs(point_max_in_mask(1,target_element(jj)) - reference_point(1,target_element(jj)));
         end
-        homogeneity_total(kk,ll) = sum(homogeneity_percel(kk,:))/length(target_element);
+        homogeneity_total(kk,ll) = 1/(sum(homogeneity_percel(kk,:))/length(target_element));
+        dst_path = sprintf('H:/result/2018_11_07_IMCL_estimation_principle_verifiacation/2018_11_11_maxrfsignal_detect_boundary_2layers/true%d_assumption%d',...
+            rate_IMCL(1,ll),rate_IMCL(1,kk));
+        if ~exist(dst_path, 'dir')
+            mkdir(dst_path);
+        end
+        save([dst_path,'\rfdata.mat'],'focused_rfdata','focused_rfdata_masked','homogeneity_percel','reference_point','point_max_in_mask');
+        figure;
+        imagesc(focused_rfdata_masked);
+        hold on
+        scatter(min(target_element):max(target_element),reference_point(min(target_element):max(target_element)),'red');
+        scatter(min(target_element):max(target_element),point_max_in_mask(min(target_element):max(target_element)),'blue','filled');
+        hold off
+        xlabel('receiver[ch]');
+        ylabel('time[sample]');
+        axis square;
+        axis tight;
+        if ii<=30
+            xlim([40 60])
+        else
+            xlim([min(target_element) max(target_element)])
+        end
+        ylim([reference_point_lowerlimit(50) reference_point_upperlimit(min(target_element))])
+        colormap(bone);
+        colorbar;
+        caxis([min(min(focused_rfdata_masked)) max(max(focused_rfdata_masked))])
+        savefig([dst_path,'\rfdata_masked.fig'])
+        exportfig([dst_path,'\rfdata_masked'],'png',[400,400])
+        close gcf
+        figure;
+        imagesc(focused_rfdata);
+        hold on
+        scatter(min(target_element):max(target_element),reference_point(min(target_element):max(target_element)),2,'red');
+        scatter(min(target_element):max(target_element),point_max_in_mask(min(target_element):max(target_element)),2,'blue','filled');
+        hold off
+        xlabel('receiver[ch]');
+        ylabel('time[sample]');
+        axis square;
+        axis tight;
+        colormap(bone);
+        colorbar;
+        caxis([min(min(focused_rfdata_masked)) max(max(focused_rfdata_masked))])
+        savefig([dst_path,'\rfdata_whole.fig'])
+        exportfig([dst_path,'\rfdata_whole'],'png',[400,400])
+        close gcf
+        figure;
+        plot(focal_depth*1e3,focal_signal_total(:,kk,ll));
+        hold on
+        scatter(focal_depth(ind_tmp)*1e3,max_tmp,'red','fileed')
+        hold off
+        xlabel('焦点深さ[mm]')
+        ylabel('信号強度[au]')
+        savefig([dst_path,'\focal_signal.fig'])
+        exportfig([dst_path,'\focal_signal'],'png',[400,400])
+        close gcf
     end
 end
-cd 'H:\result\2018_11_07_IMCL_estimation_principle_verifiacation'
-save('2018_11_10_with_rfsignal_homogeneity_SingleLayer_boundary_7.9mm_varied_focaldepth_20x20_ver2.mat','ind_tmp','ind_max_signal','focal_depth','homogeneity_total','homogeneity_percel',...
+dst_path = sprintf('H:/result/2018_11_07_IMCL_estimation_principle_verifiacation/2018_11_11_maxrfsignal_detect_boundary_2layers/');
+save([dst_path,'\result.mat'],'ind_tmp','ind_max_signal','focal_depth','homogeneity_total','homogeneity_percel',...
     'reference_point','focused_rfdata','focused_rfdata_masked','focal_signal_total','max_signal');
+
+function [focused_rfdata] = transmit_focus(rfdata,target_element,num_sample,delay_time_all,num_echo_receiver)
+focused_rfdata = zeros(num_sample,num_echo_receiver);
+for jj = 1:length(target_element)
+    % 遅延処理
+    delay_time = delay_time_all(1,target_element(jj));%[sample]
+    read_range_rfdata = length(delay_time+1:num_sample);
+    focused_rfdata(1:read_range_rfdata,:) = focused_rfdata(1:read_range_rfdata,:)...
+        +  rfdata(delay_time+1:num_sample,1:100,target_element(jj));%整相加算
+end
+end
+
+function [focal_signal_total] = receive_focus(focused_rfdata,target_element,reference_point)
+focal_signal_total = 0;
+for jj = 1:length(target_element)
+    %受信ビームフォーミング（整相加算のため）
+    focal_signal_total = focal_signal_total+ ...
+        focused_rfdata(reference_point(1,target_element(1,jj)),target_element(1,jj))/length(target_element);
+end
+end

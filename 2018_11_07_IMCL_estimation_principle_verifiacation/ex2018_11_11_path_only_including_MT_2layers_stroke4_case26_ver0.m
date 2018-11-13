@@ -1,6 +1,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%％％％％％％％%%%%%
+% 対象：case26
+% 焦点水平位置固定：y=0
 % 境界面を検出→参照点の妥当性評価
 % ch 50直下のピクセルにフォーカスをかける．
+% 参照点：整相加算における参照点
+% 比較する点：各chでのrf信号最大値(絶対値はとらない)
+%誤検出が見られるが，反射強度を考慮して誤検出と判別できるようにする．
 % フォーカス深度を１グリッドずつ変化させて，開口合成受信データを生成する．
 % F値を固定する．最近接距離をいくつに設定する？
 % x-axis: 20 mmのときに全素子を使うという前提を設ける．
@@ -15,12 +20,12 @@
 % 整相加算の前に参照点と受信chごとの振幅(ヒルベルト変換後絶対値)最大値との距離の
 % 合計を評価関数として媒質の均質性を評価することも同時に行う．
 % update:rf-dataの配列サイズが大きくなってきたので，変数区分を細分化して各変数の呼び出し速度を上げる．[2018/11/05]
+% update:for文ごとにフォルダを作成するようにする．フォルダごとにrfデータを保存する．
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear;
 load("H:/data/kwave/config/t_pos_2board.mat");
-load("H:/data/kwave/medium/2018_11_07_layer_medium/reference.mat")
-pathname = sprintf('H:/data/kwave/result/2018_11_07_layer_medium/Layer_medium_boundary_7.9mm_ IMCL%d%%',1);
+pathname = sprintf('H:/data/kwave/result/2018_11_11_case26_variousIMCL/case26_IMCL%0.1f',1.0);
 cd(pathname);
 load('rfdata.mat');
 load('kgrid.mat');
@@ -53,19 +58,18 @@ for ii = 1:num_depth
     focal_point(1,ii) = 0;
 end
 
-
 ind_max_signal = zeros(num_rate_IMCL,num_medium);
 max_signal = zeros(num_rate_IMCL,num_medium);
 homogeneity_percel = zeros(num_rate_IMCL,num_echo_receiver);
 homogeneity_total = zeros(num_rate_IMCL,num_medium);
 focal_signal_total = zeros(num_depth,num_rate_IMCL,num_medium);
-for ll = 1:num_medium
-    pathname = sprintf('H:/data/kwave/result/2018_11_07_layer_medium/Layer_medium_boundary_7.9mm_ IMCL%d%%',ll);
+for ll = 4
+    pathname = sprintf('H:/data/kwave/result/2018_11_11_case26_variousIMCL/case26_IMCL%0.1f',ll);
     cd(pathname);
     load('rfdata.mat');
     load('kgrid.mat');
     [num_sample,~,~] = size(rfdata);
-    for kk = 1:num_rate_IMCL
+    for kk = 4
         %% 反射強度プロファイルを求める．
         v_reference(1,kk) = v_muscle*(1-rate_IMCL(1,kk)/100) + v_fat*(rate_IMCL(1,kk)/100);
         for ii = 1:num_depth
@@ -134,9 +138,63 @@ for ll = 1:num_medium
             %均質性評価指標
             homogeneity_percel(kk,jj) = abs(point_max_in_mask(1,target_element(jj)) - reference_point(1,target_element(jj)));
         end
-        homogeneity_total(kk,ll) = sum(homogeneity_percel(kk,:))/length(target_element);
+        homogeneity_total(kk,ll) = 1/(sum(homogeneity_percel(kk,:))/length(target_element));
+        dst_path = sprintf('H:/result/2018_11_07_IMCL_estimation_principle_verifiacation/2018_11_11_maxrfsignal_detect_boundary_case26/true%d_assumption%d',...
+            rate_IMCL(1,ll),rate_IMCL(1,kk));
+        if ~exist(dst_path, 'dir')
+            mkdir(dst_path);
+        end
+        save([dst_path,'\rfdata.mat'],'focused_rfdata','focused_rfdata_masked','homogeneity_percel');
+        figure;
+        imagesc(focused_rfdata_masked);
+        hold on
+        scatter(min(target_element):max(target_element),reference_point(min(target_element):max(target_element)),'red');
+        scatter(min(target_element):max(target_element),point_max_in_mask(min(target_element):max(target_element)),'blue','filled');
+        hold off
+        xlabel('receiver[ch]');
+        ylabel('time[sample]');
+        axis square;
+        axis tight;
+        if ii<=30
+            xlim([40 60])
+        else
+            xlim([min(target_element) max(target_element)])
+        end
+        ylim([reference_point_lowerlimit(50) reference_point_upperlimit(min(target_element))])
+        colormap(bone);
+        colorbar;
+        caxis([min(min(focused_rfdata_masked)) max(max(focused_rfdata_masked))])
+        savefig([dst_path,'\rfdata_masked.fig'])
+        exportfig([dst_path,'\rfdata_masked'],'png',[400,400])
+        close gcf
+        figure;
+        imagesc(focused_rfdata);
+        hold on
+        scatter(min(target_element):max(target_element),reference_point(min(target_element):max(target_element)),2,'red');
+        scatter(min(target_element):max(target_element),point_max_in_mask(min(target_element):max(target_element)),2,'blue','filled');
+        hold off
+        xlabel('receiver[ch]');
+        ylabel('time[sample]');
+        axis square;
+        axis tight;
+        colormap(bone);
+        colorbar;
+        caxis([min(min(focused_rfdata_masked)) max(max(focused_rfdata_masked))])
+        savefig([dst_path,'\rfdata_whole.fig'])
+        exportfig([dst_path,'\rfdata_whole'],'png',[400,400])
+        close gcf
+        figure;
+        plot(focal_depth*1e3,focal_signal_total(:,kk,ll));
+        hold on
+        scatter(focal_depth(ind_tmp)*1e3,max_tmp,'red','fileed')
+        hold off
+        xlabel('焦点深さ[mm]')
+        ylabel('信号強度[au]')
+        savefig([dst_path,'\focal_signal.fig'])
+        exportfig([dst_path,'\focal_signal'],'png',[400,400])
+        close gcf
     end
 end
-cd 'H:\result\2018_11_07_IMCL_estimation_principle_verifiacation'
-save('2018_11_10_with_rfsignal_homogeneity_SingleLayer_boundary_7.9mm_varied_focaldepth_20x20_ver2.mat','ind_tmp','ind_max_signal','focal_depth','homogeneity_total','homogeneity_percel',...
+dst_path = sprintf('H:/result/2018_11_07_IMCL_estimation_principle_verifiacation/2018_11_11_maxrfsignal_detect_boundary_case26/');
+save([dst_path,'\result.mat'],'ind_tmp','ind_max_signal','focal_depth','homogeneity_total','homogeneity_percel',...
     'reference_point','focused_rfdata','focused_rfdata_masked','focal_signal_total','max_signal');
