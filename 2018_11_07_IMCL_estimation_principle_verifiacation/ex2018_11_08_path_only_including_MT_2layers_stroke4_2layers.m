@@ -175,9 +175,224 @@ for ll = 1:num_medium
         close gcf
     end
 end
+homogeneity_total_normalized = zeros(num_rate_IMCL,num_medium);
+homogeneity_total_normalized2 = zeros(num_rate_IMCL,num_medium);
+max_signal_normalized = zeros(num_rate_IMCL,num_medium);
+for ll = 1:num_medium
+    tmp = homogeneity_total(:,ll);
+    tmp(~isfinite(tmp))=NaN;
+    tmp(isnan(tmp)) = max(tmp);
+    tmp = tmp/max(tmp);
+    homogeneity_total_normalized(:,ll) = tmp;
+    tmp2 = max_signal(:,ll);
+    max_signal_normalized(:,ll) = tmp2/max(tmp2);
+    tmp3 = homogeneity_total(:,ll);
+    tmp3(~isfinite(tmp3))=NaN;
+    tmp3(isnan(tmp3)) = 0;
+    tmp3 = tmp3/max(tmp3);
+    homogeneity_total_normalized2(:,ll) = tmp3;
+end
+phase_and_intensity = max_signal_normalized.*homogeneity_total_normalized;
 dst_path = sprintf('H:/result/2018_11_07_IMCL_estimation_principle_verifiacation/2018_11_11_maxrfsignal_detect_boundary_2layers/');
-save([dst_path,'\result.mat'],'ind_tmp','ind_max_signal','focal_depth','homogeneity_total','homogeneity_percel',...
-    'reference_point','focused_rfdata','focused_rfdata_masked','focal_signal_total','max_signal');
+save([dst_path,'\result2.mat'],'ind_tmp','ind_max_signal','focal_depth','homogeneity_total','homogeneity_percel',...
+    'reference_point','focused_rfdata','focused_rfdata_masked','focal_signal_total','max_signal','max_signal_normalized','homogeneity_total_normalized',...
+    'homogeneity_total_normalized2','phase_and_intensity');
+
+
+figure;
+tmp = zeros(20,20);
+for ii = 1:20
+    tmp(ii,:) = focal_depth(1,ind_max_signal(ii,:))*1e3;
+end
+pcolor(tmp);
+c = colorbar;
+c.Label.String = 'boundary depth[mm]';
+axis equal
+axis tight
+xlabel('correct IMCL percentage [%]');
+ylabel('predicted IMCL percentage [%]');
+axis equal
+axis tight
+exportfig([dst_path,'\2018_11_13_boundary_eng'],'png',[400,350]);
+close gcf
+
+figure;
+tmp = zeros(20,20);
+for ii = 1:20
+    tmp(ii,:) = focal_depth(1,ind_max_signal(ii,:))*1e3;
+end
+pcolor(tmp);
+c = colorbar;
+c.Label.String = '媒質境界深度[mm]';
+axis equal
+axis tight
+xlabel('正解IMCL占有率 [%]');
+ylabel('予測IMCL占有率 [%]');
+axis equal
+axis tight
+exportfig([dst_path,'\2018_11_13_boundary'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(homogeneity_total);
+colorbar;
+c = colorbar;
+c.Label.String = 'homogeneity';
+axis equal
+axis tight
+xlabel('correct IMCL percentage [%]');
+ylabel('predicted IMCL percentage [%]')
+exportfig([dst_path,'\2018_11_13_homogeneity'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(homogeneity_total);
+c = colorbar;
+c.Label.String = '均質度評価指標';
+axis equal
+axis tight
+xlabel('正解IMCL占有率 [%]');
+ylabel('予測IMCL占有率 [%]');
+exportfig([dst_path,'\2018_11_13_homogeneity'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(max_signal);
+c = colorbar;
+c.Label.String = '信号強度[au]';
+axis equal
+axis tight
+xlabel('正解IMCL占有率 [%]');
+ylabel('予測IMCL占有率 [%]');
+axis equal
+axis tight
+exportfig([dst_path,'\2018_11_13_intensity'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(max_signal);
+c = colorbar;
+c.Label.String = 'Intensity[au]';
+axis equal
+axis tight
+xlabel('correct IMCL percentage [%]');
+ylabel('predicted IMCL percentage [%]');
+exportfig([dst_path,'\2018_11_13_intensity_eng'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(max_signal_normalized);
+c = colorbar;
+c.Label.String = 'normalized intensity[au]';
+axis equal
+axis tight
+xlabel('correct IMCL percentage [%]');
+ylabel('predicted IMCL percentage [%]');
+axis equal
+axis tight
+exportfig([dst_path,'\2018_11_13_normalized_intensity_eng'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(max_signal_normalized);
+c = colorbar;
+c.Label.String = '正規化信号強度[au]';
+axis equal
+axis tight
+xlabel('正解IMCL占有率 [%]');
+ylabel('予測IMCL占有率 [%]');
+exportfig([dst_path,'\2018_11_13_normalized_intensity'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(homogeneity_total_normalized);
+colorbar;
+c = colorbar;
+c.Label.String = 'homogeneity [normalized]';
+axis equal
+axis tight
+xlabel('correct IMCL percentage [%]');
+ylabel('predicted IMCL percentage [%]')
+exportfig([dst_path,'\2018_11_13_normalized_homogeniety_eng'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(homogeneity_total_normalized);
+c = colorbar;
+c.Label.String = '正規化均質度評価指標';
+axis equal
+axis tight
+xlabel('正解IMCL占有率 [%]');
+ylabel('予測IMCL占有率 [%]');
+exportfig([dst_path,'\2018_11_13_normalized_homogeniety'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(max_signal_normalized.*homogeneity_total_normalized);
+c = colorbar;
+c.Label.String = 'phase & intensity';
+axis equal
+axis tight
+xlabel('correct IMCL percentage [%]');
+ylabel('predicted IMCL percentage [%]');
+exportfig([dst_path,'\2018_11_13_phase&intensity_eng'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(max_signal_normalized.*homogeneity_total_normalized);
+c = colorbar;
+c.Label.String = '位相・強度指標';
+axis equal
+axis tight
+xlabel('正解IMCL占有率 [%]');
+ylabel('予測IMCL占有率 [%]');
+exportfig([dst_path,'\2018_11_13_phase&intensity'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(homogeneity_total_normalized2);
+colorbar;
+c = colorbar;
+c.Label.String = 'homogeneity [normalized]';
+axis equal
+axis tight
+xlabel('correct IMCL percentage [%]');
+ylabel('predicted IMCL percentage [%]')
+exportfig([dst_path,'\2018_11_13_normalized_homogeniety2_eng'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(homogeneity_total_normalized2);
+c = colorbar;
+c.Label.String = '正規化均質度評価指標';
+axis equal
+axis tight
+xlabel('正解IMCL占有率 [%]');
+ylabel('予測IMCL占有率 [%]');
+exportfig([dst_path,'\2018_11_13_normalized_homogeniety2'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(max_signal_normalized.*homogeneity_total_normalized2);
+c = colorbar;
+c.Label.String = 'phase & intensity';
+axis equal
+axis tight
+xlabel('correct IMCL percentage [%]');
+ylabel('predicted IMCL percentage [%]');
+exportfig([dst_path,'\2018_11_13_phase&intensity2_eng'],'png',[400,350]);
+close gcf
+
+figure;
+pcolor(max_signal_normalized.*homogeneity_total_normalized2);
+c = colorbar;
+c.Label.String = '位相・強度指標';
+axis equal
+axis tight
+xlabel('正解IMCL占有率 [%]');
+ylabel('予測IMCL占有率 [%]');
+exportfig([dst_path,'\2018_11_13_phase&intensity2'],'png',[400,350]);
+close gcf
 
 function [focused_rfdata] = transmit_focus(rfdata,target_element,num_sample,delay_time_all,num_echo_receiver)
 focused_rfdata = zeros(num_sample,num_echo_receiver);

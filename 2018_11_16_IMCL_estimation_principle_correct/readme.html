@@ -705,6 +705,40 @@ dim2 = {true_depth or false_depth};<span class="hljs-comment">%1</span>
 </ul>
 </li>
 </ul>
+<h1 id="20181116">2018/11/16</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AE%E4%BF%AE%E6%AD%A3">IMCL推定アルゴリズムの修正</h2>
+<ul>
+<li><input type="checkbox" id="checkbox8" checked="true"><label for="checkbox8">検出点を信号最大値にしてしまうと，ノイズの影響を大きく受ける．そこで，相互相関をとり，時系列的にもっとも送信波形と似た形状の波形がある時刻を割出すことで検出の正確度を担保する．</label>
+<ul>
+<li>対象：下の条件で得たデータ<br>
+&quot;H:\result\2018_11_07_IMCL_estimation_principle_verifiacation\2018_11_11_no_06_maxrfsignal_detect_boundary_case26&quot;</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">媒質</th>
+<th style="text-align:center">参照点</th>
+<th style="text-align:center">検出点</th>
+<th style="text-align:center">境界位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">腓腹部断面</td>
+<td style="text-align:center">整相加算</td>
+<td style="text-align:center">信号最大値</td>
+<td style="text-align:center">最大振幅</td>
+</tr>
+</tbody>
+</table>
+<p>▲検出点が信号最大値なのはおかしい</p>
+<hr>
+<ul>
+<li>結局相互相関をとってもほとんど違いがなかった．matlabのxcorr関数を使ったがそれが適切でないようにも思えない</li>
+<li>全焦点深さでの最大信号振幅に着目して境界検出を行っていたが，透過波からの影響をうけるような浅い深さでは信号振幅を参照しないことにより，正しい境界位置を検出できる確率が上がると思われる．</li>
+</ul>
 
 </body>
 </html>
