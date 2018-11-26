@@ -57,7 +57,7 @@ for ii = 1:num_depth
     focal_point(2,ii) = t_pos(2,1)-focal_depth(1,ii);
     focal_point(1,ii) = 0;
 end
-
+num_target_element = zeros(1,num_depth);
 ind_max_signal = zeros(num_rate_IMCL,num_medium);
 max_signal = zeros(num_rate_IMCL,num_medium);
 homogeneity_percel = zeros(num_rate_IMCL,num_echo_receiver);
@@ -74,6 +74,7 @@ for ll = 1:num_medium
         v_reference(1,kk) = v_muscle*(1-rate_IMCL(1,kk)/100) + v_fat*(rate_IMCL(1,kk)/100);
         for ii = 1:num_depth
             target_element = find((-focal_depth(1,ii)/2<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2)));
+            num_target_element(1,ii) = length(target_element);
             %受信用の参照点算出
             for jj = 1:num_echo_receiver
                 distance_from_focal_point_all(1,jj) = norm(t_pos(:,jj) - focal_point(:,ii));
