@@ -311,3 +311,7 @@ dim2 = {true_depth or false_depth};%1
     - 焦点距離が最も大きい場合，駆動素子のうち端の素子と隣接する素子間でのRF信号の遅延時間が最も大きくなると思い込んで必要なサンプリングレートの概算をしていたが，その思い込みは間違っていた．
 - やること
     - 遅延時間を縦軸に，横軸に焦点深度をとるグラフを作成する．
+- 確認できたこと
+    - ![1](https://user-images.githubusercontent.com/33616505/49428467-8411cd80-f7e9-11e8-83f6-88e974379205.PNG)
+    ![2](https://user-images.githubusercontent.com/33616505/49428471-8542fa80-f7e9-11e8-9e30-b5a023729e36.PNG)
+    ![3](https://user-images.githubusercontent.com/33616505/49428474-86742780-f7e9-11e8-9e84-fbea4c5395e9.PNG)
