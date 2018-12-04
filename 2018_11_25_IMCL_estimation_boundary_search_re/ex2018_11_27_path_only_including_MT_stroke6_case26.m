@@ -23,20 +23,18 @@
 % update:for•¶‚²‚Æ‚ÉƒtƒHƒ‹ƒ_‚ğì¬‚·‚é‚æ‚¤‚É‚·‚éDƒtƒHƒ‹ƒ_‚²‚Æ‚Érfƒf[ƒ^‚ğ•Û‘¶‚·‚éD
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% ‰Šúİ’è‚É•K—v‚Èƒf[ƒ^‚ÌŒÄ‚Ño‚µ
 clear;
 load("H:/data/kwave/config/t_pos_2board.mat");
 pathname = sprintf('H:/data/kwave/result/2018_11_11_case26_variousIMCL/case26_IMCL%0.1f_pure',1.0);
 cd(pathname);
 load('rfdata.mat');
 load('kgrid.mat');
-% load("H:/data/kwave/result/2018_10_21_point_medium/point_mudium5MHz/rfdata.mat");
-% load("H:/data/kwave/result/2018_10_21_point_medium/point_mudium5MHz/medium.mat");
-% load("H:/data/kwave/result/2018_10_21_point_medium/point_mudium5MHz/kgrid.mat");
 
-% ‰Šúİ’è
+%% ‰Šúİ’è
 v_fat = 1450;%[m/s]
 v_muscle = 1580;%[m/s]
-rate_IMCL = linspace(1,5,5);
+rate_IMCL = linspace(1,20,20);
 v_reference = zeros(1,length(rate_IMCL));
 t_facing_distance = 0.04;%[m]
 [~,num_receiver,num_transmitter] = size(rfdata);
@@ -53,7 +51,7 @@ num_depth = (t_pos(2,1)-t_pos(2,101))/kgrid.dx/2 - 3;%'3'‚Æ‚ ‚é‚Ì‚ÍCÅ‹ßÚ‹——£‚
 focal_depth = zeros(1,num_depth);
 focal_point = zeros(2,num_depth);
 element_pitch = abs(t_pos(1,1) - t_pos(1,2));
-lateral_range_max = 0.4*1e-3;
+lateral_range_max = 4.8*1e-3;
 lateral_range_min = 0;
 num_lateral = round((lateral_range_max -lateral_range_min) / element_pitch)+1;%0.0~4.8 mm‚Ü‚Å
 
@@ -67,27 +65,28 @@ focal_signal_total = zeros(num_depth,num_rate_IMCL,num_medium,num_lateral);
 focal_signal = zeros(num_rate_IMCL,num_medium,num_lateral);
 detected_boundary = zeros(num_rate_IMCL,num_medium,num_lateral);
 
-
-% ˆ—•”
+%% ˆ—•”
 for mm = 1:num_lateral
     for ii = 9:num_depth
-        focal_depth(1,ii) = (ii+3)*kgrid.dx;
-        focal_point(2,ii) = t_pos(2,1)-focal_depth(1,ii);
-        focal_point(1,ii) = (mm-1) * element_pitch;
+        focal_depth(1,ii) = single((ii+3)*kgrid.dx);
+        focal_point(2,ii) = single(t_pos(2,1)-focal_depth(1,ii));
+        focal_point(1,ii) = single((mm-1) * element_pitch);
     end
     for ll = 1:num_medium
+        %% QÆ”z—ñ‚ÌŒÄ‚Ño‚µ
         pathname = sprintf('H:/data/kwave/result/2018_11_11_case26_variousIMCL/case26_IMCL%0.1f_pure',ll);
         cd(pathname);
         load('rfdata.mat');
         load('kgrid.mat');
         [num_sample,~,~] = size(rfdata);
+        %% ‹«ŠEˆÊ’u‚ÌŒó•â‚ğ‘I’è‚·‚éD(Œó•â”Fnum_IMCL x num_medium)
         for kk = 1:num_rate_IMCL
-            %% ‹«ŠEˆÊ’u‚ÌƒAƒ^ƒŠ‚ğ‚Â‚¯‚é
+            %% ‹«ŠEˆÊ’u‚ÌƒAƒ^ƒŠ‚ğ‚Â‚¯‚é(full depth)
             if kk == 1
                 %% ”½Ë‹­“xƒvƒƒtƒ@ƒCƒ‹‚ğ‹‚ß‚éD
                 v_reference(1,kk) = v_muscle*(1-rate_IMCL(1,kk)/100) + v_fat*(rate_IMCL(1,kk)/100);
                 for ii = 9:num_depth
-                    target_element = find((-focal_depth(1,ii)/2<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2)));
+                    target_element = find((-focal_depth(1,ii)/2+focal_point(1,ii)<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2+focal_point(1,ii))));
                     %óM—p‚ÌQÆ“_Zo
                     for jj = 1:num_echo_receiver
                         distance_from_focal_point_all(1,jj) = norm(t_pos(:,jj) - focal_point(:,ii));
@@ -107,7 +106,7 @@ for mm = 1:num_lateral
                 ind_search_depth(mm,ll) = ind_max_signal(kk,ll,mm);
                 ii = ind_search_depth(mm,ll);
                 %% QÆ“_‚Æ”g–Ê‚Æ‚ÌŒ`ó‘ŠŠÖ‚ğ‹‚ß‚éDi‘ŠŒİ‘ŠŠÖ–@j
-                target_element = find((-focal_depth(1,ii)/2<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2)));
+                target_element = find((-focal_depth(1,ii)/2+focal_point(1,ii)<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2+focal_point(1,ii))));
                 %óM—p‚ÌQÆ“_Zo
                 for jj = 1:num_echo_receiver
                     distance_from_focal_point_all(1,jj) = norm(t_pos(:,jj) - focal_point(:,ii));
@@ -132,7 +131,8 @@ for mm = 1:num_lateral
                 displacement_ref(target_element(1:end-1),kk,ll,mm) = diff(reference_point(target_element));
                 error_wavefront(kk,ll,mm) = sum(abs(displacement(target_element(1:end-1),kk,ll,mm) - ...
                     displacement_ref(target_element(1:end-1),kk,ll,mm)))/(length(target_element)-1);
-                dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_25_case26/lateral%0.1fmm/true%d_assumption%d',...
+                %% o—Íƒf[ƒ^‚Ì•Û‘¶
+                dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_27_case26/lateral%0.1fmm/true%d_assumption%d',...
                     focal_point(1,9)*1e3,rate_IMCL(1,ll),rate_IMCL(1,kk));
                 if ~exist(dst_path, 'dir')
                     mkdir(dst_path);
@@ -184,11 +184,11 @@ for mm = 1:num_lateral
                 close gcf
                 fprintf('prepareing... lateral number is %d, medium number is %d, and estimation number is %d\n',mm,ll,kk);
             else
-            %% Œó•â‚ği‚Á‚Ä‹«ŠEˆÊ’u‚ğ‹‚ß‚éD    
+            %% Œó•â‚ği‚Á‚Ä‹«ŠEˆÊ’u‚ğ‹‚ß‚éD(limited depth)
                 %% ”½Ë‹­“xƒvƒƒtƒ@ƒCƒ‹‚ğ‹‚ß‚éD
                 v_reference(1,kk) = v_muscle*(1-rate_IMCL(1,kk)/100) + v_fat*(rate_IMCL(1,kk)/100);
                 for ii = ind_search_depth(mm,ll)-5:ind_search_depth(mm,ll)+5
-                    target_element = find((-focal_depth(1,ii)/2<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2)));
+                    target_element = find((-focal_depth(1,ii)/2+focal_point(1,ii)<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2+focal_point(1,ii))));
                     %óM—p‚ÌQÆ“_Zo
                     for jj = 1:num_echo_receiver
                         distance_from_focal_point_all(1,jj) = norm(t_pos(:,jj) - focal_point(:,ii));
@@ -207,7 +207,7 @@ for mm = 1:num_lateral
                 max_signal(kk,ll,mm) = focal_signal_total(ind_max_signal(kk,ll,mm),kk,ll,mm);
                 ii = ind_max_signal(kk,ll,mm);
                 %% QÆ“_‚Æ”g–Ê‚Æ‚ÌŒ`ó‘ŠŠÖ‚ğ‹‚ß‚éDi‘ŠŒİ‘ŠŠÖ–@j
-                target_element = find((-focal_depth(1,ii)/2<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2)));
+                target_element = find((-focal_depth(1,ii)/2+focal_point(1,ii)<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2+focal_point(1,ii))));
                 %óM—p‚ÌQÆ“_Zo
                 for jj = 1:num_echo_receiver
                     distance_from_focal_point_all(1,jj) = norm(t_pos(:,jj) - focal_point(:,ii));
@@ -232,7 +232,8 @@ for mm = 1:num_lateral
                 displacement_ref(target_element(1:end-1),kk,ll,mm) = diff(reference_point(target_element));
                 error_wavefront(kk,ll,mm) = sum(abs(displacement(target_element(1:end-1),kk,ll,mm) - ...
                     displacement_ref(target_element(1:end-1),kk,ll,mm)))/(length(target_element)-1);
-                dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_25_case26/lateral%0.1fmm/true%d_assumption%d',...
+                %% o—Íƒf[ƒ^‚Ì•Û‘¶
+                dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_27_case26/lateral%0.1fmm/true%d_assumption%d',...
                     focal_point(1,9)*1e3,rate_IMCL(1,ll),rate_IMCL(1,kk));
                 if ~exist(dst_path, 'dir')
                     mkdir(dst_path);
@@ -285,14 +286,15 @@ for mm = 1:num_lateral
                 fprintf('prepareing...lateral number is %d, medium number is %d, and estimation number is %d\n',mm,ll,kk);
             end
         end
-        %% ‹«ŠEˆÊ’u‚ğ“Á’è‚µ‚½DŠe”}¿‚É‘Î‚µ‚Ä“¯ˆê‚ÌÅ“_ˆÊ’u‚Å‚ÌRFƒf[ƒ^‚©‚ç”gŒ`Œ`ó“™‚ğ•]‰¿‚·‚éD
+        %% ‹«ŠEˆÊ’u‚ğ“Á’è‚·‚éD(‹«ŠEˆÊ’u”Fnum_medium)
         [~,ind_ind_max_signal] = max(max_signal(:,ll,mm));
         detected_boundary(:,ll,mm) =  ind_max_signal(ind_ind_max_signal,ll,mm);
+        %% Še”}¿(num_medium)‚É‘Î‚µ‚Ä“¯ˆê‚ÌÅ“_ˆÊ’u‚Å‚ÌRFƒf[ƒ^‚©‚ç”gŒ`Œ`ó“™‚ğ•]‰¿‚·‚éD
         for kk = 1:num_rate_IMCL
-            %% ”½Ë‹­“xƒvƒƒtƒ@ƒCƒ‹‚ğ‹‚ß‚éD
+                %% ”½Ë‹­“xƒvƒƒtƒ@ƒCƒ‹‚ğ‹‚ß‚éD
             v_reference(1,kk) = v_muscle*(1-rate_IMCL(1,kk)/100) + v_fat*(rate_IMCL(1,kk)/100);
-            for ii = detected_boundary(:,ll,mm)
-                target_element = find((-focal_depth(1,ii)/2<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2)));
+            for ii = detected_boundary(1,ll,mm)
+                target_element = find((-focal_depth(1,ii)/2+focal_point(1,ii)<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(1,ii)/2+focal_point(1,ii))));
                 %óM—p‚ÌQÆ“_Zo
                 for jj = 1:num_echo_receiver
                     distance_from_focal_point_all(1,jj) = norm(t_pos(:,jj) - focal_point(:,ii));
@@ -304,7 +306,7 @@ for mm = 1:num_lateral
                 %óMƒr[ƒ€ƒtƒH[ƒJƒVƒ“ƒO
                 focal_signal(kk,ll,mm) =  receive_focus(focused_rfdata,target_element,reference_point);
             end
-            %% QÆ“_‚Æ”g–Ê‚Æ‚ÌŒ`ó‘ŠŠÖ‚ğ‹‚ß‚éDi‘ŠŒİ‘ŠŠÖ–@j
+                %% QÆ“_‚Æ”g–Ê‚Æ‚ÌŒ`ó‘ŠŠÖ‚ğ‹‚ß‚éDi‘ŠŒİ‘ŠŠÖ–@j
             %RFƒf[ƒ^ƒ}ƒXƒLƒ“ƒOi‹Ï¿«•]‰¿‚Ì‚½‚ß)
             min_reference = min(reference_point) - 5;
             max_reference = min(reference_point) + 40 - 1;
@@ -319,7 +321,7 @@ for mm = 1:num_lateral
             displacement_ref(target_element(1:end-1),kk,ll,mm) = diff(reference_point(target_element));
             error_wavefront(kk,ll,mm) = sum(abs(displacement(target_element(1:end-1),kk,ll,mm) - ...
                 displacement_ref(target_element(1:end-1),kk,ll,mm)))/(length(target_element)-1);
-            dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_25_case26/lateral%0.1fmm/true%d_assumption%d',...
+            dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_27_case26/lateral%0.1fmm/true%d_assumption%d',...
                 focal_point(1,9)*1e3,rate_IMCL(1,ll),rate_IMCL(1,kk));
             if ~exist(dst_path, 'dir')
                 mkdir(dst_path);
@@ -362,14 +364,14 @@ for mm = 1:num_lateral
             fprintf('detected... lateral number is %d, medium number is %d, and estimation number is %d\n',mm,ll,kk);
         end
     end
-    
+    %% o—Íƒf[ƒ^‚Ì•Û‘¶
     max_signal_normalized = zeros(num_rate_IMCL,num_medium,num_lateral);
     for ll = 1:num_medium
         tmp2 = focal_signal(:,ll,mm);
         max_signal_normalized(:,ll,mm) = tmp2/max(tmp2);
     end
     
-    dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_25_case26/lateral%0.1fmm/',focal_point(1,9)*1e3);
+    dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_27_case26/lateral%0.1fmm/',focal_point(1,9)*1e3);
     save([dst_path,'\result.mat'],'ind_max_signal','focal_depth','displacement',...
         'reference_point','focal_signal_total','focal_signal','max_signal','max_signal_normalized');
     
@@ -383,7 +385,7 @@ for mm = 1:num_lateral
     title('boundary depth[mm]')
     xlabel('correct IMCL percentage [%]');
     ylabel('predicted IMCL percentage [%]');
-    exportfig([dst_path,'\2018_11_25_pre_boundary_eng'],'png',[300,250]);
+    exportfig([dst_path,'\2018_11_27_pre_boundary_eng'],'png',[300,250]);
     close gcf
     
     figure;
@@ -395,7 +397,7 @@ for mm = 1:num_lateral
     title('”}¿‹«ŠE[“x[mm]')
     xlabel('³‰ğIMCLè—L—¦ [%]');
     ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_pre_boundary'],'png',[300,250]);
+    exportfig([dst_path,'\2018_11_27_pre_boundary'],'png',[300,250]);
     close gcf
     
         figure;
@@ -407,7 +409,7 @@ for mm = 1:num_lateral
     title('boundary depth[mm]')
     xlabel('correct IMCL percentage [%]');
     ylabel('predicted IMCL percentage [%]');
-    exportfig([dst_path,'\2018_11_25_detected_boundary_eng'],'png',[300,250]);
+    exportfig([dst_path,'\2018_11_27_detected_boundary_eng'],'png',[300,250]);
     close gcf
     
     figure;
@@ -419,7 +421,7 @@ for mm = 1:num_lateral
     title('”}¿‹«ŠE[“x[mm]')
     xlabel('³‰ğIMCLè—L—¦ [%]');
     ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_detected_boundary'],'png',[300,250]);
+    exportfig([dst_path,'\2018_11_27_detected_boundary'],'png',[300,250]);
     close gcf
     
     figure;
@@ -427,7 +429,7 @@ for mm = 1:num_lateral
     title('wavefront distortion');
     xlabel('correct IMCL percentage [%]');
     ylabel('predicted IMCL percentage [%]')
-    exportfig([dst_path,'\2018_11_25_detected_wavefront_eng'],'png',[300,250]);
+    exportfig([dst_path,'\2018_11_27_detected_wavefront_eng'],'png',[300,250]);
     close gcf
     
     figure;
@@ -435,146 +437,60 @@ for mm = 1:num_lateral
     title('”g–Ê˜c‚İw•W');
     xlabel('³‰ğIMCLè—L—¦ [%]');
     ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_detected_wavefront]]'],'png',[300,250]);
+    exportfig([dst_path,'\2018_11_27_detected_wavefront]]'],'png',[300,250]);
     close gcf
     
     figure;
-    heatmap(max_signal);
-    c = colorbar;
-    c.Label.String = 'M†‹­“x[au]';
-    axis equal
-    axis tight
+    heatmap(max_signal(:,:,mm));
+    title('M†‹­“x[au]');
     xlabel('³‰ğIMCLè—L—¦ [%]');
     ylabel('—\‘ªIMCLè—L—¦ [%]');
-    axis equal
-    axis tight
-    exportfig([dst_path,'\2018_11_25_detected_intensity'],'png',[300,250]);
+    exportfig([dst_path,'\2018_11_27_pre_intensity'],'png',[300,250]);
     close gcf
     
     figure;
-    heatmap(max_signal);
-    c = colorbar;
-    c.Label.String = 'Intensity[au]';
-    axis equal
-    axis tight
+    heatmap(max_signal(:,:,mm));
+    title('Intensity[au]');
     xlabel('correct IMCL percentage [%]');
     ylabel('predicted IMCL percentage [%]');
-    exportfig([dst_path,'\2018_11_25_intensity_eng'],'png',[300,250]);
+    exportfig([dst_path,'\2018_11_27_pre_intensity_eng'],'png',[300,250]);
     close gcf
     
     figure;
-    heatmap(max_signal_normalized);
-    c = colorbar;
-    c.Label.String = 'normalized intensity[au]';
-    axis equal
-    axis tight
+    heatmap(focal_signal(:,:,mm));
+    title('M†‹­“x[au]');
+    xlabel('³‰ğIMCLè—L—¦ [%]');
+    ylabel('—\‘ªIMCLè—L—¦ [%]');
+    exportfig([dst_path,'\2018_11_27_detected_intensity'],'png',[300,250]);
+    close gcf
+    
+    figure;
+    heatmap(focal_signal(:,:,mm));
+    title('Intensity[au]');
     xlabel('correct IMCL percentage [%]');
     ylabel('predicted IMCL percentage [%]');
-    axis equal
-    axis tight
-    exportfig([dst_path,'\2018_11_25_normalized_intensity_eng'],'png',[300,250]);
-    close gcf
-    
-    figure;
-    heatmap(max_signal_normalized);
-    c = colorbar;
-    c.Label.String = '³‹K‰»M†‹­“x[au]';
-    axis equal
-    axis tight
-    xlabel('³‰ğIMCLè—L—¦ [%]');
-    ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_normalized_intensity'],'png',[300,250]);
-    close gcf
-    
-    figure;
-    heatmap(homogeneity_total_normalized);
-    colorbar;
-    c = colorbar;
-    c.Label.String = 'homogeneity [normalized]';
-    axis equal
-    axis tight
-    xlabel('correct IMCL percentage [%]');
-    ylabel('predicted IMCL percentage [%]')
-    exportfig([dst_path,'\2018_11_25_normalized_homogeniety_eng'],'png',[300,250]);
-    close gcf
-    
-    figure;
-    heatmap(homogeneity_total_normalized);
-    c = colorbar;
-    c.Label.String = '³‹K‰»‹Ï¿“x•]‰¿w•W';
-    axis equal
-    axis tight
-    xlabel('³‰ğIMCLè—L—¦ [%]');
-    ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_normalized_homogeniety'],'png',[300,250]);
-    close gcf
-    
-    figure;
-    heatmap(max_signal_normalized.*homogeneity_total_normalized);
-    c = colorbar;
-    c.Label.String = 'phase & intensity';
-    axis equal
-    axis tight
-    xlabel('correct IMCL percentage [%]');
-    ylabel('predicted IMCL percentage [%]');
-    exportfig([dst_path,'\2018_11_25_phase&intensity_eng'],'png',[300,250]);
-    close gcf
-    
-    figure;
-    heatmap(max_signal_normalized.*homogeneity_total_normalized);
-    c = colorbar;
-    c.Label.String = 'ˆÊ‘ŠE‹­“xw•W';
-    axis equal
-    axis tight
-    xlabel('³‰ğIMCLè—L—¦ [%]');
-    ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_phase&intensity'],'png',[300,250]);
-    close gcf
-    
-    figure;
-    heatmap(homogeneity_total_normalized2);
-    colorbar;
-    c = colorbar;
-    c.Label.String = 'homogeneity [normalized]';
-    axis equal
-    axis tight
-    xlabel('correct IMCL percentage [%]');
-    ylabel('predicted IMCL percentage [%]')
-    exportfig([dst_path,'\2018_11_25_normalized_homogeniety2_eng'],'png',[300,250]);
-    close gcf
-    
-    figure;
-    heatmap(homogeneity_total_normalized2);
-    c = colorbar;
-    c.Label.String = '³‹K‰»‹Ï¿“x•]‰¿w•W';
-    axis equal
-    axis tight
-    xlabel('³‰ğIMCLè—L—¦ [%]');
-    ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_normalized_homogeniety2'],'png',[300,250]);
-    close gcf
-    
-    figure;
-    heatmap(max_signal_normalized.*homogeneity_total_normalized2);
-    c = colorbar;
-    c.Label.String = 'phase & intensity';
-    axis equal
-    axis tight
-    xlabel('correct IMCL percentage [%]');
-    ylabel('predicted IMCL percentage [%]');
-    exportfig([dst_path,'\2018_11_25_phase&intensity2_eng'],'png',[300,250]);
-    close gcf
-    
-    figure;
-    heatmap(max_signal_normalized.*homogeneity_total_normalized2);
-    c = colorbar;
-    c.Label.String = 'ˆÊ‘ŠE‹­“xw•W';
-    axis equal
-    axis tight
-    xlabel('³‰ğIMCLè—L—¦ [%]');
-    ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_phase&intensity2'],'png',[300,250]);
-    close gcf
+    exportfig([dst_path,'\2018_11_27_detected_intensity_eng'],'png',[300,250]);
+    close gcf    
 end
-
-
+%% ‚·‚×‚Ä‚Ì•Ï”‚ğ•Û‘¶
+savefilename = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_27_case26/total_result.mat');
+save(savefilename);
+%% ŠÖ”•”
+function [focused_rfdata] = transmit_focus(rfdata,target_element,num_sample,delay_time_all,num_echo_receiver)
+focused_rfdata = zeros(num_sample,num_echo_receiver);
+for jj = 1:length(target_element)
+    % ’x‰„ˆ—
+    delay_time = delay_time_all(1,target_element(jj));%[sample]
+    read_range_rfdata = length(delay_time+1:num_sample);
+    focused_rfdata(1:read_range_rfdata,:) = focused_rfdata(1:read_range_rfdata,:)...
+        +  rfdata(delay_time+1:num_sample,1:100,target_element(jj));%®‘Š‰ÁZ
+end
+end
+function [focal_signal_total] = receive_focus(focused_rfdata,target_element,reference_point)
+focal_signal_total = 0;
+for jj = 1:length(target_element)
+    %óMƒr[ƒ€ƒtƒH[ƒ~ƒ“ƒOi®‘Š‰ÁZ‚Ì‚½‚ßj
+    focal_signal_total = focal_signal_total+ ...
+        focused_rfdata(reference_point(1,target_element(1,jj)),target_element(1,jj))/length(target_element);
+end
+end

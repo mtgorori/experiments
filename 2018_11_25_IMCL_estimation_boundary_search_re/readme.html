@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>readme.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
+	font-size: 14px;
+	padding: 0 12px;
+	line-height: 22px;
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	color: #4080D0;
+	text-decoration: none;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
+	font-size: inherit;
+	line-height: auto;
+}
+
+a:hover {
+	color: #4080D0;
+	text-decoration: underline;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left: 5px solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 14px;
+	line-height: 19px;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+.mac code {
+	font-size: 12px;
+	line-height: 18px;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+/** Theming */
+
+.vscode-light,
+.vscode-light pre code {
+	color: rgb(30, 30, 30);
+}
+
+.vscode-dark,
+.vscode-dark pre code {
+	color: #DDD;
+}
+
+.vscode-high-contrast,
+.vscode-high-contrast pre code {
+	color: white;
+}
+
+.vscode-light code {
+	color: #A31515;
+}
+
+.vscode-dark code {
+	color: #D7BA7D;
+}
+
+.vscode-light pre:not(.hljs),
+.vscode-light code > div {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre:not(.hljs),
+.vscode-dark code > div {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre:not(.hljs),
+.vscode-high-contrast code > div {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+.vscode-light blockquote,
+.vscode-dark blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.vscode-high-contrast blockquote {
+	background: transparent;
+	border-color: #fff;
+}
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family:  "Meiryo", "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+</head>
+<body>
+<h1 id="20181105">2018/11/05</h1>
+<h2 id="%E3%81%AF%E3%81%98%E3%82%81%E3%81%AB">はじめに</h2>
+<p>Q: ex2018_10_21_search_path_contain_only_IMCL4.mなどがどの結果出しに用いられたかはどこで分かる？
+A：ex2018_10_21_search_path_contain_only_IMCL3.mlxなどのように名前で紐づけてあったり，discuss_2018_10_21-_search_path_contain_only_IMCL.mlxの中に「コード→結果→議論」のような流れで紐付けられていたりする．mlxファイルを見ることで分かる．</p>
+<h2 id="%E3%81%9D%E3%82%82%E3%81%9D%E3%82%82%E9%80%81%E5%8F%97%E4%BF%A1%E3%83%95%E3%82%A9%E3%83%BC%E3%82%AB%E3%82%B9%E3%81%AF%E6%AD%A3%E3%81%97%E3%81%8F%E6%A9%9F%E8%83%BD%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E3%81%8B%EF%BC%9F">そもそも送受信フォーカスは正しく機能しているか？</h2>
+<ul>
+<li>問題点
+<ul>
+<li>焦点深度が音響境界と一致したときに信号強度がピークをとった事により，整相加算が適切に機能しているとみなしていたことが問題である．信号を加算する前に参照点と波形のピークが一致しているかどうかを確認する必要がある．</li>
+</ul>
+</li>
+<li>確認方法
+<ol>
+<li>IMAT領域を1 pixel分の点として作成した媒質データに対して送受信フォーカスをかけた．</li>
+<li>参照点とRF信号の振幅ピークが一致するかを，焦点深度を変化させながら，参照点(赤点),RF信号の振幅ピーク(青点)で逐次示すムービーを作成して目視で確認した．</li>
+</ol>
+</li>
+<li>結果
+<ul>
+<li>IMAT領域に到達する焦点深度において，参照点とRF信号の信号ピークが良好に一致したことが認められた．</li>
+</ul>
+</li>
+</ul>
+<h2 id="%E5%8F%97%E4%BF%A1%E6%B3%A2%E9%9D%A2%E3%81%AE%E6%95%B4%E3%81%86%E6%99%82%E5%88%BB%E3%81%8C%E6%83%B3%E5%AE%9A%E3%82%88%E3%82%8A%E3%82%82%E6%97%A9%E3%81%84%E3%81%93%E3%81%A8%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">受信波面の整う時刻が想定よりも早いことについて</h2>
+<ol>
+<li><strong>受信波面が整っている時刻において<br>波形包絡線最大位置と参照点がどれだけの遅延をしているのか確認．</strong>
+<ul>
+<li>焦点深度が7.3 mmにおいて目視で波形の乱れがほとんどないことを確認．<br>（IMCLとIMATの境界位置は奥行方向7.9 mm）</li>
+<li>このときの遅延を確認．
+<ul>
+<li>確認されたこと
+<ul>
+<li>中央のch50における遅延は，焦点深度と領域境界との変位によるものとして説明できる．</li>
+</ul>
+</li>
+<li>考察
+<ul>
+<li>かならずしも境界位置に焦点を合わせないと波面が整わないわけではない．</li>
+<li>伝播経路内に混在するIMATにより焦点ずれが生じ，領域境界に焦点を合わせたときの反射波が歪んだと考えられる．</li>
+<li>むしろ境界に焦点を合わせないことにより，媒質の細かな不均一さによる波面歪みの影響が偶然小さくなることがある．</li>
+</ul>
+</li>
+<li>提起できる仮説
+<ul>
+<li>境界に焦点を合わせても波面歪みが生じている原因は，伝播経路中に混在するIMATによるものである．</li>
+<li>境界に焦点を合わせずとも，整っている波面と仮定音速により定まる参照点列とを比較して，最も当てはまるような仮定音速によりIMCL量が推定できる.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="20181106">2018/11/06</h1>
+<h2 id="%E5%8F%97%E4%BF%A1%E6%B3%A2%E9%9D%A2%E3%81%AE%E6%95%B4%E3%81%86%E6%99%82%E5%88%BB%E3%81%8C%E6%83%B3%E5%AE%9A%E3%82%88%E3%82%8A%E3%82%82%E6%97%A9%E3%81%84%E3%81%93%E3%81%A8%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6%EF%BC%88%E7%B6%9A%EF%BC%89">受信波面の整う時刻が想定よりも早いことについて（続）</h2>
+<ol start="2">
+<li><strong>IMCLとIMATの境界を焦点とする条件下で伝播経路内にIMAT領域が混在しているかを確認．</strong>
+<ul>
+<li>伝播経路で囲まれた領域内でのIMAT面積比を確認．経路の不均質さの目安として．</li>
+<li>確認方法
+<ol>
+<li>焦点深度に対応した開口径をなすための駆動素子の各位置と焦点位置とを結ぶ線分を<br>音速分布イメージに上書きする．(目視の確認)</li>
+<li>実際にカウントして占有率を確認．
+<ul>
+<li><strong>内挿</strong><br>焦点と駆動素子のうち最端の素子のインデックスが分かり，x軸方向に何グリッドだけ離れているかの情報があれば，内挿処理ができる．<br>
+①内挿処理で，両側端点のインデックスが分かる．<br>
+(２点参照の線形内挿．非整数に対しては開口中心から下部の駆動素子についてfloor, 上部の駆動素子についてはceilを用いる．)<br>
+②y軸方向に着目して，その間にあるIMATをカウントする．<br>
+③最後にカウント数を総探索数で割る．</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>結果
+<ul>
+<li>焦点深度7.9 mm（IMATとMTとの境界位置）における，伝播経路で囲まれた領域内（領域A）でのIMAT面積比は，2.58 %であった．</li>
+</ul>
+</li>
+<li>考察
+<ul>
+<li>領域Aにおいて不均質性が生じているために，波形歪みが生じた可能性がある．</li>
+<li>そこで，領域Aに存在するIMATを除去した媒質を用いてRFデータを取得し，同様に焦点深度7.9 mmでの波形形状を確認する．</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>領域Aに存在するIMATを除去した条件で受信波形形状の時間変動を確認する．</strong>
+<ul>
+<li>結果
+<ul>
+<li>IMATを除去する前よりもIMATを除去した方が，反射強度から判別した領域境界に一致する焦点深度での波形形状が整っており，また振幅のコントラストも若干高くなっていた．</li>
+<li>一方で，IMATを除去したのにも関わらず，波形形状の変化がわずかなものであった．</li>
+<li>また，反射強度から判別した領域境界は，IMAT除去前では焦点深度7.9 mmの位置であったのが，IMAT除去後では焦点深度8.0 mmの位置へと変動した．</li>
+</ul>
+</li>
+<li>考察
+<ul>
+<li>点音源で送受信しているため，全周囲からの反射波を均等に受けている．それによって仮想点音源以外からの波形が混在して波形が乱れているのではないだろうか．</li>
+<li>全周囲からの影響を受けないようなIMATの除去をすることによる変化をみることで，その仮説の有用性が確認できると思われる．</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="20181107">2018/11/07</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E6%96%B9%E6%B3%95%E3%81%AE%E4%BA%8C%E5%B1%A4%E5%AA%92%E8%B3%AA%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E5%8E%9F%E7%90%86%E6%A4%9C%E8%A8%BC">IMCL推定方法の二層媒質を用いた原理検証</h2>
+<ul>
+<li>2018/11/06の3.における考察で，全周囲からの影響を受けないようなIMATの除去を行なうことで，焦点位置に存在する領域境界からの影響のみを受けるような状況をつくり，波形形状の変化を観察することが次にやることとして定まった．</li>
+<li>一方で，そもそも波形形状を評価すること，および，適切な仮定音速を求めることが実際にIMCL推定に繋がりうるのかを確認せずに，仮定ありきで話をすすめてしまっていた．</li>
+<li>そこで，伝搬経路上に確実にIMATが存在しない系のうち，最も簡素と考えられる系として，二層媒質系を用いて，IMCL推定精度を評価する．実際の筋肉・脂肪系に対してはここで得られる精度よりも劣った精度となるはずである．まず，簡素な系で本手法が機能するかどうかを確認することは重要であると考える．</li>
+<li>実験条件
+<ul>
+<li>IMATとMTの境界位置が焦点深度7.9 mmに位置するような媒質のうち，単⼀の層構造をとるような媒質を作成した．</li>
+<li>0 - 20 %の範囲で変動させる．</li>
+<li>[1, 2,..., 20 %]の20通りにする．</li>
+<li>仮定⾳速も20通り．計400回の演算になる．</li>
+<li>焦点深さを7.9 mmに固定すれば計算量も⼤幅に削減できる．</li>
+<li>RFデータを⾒たいときはどうすれば良い︖</li>
+<li><s>400ケース中1ケースだけに着⽬すれば⼗分と思う．</s></li>
+<li>反射強度から境界面の深度を全ケースに渡って調べる必要がある．[2018/11/08]
+<ul>
+<li>アルゴリズムのフローが，境界面を検出→参照点の妥当性評価である以上は，反射強度プロファイルを確認する必要がある．</li>
+<li>仮定音速が大きく異なると，フォーカスがかからなくなるため，境界面の位置を正確に推定できなくなることが可能性として残ったままの状態で焦点深さを7.9 mmに固定するのは話が飛躍しているように思われる．</li>
+<li>なるべく配列のサイズを過大にしないようなプログラムに整えていく必要がある．</li>
+<li>
+<h2 id="%E5%A2%83%E7%95%8C%E9%9D%A2%E3%81%AE%E6%B7%B1%E5%BA%A6%E3%82%92%E8%B5%B0%E6%9F%BB%E3%81%97%E3%81%9F%E5%A0%B4%E5%90%88%E3%81%AE%E8%A7%A3%E6%9E%90%E6%9D%A1%E4%BB%B6">境界面の深度を走査した場合の解析条件</h2>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="20181108">2018/11/08</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E6%96%B9%E6%B3%95%E3%81%AE%E4%BA%8C%E5%B1%A4%E5%AA%92%E8%B3%AA%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E5%8E%9F%E7%90%86%E6%A4%9C%E8%A8%BC%E7%B6%9A">IMCL推定方法の二層媒質を用いた原理検証(続)</h2>
+<ul>
+<li>結果
+<ul>
+<li>反射強度プロファイルを参照せずに焦点深さを7.9 mmで固定した場合．
+<ul>
+<li>精度良く推定できていることが確認された．</li>
+<li>一方で，配列の参照の仕方が不適切であった可能性がデバッグの時点で出てきた．</li>
+<li>焦点深さを固定する前の大きい配列を保存しながら行ったIMCL占有率推定プログラムの見直しが必要である．
+<ul>
+<li>原理上うまくいきそうという見通しが立ってよかったのは確か．</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>反射強度から媒質境界を推定．その推定境界位置について参照点とRF信号の正の最大値のインデックスとの距離から適切なIMCL占有率を反映した仮定音速を推定した場合．
+<ul>
+<li>計算に時間がかかることが問題であるが，所要時間を控えていなかった．</li>
+<li>推定誤差が±0.5 %と，非常に高い精度となった．</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>メモ: 【主にアルゴリズムの修正について】<br>
+Q: 反射強度が焦点深度0.4 mmで最大となる場合があるが，これはフォーカスがかかっているというよりもむしろ，隣の素子にそのまま音波が透過・到達した事によるものである．よって，反射強度が最大の位置が焦点深度0.4 mmにあるときは，そのピークよりも深部にあるピークを参照させるようにしなければならない．peak関数を使って対処できないだろうか．<br>
+A:</p>
+<pre class="hljs"><code><div>[~,ind_max_signal(kk,ll)] = findpeaks(<span class="hljs-built_in">abs</span>(focal_signal_total(kk,:)),<span class="hljs-string">'Npeaks'</span>,<span class="hljs-number">1</span>,<span class="hljs-string">'SortStr'</span>,<span class="hljs-string">'descend'</span>);
+</div></code></pre>
+<p>これで解決できた．<br>
+Q: 正解IMCL占有率，予測IMCL占有率(これにより仮定音速が求まる)が一致した場合，媒質の境界面の位置＝反射強度が最も大きい焦点深度であるはずが，0.1 mm分ズレていた．これから考えられることは？<br>
+A:そもそも受信フォーカスで適用するオフセットが適切ではない．このオフセットはどのように決めたのだったかを見直す．<br></p>
+<pre class="hljs"><code><div><span class="hljs-comment">%受信用の参照点算出</span>
+<span class="hljs-keyword">for</span> jj = <span class="hljs-number">1</span>:num_echo_receiver
+    distance_from_focal_point_all(<span class="hljs-number">1</span>,jj) = norm(t_pos(:,jj) - focal_point(:,ii));
+    delay_time_all = <span class="hljs-built_in">round</span>(((distance_from_focal_point_all - focal_depth(<span class="hljs-number">1</span>,ii))/v_reference(<span class="hljs-number">1</span>,kk))/kgrid.dt);<span class="hljs-comment">%[sample]</span>
+    reference_point(<span class="hljs-number">1</span>,jj) = <span class="hljs-built_in">round</span>(delay_time_all(<span class="hljs-number">1</span>,jj)+<span class="hljs-number">1</span>+(<span class="hljs-number">2</span>*focal_depth(<span class="hljs-number">1</span>,ii)/v_reference(<span class="hljs-number">1</span>,kk))/kgrid.dt+<span class="hljs-number">25</span>);
+    <span class="hljs-comment">%25はfocal_amplitudeを最大にするオフセット．</span>
+    reference_point_lowerlimit(<span class="hljs-number">1</span>,jj) ...
+    = <span class="hljs-built_in">round</span>(delay_time_all(<span class="hljs-number">1</span>,jj)*(v_reference(<span class="hljs-number">1</span>,kk)/v_muscle)+<span class="hljs-number">1</span>+(<span class="hljs-number">2</span>*focal_depth(<span class="hljs-number">1</span>,ii)/v_muscle)/kgrid.dt+<span class="hljs-number">25</span><span class="hljs-number">-1</span>);
+    reference_point_upperlimit(<span class="hljs-number">1</span>,jj) ...
+    = <span class="hljs-built_in">round</span>(delay_time_all(<span class="hljs-number">1</span>,jj)*(v_reference(<span class="hljs-number">1</span>,kk)/v_fat)+<span class="hljs-number">1</span>+(<span class="hljs-number">2</span>*focal_depth(<span class="hljs-number">1</span>,ii)/v_fat)/kgrid.dt+<span class="hljs-number">25</span>);
+    <span class="hljs-comment">%どんなに遅延しても早く到達してもこの範囲内に焦点位置からのエコーパルスが入っているであろう上限・下限</span>
+ <span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>この参照インデックスを，<br></p>
+<ol>
+<li>rfデータそのものの整相加算に用いて反射強度を計算，境界位置を推定．</li>
+<li>rfデータに包絡線処理をしてその最大値と参照インデックスとの距離を測っている．<br>
+　2.が特に致命的なミス．包絡線処理をすることで，データのピークの位置が変わってしまう．このミスは，どちらもrfデータorその絶対値を用いて議論することで対策できる．<br></li>
+</ol>
+<ul>
+<li>オフセットの決め方
+<ul>
+<li>source_wave.matから，初期条件での圧力時間プロファイルにおける，RF信号の正の最大値のインデックスが25である．デフォルトでは遅延をかけた後参照しているのは1番目のインデックスであるから，25-1=24だけオフセットを設けた．参照インデックスと干渉後のRF信号の正の最大値のインデックスが良好に一致していることを目視で確認した．<br></li>
+</ul>
+</li>
+</ul>
+<p>Q: 干渉前後で信号周期は変動するはず．確認したか？<br>
+A: 思ったより変動していなかった．1サンプル程度のズレであった．<br>
+<br>
+<br></p>
+<h1 id="20181109">2018/11/09</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E6%96%B9%E6%B3%95%E3%81%AE%E4%BA%8C%E5%B1%A4%E5%AA%92%E8%B3%AA%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E5%8E%9F%E7%90%86%E6%A4%9C%E8%A8%BC%E7%B6%9A">IMCL推定方法の二層媒質を用いた原理検証(続)</h2>
+<ul>
+<li><input type="checkbox" id="checkbox0" checked="true"><label for="checkbox0">反射強度により境界位置を決めているが，誤検出が見られた．これへの対応．</label></li>
+<li><input type="checkbox" id="checkbox1" checked="true"><label for="checkbox1">もう一度case26の複雑な構造をした媒質に対してIMCL推定手法を適用する．</label>
+<ul>
+<li>コードを書き直したことにより，問題点が解決した可能性がある．
+<ul>
+<li><input type="checkbox" id="checkbox2" checked="true"><label for="checkbox2">駆動素子数を限定しているのに関わらず，最後に全素子において波形形状評価をしていた可能性がある．これについて確認をする．</label></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li>反射強度による境界位置検出におけるエラーの調査
+<ul>
+<li>正解IMCL占有率: 10 %, 予測IMCL占有率: 16 %において誤検出が見られた．このときと，検出が正しく機能した，正解IMCL占有率： 10 %, 予測IMCL占有率: 10 %での結果(focal_signal_total[dim={20,20}])を比較して，上述したピーク関数を用いる推定方法の問題点を明らかにする．</li>
+<li>仮定音速が正解音速と大きく異なると，媒質境界位置が0.4 mm~0.5 mmと顕著に外れた位置として検出された．
+<ul>
+<li>考えられる原因：素子間隔は約0.4 mmである．一方で誤検出された媒質境界深度は0.4 mm程度である．すなわち，反射波ではなく透過波を加算した結果であると考えられる．</li>
+<li>改善案<br>
+<ol>
+<li>0.4 mm - 0.5 mmの信号強度を参照しないようにする．
+<ul>
+<li>問題点として，0.4 mm程度の箇所に領域境界があったときに誤判別してしまう可能性がある．</li>
+<li>それほどの近距離では正確に音速を予測することがもともと困難であるようなら参照しないことに問題はないはずである．</li>
+</ul>
+</li>
+<li>反射強度を加味して修正をかける．</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>確認プロセスにおいて気づいた他の点
+<ul>
+<li>信号強度(要修正：正の値のはずなのに信号振幅に対して用いてしまっている)の絶対値が最大の箇所を探索しているが，整相加算して信号が最大化されるのは正の方向にであるので，絶対値を使うことは適切でない．位相の情報を捨てて振幅の大きさだけに注目しているために推定精度の低下に寄与している可能性がある．この点を改良をして結果を比較する．
+<ul>
+<li>例えば，実際のIMCL率よりもIMCL率を多く見積もっているとする．そのとき，仮定音速が小さくなっているのだから，仮定のl/cが大きく見積もられていることになる．このとき，送信フォーカスでの実質の焦点は想定した焦点位置よりも深い箇所に位置することになる．&quot;H:\result\2018_11_07_IMCL_estimation_principle_verifiacation\2018_11_09_focased_signal_comparison_TorF.png&quot;を参照すれば，現に信号強度のピーク位置が奥側にシフトしていることが確認できる．しかしながら，強度の絶対値で境界位置を検出しているため，手前に焦点位置があるものと誤判定してしまっていることが現状の問題点である．そこで，上のようなアルゴリズムの変更を行なう．</li>
+<li>差分<br>
+&quot;H:\experiments\2018_11_07_IMCL_estimation_principle_verifiacation\ex2018_11_08_path_only_including_MT_2layers_stroke2.m&quot;<br>
+↓<br>
+&quot;H:\experiments\2018_11_07_IMCL_estimation_principle_verifiacation\ex2018_11_08_path_only_including_MT_2layers_stroke3.m&quot;</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="20181113">2018/11/13</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E6%96%B9%E6%B3%95%E3%81%AE%E4%BA%8C%E5%B1%A4%E5%AA%92%E8%B3%AA%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E5%8E%9F%E7%90%86%E6%A4%9C%E8%A8%BC%E7%B6%9A">IMCL推定方法の二層媒質を用いた原理検証(続)</h2>
+<ul>
+<li><input type="checkbox" id="checkbox3" checked="true"><label for="checkbox3">homogeneity_total, max_signalの可視化</label>
+<ul>
+<li><input type="checkbox" id="checkbox4" checked="true"><label for="checkbox4">カラーマップの表示</label></li>
+<li><input type="checkbox" id="checkbox5"><label for="checkbox5">同じ媒質に対する推定IMCL率の変化に伴うhomogeneity_totalとmax_signalのプロファイル表示．</label></li>
+</ul>
+</li>
+<li><input type="checkbox" id="checkbox6" checked="true"><label for="checkbox6">homogeneity_totalに含まれるInfに対する処理</label></li>
+<li><input type="checkbox" id="checkbox7"><label for="checkbox7">経路上のIMATを取り除いたときの推定精度評価</label></li>
+</ul>
+<hr>
+<ul>
+<li>今まで行ったIMCL推定アルゴリズムの変更履歴</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:center">参照点</th>
+<th style="text-align:center">検出点</th>
+<th style="text-align:center">問題点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.</td>
+<td style="text-align:center">整相加算</td>
+<td style="text-align:center">包絡線の最大値</td>
+<td style="text-align:center">包絡線最大値とRF信号最大値を<br>とる点は一致しない．</td>
+</tr>
+<tr>
+<td>2.</td>
+<td style="text-align:center">整相加算</td>
+<td style="text-align:center">RF信号絶対値の最大値</td>
+<td style="text-align:center">整相加算ではRF信号最大値をとる位相を<br>基準に遅延をかけているため<br>RF信号最小値を検出することで<br>計測誤差が生じる．</td>
+</tr>
+<tr>
+<td>3.</td>
+<td style="text-align:center">整相加算</td>
+<td style="text-align:center">RF信号の最大値</td>
+<td style="text-align:center">理論上問題なし</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>同じ媒質に対する推定IMCL率の変化に伴うhomogeneity_totalとmax_signalのプロファイル表示
+<ul>
+<li>確認されたこと</li>
+</ul>
+<ol>
+<li>homogeneity_totalのみに着目すればIMCL推定精度が十分でない</li>
+<li>max_signal(反射強度最大値)にも着目すればIMCL推定精度が向上する</li>
+<li>整相加算における位相と振幅情報の両面から評価していることに近しいと考える．
+<ul>
+<li>もっと考察が必要</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>結果の遷移が明快な動画の作成</li>
+</ul>
+<pre class="hljs"><code><div>dim =  {medium, estimation};<span class="hljs-comment">%2</span>
+dim2 = {true_depth or false_depth};<span class="hljs-comment">%1</span>
+</div></code></pre>
+<ul>
+<li>homogeneity_totalに含まれるInfに対する処理
+<ul>
+<li>Infのかわりに最大値を代入</li>
+</ul>
+</li>
+</ul>
+<h1 id="20181116">2018/11/16</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AE%E4%BF%AE%E6%AD%A3">IMCL推定アルゴリズムの修正</h2>
+<ul>
+<li><input type="checkbox" id="checkbox8" checked="true"><label for="checkbox8">検出点を信号最大値にしてしまうと，ノイズの影響を大きく受ける．そこで，相互相関をとり，時系列的にもっとも送信波形と似た形状の波形がある時刻を割出すことで検出の正確度を担保する．</label>
+<ul>
+<li>対象：下の条件で得たデータ<br>
+&quot;H:\result\2018_11_07_IMCL_estimation_principle_verifiacation\2018_11_11_no_06_maxrfsignal_detect_boundary_case26&quot;</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">媒質</th>
+<th style="text-align:center">参照点</th>
+<th style="text-align:center">検出点</th>
+<th style="text-align:center">境界位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">腓腹部断面</td>
+<td style="text-align:center">整相加算</td>
+<td style="text-align:center">信号最大値</td>
+<td style="text-align:center">最大振幅</td>
+</tr>
+</tbody>
+</table>
+<p>▲検出点が信号最大値なのはおかしい</p>
+<hr>
+<ul>
+<li>結局相互相関をとってもほとんど違いがなかった．matlabのxcorr関数を使ったがそれが適切でないようにも思えない</li>
+<li>全焦点深さでの最大信号振幅に着目して境界検出を行っていたが，透過波からの影響をうけるような浅い深さでは信号振幅を参照しないことにより，正しい境界位置を検出できる確率が上がると思われる．</li>
+<li>東先生に質問してみると，相互相関をとる対象の関数を誤って選択していたことがわかった．
+<ul>
+<li>RFデータの隣合うチャンネルの時間波形間での相互相関をとり，そのラグを取ることで，曲率をとり，整相加算における参照点プロットがとる曲率と比較することにより，正しい仮定音速を推定するという流れはどうであろうか．</li>
+</ul>
+</li>
+</ul>
+<h1 id="20181119">2018/11/19</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AE%E4%BF%AE%E6%AD%A3">IMCL推定アルゴリズムの修正</h2>
+<ul>
+<li><input type="checkbox" id="checkbox9" checked="true"><label for="checkbox9">題目のネーミングを考え直す</label></li>
+<li>透過波による影響を考慮しないビームフォーミングによる媒質境界判定法について
+<ul>
+<li>透過波の影響をうける時間フレームについては参照しないようにする．</li>
+<li>受信波形振幅の最大値を用いて検出していたことに問題があった．振幅が大きくなっているのに関わらず，位相が回っていることによって，あたかも振幅が小さく見えてしまう．この状態では信号のピークを正確に判定することが困難になってしまう．そこで，包絡線処理を行なうことで振幅情報だけを取り出す．</li>
+<li>確認されたこと
+<ul>
+<li>半値幅が設定音速と環境音速との違いで変わりそうか確認してみる
+<ul>
+<li>半値幅が確かに設定音速と環境音速の違いが少ない場合において低減されたが，この要因として，設定音速の適切さが支配的なのか，あるいは設定音速と環境音速の誤差が媒質不均質さの補正としての役割を持つことによる効果が支配的なのかこのままでは弁別できない．</li>
+</ul>
+</li>
+<li>ところで各設定音速での反射強度を正規化して積算した結果，境界深度がパッキリ見える様になった．
+<ul>
+<li>初期値を適当に決めて例えば5条件計測にして境界を見つけられるなら処理速度は上がりそう．
+境界位置がわずかにシフトしているはずなのでそれも可視化したい．</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>おもったこと
+<ul>
+<li>やはり境界位置を整相加算で見つけてそこから手前の領域の不均一さを評価．続いて不均一さがしきい値を下回っていたら信頼して，環境音速と設定音速との差を波面の曲率によって評価するのがよいとおもう．</li>
+<li>マスク処理をかけないでRFデータを広く使ってやるのがよいと思った．</li>
+<li>隣合う素子での波形データの相互相関の最大値を評価することで，素子ごとの信号振幅最大値を評価するよりもノイズに強い変位追跡が可能になりそう．</li>
+<li>波面形状を反映しているRFデータはまるで指紋のようにみえる．</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="20181120">2018/11/20</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AE%E4%BF%AE%E6%AD%A3">IMCL推定アルゴリズムの修正</h2>
+<ul>
+<li>題目の案
+<ol>
+<li>反射・透過超音波を用いた筋肉内脂肪量推定手法の開発</li>
+<li>対向超音波プローブによる筋肉内脂肪量推定手法の開発</li>
+<li>対向超音波プローブを用いた反射・透過情報による筋肉内脂肪量推定手法の開発<br>
+➣2か3が良いと思った．</li>
+</ol>
+</li>
+<li>相互相関を用いた受信波面曲率評価
+<ul>
+<li>素子間のRFデータの相互相関をとっているだけなので，RFデータの代表点を算出することはせず，素子間のRFデータの時間シフトを算出する．</li>
+<li>仮定参照点との誤差の評価はどのように行なうか
+<ul>
+<li>仮定参照点がなす二次関数と，RFデータの代表点がなす二次関数との誤差を評価する．</li>
+</ul>
+</li>
+<li>結果
+<ul>
+<li>振幅最大値をとるよりも波面形状評価性能が向上した．</li>
+</ul>
+</li>
+<li>改善点
+<ul>
+<li>隣合う素子のRFデータ時間シフトしか見ていない．すなわち，駆動素子の端と端との位置関係などの情報は反映されていない．</li>
+<li>隣合う素子だけでなく，多数の参照素子の組合せから時間シフトを推定することで推定精度が向上しないだろうか．</li>
+<li>しかしながら，隣合う素子のRFデータに連続性があるという洞察から隣合う素子のみを参照しているのに関わらず，波形が大きく変わっているかもしれないRFデータ同士を比較することにどれほどの有用性があるだろうか．</li>
+<li>時間シフト推定に採用する素子組合せを相互相関値の程度から決めるというやり方はどうだろうか．</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="20181121">2018/11/21</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AE%E4%BF%AE%E6%AD%A3">IMCL推定アルゴリズムの修正</h2>
+<ul>
+<li>思ったこと
+<ul>
+<li>いろいろ場当たり的に手法を変えて考察もせずに検討を繰り返すのはよくない．なぜだめだったのかを考えて改善をするという正攻法が求められている．
+<ul>
+<li>なぜダメだったのかを考えて：振幅最大値をとることが良くない理由を考えて</li>
+<li>改善する：正規化相互相関を用いる．</li>
+<li>なぜダメだったのかの理由付け：ノイズに弱い
+<ul>
+<li>これについての議論をしている論文や教科書をあたる．時間はかけずに参照程度に．</li>
+</ul>
+</li>
+<li>改善するために正規化相互相関を導入した理由：たくさんの情報を総合しているためノイズに強い
+<ul>
+<li>これについても言及している教科書等をあたる．時間はかけずに．</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>相互相関の改良へのヒント
+<ul>
+<li>位相限定相互相関
+<ul>
+<li>信号をフーリエ変換して，位相情報のみを取り出して相関をとっている．</li>
+<li>ここで問題なのは，位相が回れば相関値が簡単にあがる．つまり，半波長の移動量しか正確にトラッキングできないということ．</li>
+<li>振幅情報も交えて見たほうがいいに決まっている．</li>
+<li>これが有効に機能するのは，構造固有の空間周波数を持った画像データ等に対してである．</li>
+</ul>
+</li>
+<li>コヒーレンシーという指標がある．
+<ul>
+<li>相互相関のフーリエ変換した形式のものである．</li>
+<li>説明しているウェブページがあったので参考にする．http://www.eri.u-tokyo.ac.jp/people/knishida/Lecture/Timeseries_cross.pdf</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="20181122">2018/11/22</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AE%E4%BF%AE%E6%AD%A3">IMCL推定アルゴリズムの修正</h2>
+<ul>
+<li>調べてわかったこと
+<ul>
+<li>相互相関関数は，クロススペクトルの逆フーリエ変換である．</li>
+<li>クロススペクトルの逆フーリエ変換として相互相関を評価するときには，信号対雑音比が良好な帯域で重み付けを多めに行って逆フーリエ変換をすることによって，位相の傾きをなるべく保つようにしたい．(一般化相互相関関数)</li>
+<li>RFデータの帯域と送信波形の帯域は似通っているので，帯域を適切に選んで重み付けするという処理は有用ではない．</li>
+</ul>
+</li>
+<li>やろうと思ったこと
+<ul>
+<li>ch間のシフト量は精度良く分かったのだから，それを利用して波面形状評価を行ってやれば良い．すなわち参照点列のch間でのシフト量と検出点のch間でのシフト量を比べて上げれば良い．評価関数は平均二乗誤差等で．</li>
+<li>結局設定音速誤差と境界検出深度誤差との関係を可視化する必要がある．</li>
+<li>実際にブロック肉を用いて波形先頭到達時間等を求めるときには，一般化相互相関関数が役に立つかもしれない．</li>
+</ul>
+</li>
+</ul>
+<h1 id="20181126">2018/11/26</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AE%E4%BF%AE%E6%AD%A3">IMCL推定アルゴリズムの修正</h2>
+<ul>
+<li>やったこと
+<ul>
+<li>水平方向にセクタスキャンする
+<ul>
+<li>境界と駆動アレイ間の不均質さが最も少ない送受信条件をもとめる</li>
+<li>その条件で最も信号強度の大きい設定音速をもとめる</li>
+</ul>
+</li>
+<li>具体的なフローチャートの策定</li>
+<li>これらの情報を可視化するためのコード作成・修正</li>
+</ul>
+</li>
+</ul>
+<h1 id="20181127">2018/11/27</h1>
+<h2 id="imcl%E6%8E%A8%E5%AE%9A%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AE%E5%A6%A5%E5%BD%93%E6%80%A7%E6%A4%9C%E8%A8%BC">IMCL推定アルゴリズムの妥当性検証</h2>
+<ul>
+<li>やったこと
+<ul>
+<li>&quot;H:\experiments\2018_11_25_IMCL_estimation_boundary_search_re\ex2018_11_25_path_only_including_MT_stroke5_case26.m&quot;のリファクタリング</li>
+<li>上のスクリプトからの結果を更にわかりやすく可視化する
+<ul>
+<li>境界位置検出精度がひと目で分かるようにする
+<ul>
+<li>媒質音速分布イメージの上に，検出境界位置をプロットする</li>
+<li>IMCL占有率1 ~ 20 %の場合で実施する．</li>
+<li>アニメーションにできるとさらに良い．</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>解析条件の決定的なミス
+<ul>
+<li>IMCL率が適正でなかった．
+<ul>
+<li>IMCL濃度がEMCL占有領域の関数になっていた．</li>
+<li>全体の脂肪率推定のために，全体の脂肪率を，EMCL率が変わっても一定に保たせたかったためにIMCL濃度を適応的に変動させていた．</li>
+</ul>
+</li>
+<li>IMCL率を適正にして再度解析を回す．</li>
+</ul>
+</li>
+<li>ミスはなかった．
+<ul>
+<li>上のことを考慮してコードを回していたみたいだ．</li>
+</ul>
+</li>
+<li>その他の細かなミス
+<ul>
+<li>t_posのsingle型では，厳密に0.4 mm間隔で配置されていないようだ．</li>
+<li>駆動素子の判定が完全ではなかった．</li>
+<li>そこで，round(a,4)を用いて小数点以下3桁以降は落とすようにした．</li>
+<li>&quot;H:\experiments\2018_11_25_IMCL_estimation_boundary_search_re\ex2018_11_27_path_only_including_MT_stroke6_case26.m&quot;に反映した．</li>
+</ul>
+</li>
+<li>アニメーションを作った．</li>
+</ul>
+</li>
+</ul>
+
+</body>
+</html>

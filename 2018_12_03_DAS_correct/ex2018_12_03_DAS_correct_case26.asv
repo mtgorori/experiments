@@ -34,7 +34,7 @@ load('kgrid.mat');
 %% ‰Šúİ’è
 v_fat = 1450;%[m/s]
 v_muscle = 1580;%[m/s]
-rate_IMCL = linspace(1,20,20);
+rate_IMCL = 1;
 v_reference = zeros(1,length(rate_IMCL));
 t_facing_distance = 0.04;%[m]
 [~,num_receiver,num_transmitter] = size(rfdata);
@@ -51,7 +51,7 @@ num_depth = (t_pos(2,1)-t_pos(2,101))/kgrid.dx/2 - 3;%'3'‚Æ‚ ‚é‚Ì‚ÍCÅ‹ßÚ‹——£‚
 focal_depth = zeros(1,num_depth);
 focal_point = zeros(2,num_depth);
 element_pitch = abs(t_pos(1,1) - t_pos(1,2));
-lateral_range_max = 4.8*1e-3;
+lateral_range_max = 10*1e-3;
 lateral_range_min = 0;
 num_lateral = round((lateral_range_max -lateral_range_min) / element_pitch)+1;%0.0~4.8 mm‚Ü‚Å
 
@@ -99,7 +99,7 @@ for mm = 1:num_lateral
                     focal_signal_total(ii,kk,ll,mm) =  receive_focus(focused_rfdata,target_element,reference_point);
                 end
                 %% ”½Ë‹­“x‚ªÅ‘å‚ÌÅ“_ˆÊ’u‚ğ’TõD
-                [max_tmp,ind_tmp] = findpeaks(abs(focal_signal_total(9:end,kk,ll,mm)),'Npeaks',2,'SortStr','descend');
+                [max_tmp,ind_tmp] = findpeaks(abs(focal_signal_total(9:end,kk,ll,mm)),'Npeaks',1,'SortStr','descend');
                 [min_ind_tmp,ind_ind_tmp] = min(ind_tmp);
                 ind_max_signal(kk,ll,mm) = min_ind_tmp+8;
                 max_signal(kk,ll,mm) = focal_signal_total(ind_max_signal(kk,ll,mm),kk,ll,mm);
@@ -132,7 +132,7 @@ for mm = 1:num_lateral
                 error_wavefront(kk,ll,mm) = sum(abs(displacement(target_element(1:end-1),kk,ll,mm) - ...
                     displacement_ref(target_element(1:end-1),kk,ll,mm)))/(length(target_element)-1);
                 %% o—Íƒf[ƒ^‚Ì•Û‘¶
-                dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_25_case26/lateral%0.1fmm/true%d_assumption%d',...
+                dst_path = sprintf('H:/result/2018_12_03_DAS_correct/case26/correct/lateral%0.1fmm/true%d_assumption%d',...
                     focal_point(1,9)*1e3,rate_IMCL(1,ll),rate_IMCL(1,kk));
                 if ~exist(dst_path, 'dir')
                     mkdir(dst_path);
@@ -233,7 +233,7 @@ for mm = 1:num_lateral
                 error_wavefront(kk,ll,mm) = sum(abs(displacement(target_element(1:end-1),kk,ll,mm) - ...
                     displacement_ref(target_element(1:end-1),kk,ll,mm)))/(length(target_element)-1);
                 %% o—Íƒf[ƒ^‚Ì•Û‘¶
-                dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_25_case26/lateral%0.1fmm/true%d_assumption%d',...
+                dst_path = sprintf('H:/result/2018_12_03_DAS_correct/case26/correct/lateral%0.1fmm/true%d_assumption%d',...
                     focal_point(1,9)*1e3,rate_IMCL(1,ll),rate_IMCL(1,kk));
                 if ~exist(dst_path, 'dir')
                     mkdir(dst_path);
@@ -321,7 +321,7 @@ for mm = 1:num_lateral
             displacement_ref(target_element(1:end-1),kk,ll,mm) = diff(reference_point(target_element));
             error_wavefront(kk,ll,mm) = sum(abs(displacement(target_element(1:end-1),kk,ll,mm) - ...
                 displacement_ref(target_element(1:end-1),kk,ll,mm)))/(length(target_element)-1);
-            dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_25_case26/lateral%0.1fmm/true%d_assumption%d',...
+            dst_path = sprintf('H:/result/2018_12_03_DAS_correct/case26/correct/lateral%0.1fmm/true%d_assumption%d',...
                 focal_point(1,9)*1e3,rate_IMCL(1,ll),rate_IMCL(1,kk));
             if ~exist(dst_path, 'dir')
                 mkdir(dst_path);
@@ -371,7 +371,7 @@ for mm = 1:num_lateral
         max_signal_normalized(:,ll,mm) = tmp2/max(tmp2);
     end
     
-    dst_path = sprintf('H:/result/2018_11_25_IMCL_estimation_boundary_search_re/2018_11_25_case26/lateral%0.1fmm/',focal_point(1,9)*1e3);
+    dst_path = sprintf('H:/result/2018_12_03_DAS_correct/case26/correct/lateral%0.1fmm/',focal_point(1,9)*1e3);
     save([dst_path,'\result.mat'],'ind_max_signal','focal_depth','displacement',...
         'reference_point','focal_signal_total','focal_signal','max_signal','max_signal_normalized');
     
@@ -385,7 +385,7 @@ for mm = 1:num_lateral
     title('boundary depth[mm]')
     xlabel('correct IMCL percentage [%]');
     ylabel('predicted IMCL percentage [%]');
-    exportfig([dst_path,'\2018_11_25_pre_boundary_eng'],'png',[300,250]);
+    exportfig([dst_path,'\pre_boundary_eng'],'png',[300,250]);
     close gcf
     
     figure;
@@ -397,7 +397,7 @@ for mm = 1:num_lateral
     title('”}¿‹«ŠE[“x[mm]')
     xlabel('³‰ğIMCLè—L—¦ [%]');
     ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_pre_boundary'],'png',[300,250]);
+    exportfig([dst_path,'\pre_boundary'],'png',[300,250]);
     close gcf
     
         figure;
@@ -409,7 +409,7 @@ for mm = 1:num_lateral
     title('boundary depth[mm]')
     xlabel('correct IMCL percentage [%]');
     ylabel('predicted IMCL percentage [%]');
-    exportfig([dst_path,'\2018_11_25_detected_boundary_eng'],'png',[300,250]);
+    exportfig([dst_path,'\detected_boundary_eng'],'png',[300,250]);
     close gcf
     
     figure;
@@ -421,7 +421,7 @@ for mm = 1:num_lateral
     title('”}¿‹«ŠE[“x[mm]')
     xlabel('³‰ğIMCLè—L—¦ [%]');
     ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_detected_boundary'],'png',[300,250]);
+    exportfig([dst_path,'\detected_boundary'],'png',[300,250]);
     close gcf
     
     figure;
@@ -429,7 +429,7 @@ for mm = 1:num_lateral
     title('wavefront distortion');
     xlabel('correct IMCL percentage [%]');
     ylabel('predicted IMCL percentage [%]')
-    exportfig([dst_path,'\2018_11_25_detected_wavefront_eng'],'png',[300,250]);
+    exportfig([dst_path,'\detected_wavefront_eng'],'png',[300,250]);
     close gcf
     
     figure;
@@ -437,7 +437,7 @@ for mm = 1:num_lateral
     title('”g–Ê˜c‚İw•W');
     xlabel('³‰ğIMCLè—L—¦ [%]');
     ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_detected_wavefront]]'],'png',[300,250]);
+    exportfig([dst_path,'\detected_wavefront]]'],'png',[300,250]);
     close gcf
     
     figure;
@@ -445,7 +445,7 @@ for mm = 1:num_lateral
     title('M†‹­“x[au]');
     xlabel('³‰ğIMCLè—L—¦ [%]');
     ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_pre_intensity'],'png',[300,250]);
+    exportfig([dst_path,'\pre_intensity'],'png',[300,250]);
     close gcf
     
     figure;
@@ -453,7 +453,7 @@ for mm = 1:num_lateral
     title('Intensity[au]');
     xlabel('correct IMCL percentage [%]');
     ylabel('predicted IMCL percentage [%]');
-    exportfig([dst_path,'\2018_11_25_pre_intensity_eng'],'png',[300,250]);
+    exportfig([dst_path,'\pre_intensity_eng'],'png',[300,250]);
     close gcf
     
     figure;
@@ -461,7 +461,7 @@ for mm = 1:num_lateral
     title('M†‹­“x[au]');
     xlabel('³‰ğIMCLè—L—¦ [%]');
     ylabel('—\‘ªIMCLè—L—¦ [%]');
-    exportfig([dst_path,'\2018_11_25_detected_intensity'],'png',[300,250]);
+    exportfig([dst_path,'\detected_intensity'],'png',[300,250]);
     close gcf
     
     figure;
@@ -469,26 +469,9 @@ for mm = 1:num_lateral
     title('Intensity[au]');
     xlabel('correct IMCL percentage [%]');
     ylabel('predicted IMCL percentage [%]');
-    exportfig([dst_path,'\2018_11_25_detected_intensity_eng'],'png',[300,250]);
+    exportfig([dst_path,'\detected_intensity_eng'],'png',[300,250]);
     close gcf    
 end
-
-%% ŠÖ”•”
-function [focused_rfdata] = transmit_focus(rfdata,target_element,num_sample,delay_time_all,num_echo_receiver)
-focused_rfdata = zeros(num_sample,num_echo_receiver);
-for jj = 1:length(target_element)
-    % ’x‰„ˆ—
-    delay_time = delay_time_all(1,target_element(jj));%[sample]
-    read_range_rfdata = length(delay_time+1:num_sample);
-    focused_rfdata(1:read_range_rfdata,:) = focused_rfdata(1:read_range_rfdata,:)...
-        +  rfdata(delay_time+1:num_sample,1:100,target_element(jj));%®‘Š‰ÁZ
-end
-end
-function [focal_signal_total] = receive_focus(focused_rfdata,target_element,reference_point)
-focal_signal_total = 0;
-for jj = 1:length(target_element)
-    %óMƒr[ƒ€ƒtƒH[ƒ~ƒ“ƒOi®‘Š‰ÁZ‚Ì‚½‚ßj
-    focal_signal_total = focal_signal_total+ ...
-        focused_rfdata(reference_point(1,target_element(1,jj)),target_element(1,jj))/length(target_element);
-end
-end
+%% ‚·‚×‚Ä‚Ì•Ï”‚ğ•Û‘¶
+savefilename = sprintf('H:/result/2018_12_03_DAS_correct/case26/correct/total_result.mat');
+save(savefilename);
