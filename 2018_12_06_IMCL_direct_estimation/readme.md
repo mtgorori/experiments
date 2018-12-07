@@ -324,3 +324,4 @@ dim2 = {true_depth or false_depth};%1
  - The direct estimation of sound speed using pulse–echo ultrasound
     - Anderson, Martin E. 19988
     - 上の概念図はこの論文に基づいたもの．
+- 結局，切片によって二次関数の二次多項式第一項の値が変化することがわかったので，絶対的な到達時間も算出する必要がある．
