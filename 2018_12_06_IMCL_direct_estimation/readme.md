@@ -322,6 +322,32 @@ dim2 = {true_depth or false_depth};%1
 - 曲率や切片の情報を用いて音速を推定する方針は変わらない．
  ![2018_12_05_ _](https://user-images.githubusercontent.com/33616505/49565250-e85b9b00-f969-11e8-8617-67b568c4e107.png)
  - The direct estimation of sound speed using pulse–echo ultrasound
-    - Anderson, Martin E. 19988
+    - Anderson, Martin E. 1998
     - 上の概念図はこの論文に基づいたもの．
 - 結局，切片によって二次関数の二次多項式第一項の値が変化することがわかったので，絶対的な到達時間も算出する必要がある．
+
+# 2018/12/10
+## IMCL推定の限界
+``` matlab
+"H:\experiments\2018_12_06_IMCL_direct_estimation\2layer\ex2018_12_07_IMCL_direct_estimation_interp_multilayer.m"
+%%%%%%%%%%%%%%%%%%%%
+% 対象：ワイヤターゲット，境界厚さ：2mm~19mm
+% 設定音速：1580[m/s]＝正解音速
+% 焦点水平位置固定：y=0
+% 境界位置：既知
+% IMCL割合を0 %に固定する．
+% 波面遅延プロファイルにより音速推定
+% 素子間受信波時間差は実信号の正規化相互相関を用いる
+%%%%%%%%%%%%%%%%%%%%
+```
+![estimation_velociry](https://user-images.githubusercontent.com/33616505/49710515-3a0f6880-fc7d-11e8-90ee-34bec7ea7c03.png)
+![ex2018_12_10_figures_03](https://user-images.githubusercontent.com/33616505/49722631-8754ff80-fca8-11e8-8490-0ac66095f645.png)
+![ex2018_12_10_figures_04](https://user-images.githubusercontent.com/33616505/49722635-87ed9600-fca8-11e8-93f4-180a2365c80f.png)
+![ex2018_12_10_figures_01](https://user-images.githubusercontent.com/33616505/49722639-891ec300-fca8-11e8-9c9f-ab70004466c8.png)
+![ex2018_12_10_figures_02](https://user-images.githubusercontent.com/33616505/49722641-89b75980-fca8-11e8-9e98-4acd900262a8.png)
+- あとはフィッティング残差を表示するとよい
+
+# 2018/12/11
+## IMCL推定フローを決めて一意に解を出す
+- 確認したこと
+    - matlabのxcorr関数は，信号をフーリエ変換してクロススペクトルをとってから逆フーリエ変換することで相互相関をみている．すなわち実信号を入れさえすれば解析信号に変換して位相を含めて相互相関をみてくれるということ．

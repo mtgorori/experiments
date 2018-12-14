@@ -1,20 +1,21 @@
 %%%%%%%%%%%%%%%%%%%%
-% ‘ÎÛF“ñ‘Š”}¿C‹«ŠEŒú‚³F15.0mm
+% ‘ÎÛFƒƒCƒ„ƒ^[ƒQƒbƒgC‹«ŠEŒú‚³F15.0mm
 % İ’è‰¹‘¬F1580[m/s]³‰ğ‰¹‘¬
 % Å“_…•½ˆÊ’uŒÅ’èFy=0
 % ‹«ŠEˆÊ’uFŠù’m
 % IMCLŠ„‡‚ğ0 %‚ÉŒÅ’è‚·‚éD
-% óM”g–Ê‚Ì‹È—¦‚É‚æ‚è‰¹‘¬„’è
+% ”g–Ê’x‰„ƒvƒƒtƒ@ƒCƒ‹‚É‚æ‚è‰¹‘¬„’è
 % ‘fqŠÔóM”gŠÔ·‚ÍÀM†‚Ì³‹K‰»‘ŠŒİ‘ŠŠÖ‚ğ—p‚¢‚é
 %%%%%%%%%%%%%%%%%%%%
 
 %% ‰Šúİ’è
 clear
+dst_path = sprintf('H:/result/2018_12_06_IMCL_direct_estimation/2layer');
 load("H:/data/kwave/config/t_pos_2board.mat");
-load("H:\data\kwave\result\2018_11_07_layer_medium\Layer_medium_boundary_15.0mm_ IMCL0%\sourse_wave.mat")
 load("H:\data\kwave\result\2018_11_07_layer_medium\Layer_medium_boundary_15.0mm_ IMCL0%\rfdata.mat")
-load("H:\data\kwave\medium\2018_11_07_layer_medium\Layer_medium_boundary_15.0mm_ IMCL0%.mat")
+load("H:\data\kwave\result\2018_11_07_layer_medium\Layer_medium_boundary_15.0mm_ IMCL0%\medium.mat")
 load("H:\data\kwave\result\2018_11_07_layer_medium\Layer_medium_boundary_15.0mm_ IMCL0%\kgrid.mat")
+load("H:\data\kwave\result\2018_11_07_layer_medium\Layer_medium_boundary_15.0mm_ IMCL0%\sourse_wave.mat")
 v_fat = 1450;%[m/s]
 v_muscle = 1580;%[m/s]
 t_facing_distance = 0.04;%[m]
@@ -25,8 +26,8 @@ reference_point_lowerlimit = zeros(1,num_echo_receiver);%‹Ï¿«•]‰¿‚Ì‚½‚ß‚ÌRFƒf
 reference_point_upperlimit = zeros(1,num_echo_receiver);%‹Ï¿«•]‰¿‚Ì‚½‚ß‚ÌRFƒf[ƒ^ƒ}ƒXƒLƒ“ƒO‚Ég‚¤
 distance_from_focal_point_all = zeros(1,num_echo_receiver);
 num_depth = (t_pos(2,1)-t_pos(2,101))/kgrid.dx/2 - 3;%'3'‚Æ‚ ‚é‚Ì‚ÍCÅ‹ßÚ‹——£‚ª0.4 mm‚Å‚ ‚é‚±‚Æ‚ğl—¶‚µ‚Ä‚¢‚éD
-focal_depth = medium_focal_depth(14);
-focal_point = [0 ;kgrid.x_vec(ind_focal_point(14))];
+focal_depth = kgrid.dx*150;
+focal_point = [0 ;kgrid.x_vec(301)];
 element_pitch = abs(t_pos(1,1) - t_pos(1,2));
 lateral_range_max = 0;
 lateral_range_min = 0;
@@ -37,8 +38,6 @@ displacement = zeros(1,num_echo_receiver);
 displacement_ref = zeros(1,num_echo_receiver);
 error_wavefront = 0;
 % focal_signal_total = zeros(1,num_depth);
-detected_boundary = 0;
-estimated_velocity  = 0;
 
 %% ƒtƒH[ƒJƒVƒ“ƒO
 %‹ì“®‘fq‚ÌŒˆ’è
@@ -58,7 +57,9 @@ interp_rfdata = zeros(num_sample*4,num_echo_receiver);
 for jj = 1:num_echo_receiver
     interp_rfdata(:,jj) = interp(focused_rfdata(:,jj),4);
 end
-%% ‹È—¦ŒvZ
+source_wave = interp(source_wave,4);
+
+%% ‰¹‘¬„’è
 %RFƒf[ƒ^ƒ}ƒXƒLƒ“ƒO(ŒvZ—Ìˆæ)
 min_mask = (min(reference_point) - 10)*4;
 max_mask = (min(reference_point) + 100 - 1)*4;
@@ -78,8 +79,61 @@ for jj = 1:length(target_element)-1
     displacement(1,target_element(jj)+1) = lag(I);
     delay_profile(1,jj+1) = sum(displacement(1,target_element(1):target_element(jj)+1));
 end
-poly_delay_profile_fitted = polyfit(t_pos(1,target_element),(delay_profile*kgrid.dt/4).^2,2); 
+ind_central_element = find(target_element == 50);
+delay_profile = delay_profile + abs(delay_profile(1,ind_central_element));
+[~,delay_offset] = findpeaks(abs(hilbert(focused_rfdata_mask(:,50))),'NPeaks',1,'SortStr','descend');
+[~,source_wave_offset] = findpeaks(abs(hilbert(source_wave)),'NPeaks',1,'SortStr','descend');
+delay_offset = delay_offset - source_wave_offset;
+delay_profile = delay_profile + delay_offset/2;
+poly_delay_profile_fitted = polyfit(t_pos(1,target_element),(delay_profile*kgrid.dt/4).^2,2);
 displacement_ref(1,target_element(2:end)) = diff(reference_point(target_element));
-estimated_velocity = 1/sqrt(-poly_delay_profile_fitted(1))/4.107;
-
+estimated_velocity = 1/sqrt(poly_delay_profile_fitted(1));
+f = polyval(poly_delay_profile_fitted.',t_pos(1,target_element).');
+T = table(t_pos(1,target_element).',(delay_profile*kgrid.dt/4).^2.',f,(delay_profile*kgrid.dt/4).^2.'-f,'VariableNames',{'X','Y','Fit','FitError'});
 %% •Û‘¶•”
+delay_profile = zeros(1,length(target_element));
+for jj = 1:length(target_element)-1
+    [acor,lag] = xcorr(focused_rfdata_mask(:,target_element(jj+1)),focused_rfdata_reference(:,target_element(jj)),'coeff');
+    [~,I] = max(abs(acor));
+    displacement(1,target_element(jj)+1) = lag(I);
+    delay_profile(1,jj+1) = sum(displacement(1,target_element(1):target_element(jj)+1));
+end
+delay_profile = delay_profile + abs(delay_profile(1,ind_central_element));
+[~,delay_offset] = findpeaks(abs(hilbert(focused_rfdata_mask(:,50))),'NPeaks',1,'SortStr','descend');
+[~,source_wave_offset] = findpeaks(abs(hilbert(source_wave)),'NPeaks',1,'SortStr','descend');
+delay_profile = delay_profile + delay_offset;
+figure;
+imagesc(t_pos(1,:)*1e3,kgrid.t_array*1e9,abs(hilbert(interp_rfdata)));
+hold on
+scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,delay_profile*kgrid.dt/4*1e9,'blue','filled');
+% scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,(reference_point(1,(min(target_element):max(target_element)))+3)*kgrid.dt*1e9,'red');
+hold off
+xlabel('lateral[mm]');
+ylabel('time[ns]');
+axis square;
+axis tight;
+xlim([t_pos(1,(min(target_element))-1)*1e3 t_pos(1,(max(target_element)+1))*1e3])
+ylim([min_reference*kgrid.dt*1e9/4 max_mask*kgrid.dt*1e9/4])
+colormap(bone);
+colorbar;
+caxis([0 max(max(abs(hilbert(focused_rfdata_mask))))])
+savefig([dst_path,'\rfdata_detail_interp_rawsignal.fig'])
+exportfig([dst_path,'\rfdata_detail_interp_rawsignal'],'png',[400,400])
+
+figure;
+imagesc(t_pos(1,:)*1e3,kgrid.t_array*1e9,abs(hilbert(interp_rfdata)));
+hold on
+scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,delay_profile*kgrid.dt/4*1e9,'blue','filled');
+% scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,(reference_point(1,(min(target_element):max(target_element)))+3)*kgrid.dt*1e9,'red');
+hold off
+xlabel('lateral[mm]');
+ylabel('time[ns]');
+axis square;
+axis tight;
+xlim([t_pos(1,(min(target_element))-1)*1e3 t_pos(1,(max(target_element)+1))*1e3])
+ylim([0 max_mask*kgrid.dt*1e9/2])
+colormap(bone);
+colorbar;
+caxis([0 max(max(abs(hilbert(focused_rfdata_mask))))])
+savefig([dst_path,'\rfdata_whole_interp_rawsignal.fig'])
+exportfig([dst_path,'\rfdata_whole_interp_rawsignal'],'png',[400,400])

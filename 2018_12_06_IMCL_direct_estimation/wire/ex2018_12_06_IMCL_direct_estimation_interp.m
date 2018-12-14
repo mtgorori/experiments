@@ -26,8 +26,8 @@ reference_point_lowerlimit = zeros(1,num_echo_receiver);%‹Ï¿«•]‰¿‚Ì‚½‚ß‚ÌRFƒf
 reference_point_upperlimit = zeros(1,num_echo_receiver);%‹Ï¿«•]‰¿‚Ì‚½‚ß‚ÌRFƒf[ƒ^ƒ}ƒXƒLƒ“ƒO‚Ég‚¤
 distance_from_focal_point_all = zeros(1,num_echo_receiver);
 num_depth = (t_pos(2,1)-t_pos(2,101))/kgrid.dx/2 - 3;%'3'‚Æ‚ ‚é‚Ì‚ÍCÅ‹ßÚ‹——£‚ª0.4 mm‚Å‚ ‚é‚±‚Æ‚ğl—¶‚µ‚Ä‚¢‚éD
-focal_depth = kgrid.dx*151;
-focal_point = [0 ;kgrid.x_vec(300)];
+focal_depth = kgrid.dx*149;
+focal_point = [0 ;kgrid.x_vec(302)];
 element_pitch = abs(t_pos(1,1) - t_pos(1,2));
 lateral_range_max = 0;
 lateral_range_min = 0;
@@ -106,7 +106,7 @@ figure;
 imagesc(t_pos(1,:)*1e3,kgrid.t_array*1e9,abs(hilbert(interp_rfdata)));
 hold on
 scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,delay_profile*kgrid.dt/4*1e9,'blue','filled');
-scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,(reference_point(1,(min(target_element):max(target_element)))+3)*kgrid.dt*1e9,'red');
+% scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,(reference_point(1,(min(target_element):max(target_element)))+2)*kgrid.dt*1e9,'red');
 hold off
 xlabel('lateral[mm]');
 ylabel('time[ns]');
@@ -124,7 +124,7 @@ figure;
 imagesc(t_pos(1,:)*1e3,kgrid.t_array*1e9,abs(hilbert(interp_rfdata)));
 hold on
 scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,delay_profile*kgrid.dt/4*1e9,'blue','filled');
-scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,(reference_point(1,(min(target_element):max(target_element)))+3)*kgrid.dt*1e9,'red');
+% scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,(reference_point(1,(min(target_element):max(target_element)))+3)*kgrid.dt*1e9,'red');
 hold off
 xlabel('lateral[mm]');
 ylabel('time[ns]');
