@@ -1,0 +1,181 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ex2018_12_10_figures</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-12-10"><meta name="DC.source" content="ex2018_12_10_figures.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">&#22659;&#30028;&#28145;&#12373;&#12392;&#38899;&#36895;&#25512;&#23450;&#31934;&#24230;&#12398;&#38306;&#20418;</a></li></ul></div><pre class="codeinput"><span class="comment">%%%%%%%%%%%%%%</span>
+<span class="comment">% &#32080;&#26524;&#12398;figure&#12434;&#20316;&#25104;&#12377;&#12427;&#65294;2018/12/10</span>
+<span class="comment">%%%%%%%%%%%%%%</span>
+load(<span class="string">"H:\result\2018_12_06_IMCL_direct_estimation\2layer\2018_12_07_multi_layer_variable.mat"</span>)
+<span class="comment">%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% &#23550;&#35937;&#65306;&#12527;&#12452;&#12516;&#12479;&#12540;&#12466;&#12483;&#12488;&#65292;&#22659;&#30028;&#21402;&#12373;&#65306;2mm~19mm</span>
+<span class="comment">% &#35373;&#23450;&#38899;&#36895;&#65306;1580[m/s]&#65309;&#27491;&#35299;&#38899;&#36895;</span>
+<span class="comment">% &#28966;&#28857;&#27700;&#24179;&#20301;&#32622;&#22266;&#23450;&#65306;y=0</span>
+<span class="comment">% &#22659;&#30028;&#20301;&#32622;&#65306;&#26082;&#30693;</span>
+<span class="comment">% IMCL&#21106;&#21512;&#12434;0 %&#12395;&#22266;&#23450;&#12377;&#12427;&#65294;</span>
+<span class="comment">% &#27874;&#38754;&#36933;&#24310;&#12503;&#12525;&#12501;&#12449;&#12452;&#12523;&#12395;&#12424;&#12426;&#38899;&#36895;&#25512;&#23450;</span>
+<span class="comment">% &#32032;&#23376;&#38291;&#21463;&#20449;&#27874;&#26178;&#38291;&#24046;&#12399;&#23455;&#20449;&#21495;&#12398;&#27491;&#35215;&#21270;&#30456;&#20114;&#30456;&#38306;&#12434;&#29992;&#12356;&#12427;</span>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%</span>
+</pre><h2 id="2">&#22659;&#30028;&#28145;&#12373;&#12392;&#38899;&#36895;&#25512;&#23450;&#31934;&#24230;&#12398;&#38306;&#20418;</h2><pre class="codeinput"><span class="comment">% &#20840;&#20307;&#22259;</span>
+figure;
+plot(focal_depth*1e3,estimated_velocity);
+hold <span class="string">on</span>
+plot(focal_depth*1e3,correct_velocity,<span class="string">'--'</span>);
+hold <span class="string">off</span>
+xlabel(<span class="string">'boundary depth[mm]'</span>);
+ylabel(<span class="string">'estimated velocity'</span>);
+legend(<span class="string">'estimated'</span>,<span class="string">'correct'</span>);
+savefilename = sprintf(<span class="string">'/estimation_velocity'</span>);
+savefig([dst_path,savefilename,<span class="string">'.fig'</span>]);
+exportfig([dst_path,savefilename],<span class="string">'png'</span>,[400,300]);
+<span class="comment">% 4mm&#20197;&#38477;&#12398;&#25313;&#22823;&#22259;</span>
+figure;
+plot(focal_depth(3:end)*1e3,estimated_velocity(3:end));
+hold <span class="string">on</span>
+plot(focal_depth(3:end)*1e3,correct_velocity(3:end),<span class="string">'--'</span>);
+hold <span class="string">off</span>
+xlabel(<span class="string">'boundary depth[mm]'</span>);
+ylabel(<span class="string">'estimated velocity'</span>);
+legend(<span class="string">'estimated'</span>,<span class="string">'correct'</span>)
+savefilename = sprintf(<span class="string">'/estimation_velocity_detail'</span>);
+savefig([dst_path,savefilename,<span class="string">'.fig'</span>]);
+exportfig([dst_path,savefilename],<span class="string">'png'</span>,[400,300]);
+<span class="comment">% &#28145;&#24230;&#12372;&#12392;&#12398;&#25512;&#23450;&#35492;&#24046;&#12434;&#26834;&#12464;&#12521;&#12501;&#12391;&#31034;&#12377;</span>
+figure;
+bar(focal_depth*1e3,estimated_velocity - correct_velocity);
+xlabel(<span class="string">'boundary depth[mm]'</span>);
+ylabel(<span class="string">'error of estimation[m/s] '</span>);
+savefilename = sprintf(<span class="string">'/error_of_estimation'</span>);
+savefig([dst_path,savefilename,<span class="string">'.fig'</span>]);
+exportfig([dst_path,savefilename],<span class="string">'png'</span>,[400,300]);
+<span class="comment">% 4mm&#20197;&#38477;&#12398;&#25313;&#22823;&#22259;</span>
+figure;
+bar(focal_depth(3:end)*1e3,estimated_velocity(3:end) - correct_velocity(3:end));
+xlabel(<span class="string">'boundary depth[mm]'</span>);
+ylabel(<span class="string">'error of estimation[m/s] '</span>);
+savefilename = sprintf(<span class="string">'/error_of_estimation_detail'</span>);
+savefig([dst_path,savefilename,<span class="string">'.fig'</span>]);
+exportfig([dst_path,savefilename],<span class="string">'png'</span>,[400,300]);
+</pre><img vspace="5" hspace="5" src="ex2018_12_10_figures_01.png" alt=""> <img vspace="5" hspace="5" src="ex2018_12_10_figures_02.png" alt=""> <img vspace="5" hspace="5" src="ex2018_12_10_figures_03.png" alt=""> <img vspace="5" hspace="5" src="ex2018_12_10_figures_04.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%%%%%%%%%%%%%%
+% 結果のfigureを作成する．2018/12/10
+%%%%%%%%%%%%%%
+load("H:\result\2018_12_06_IMCL_direct_estimation\2layer\2018_12_07_multi_layer_variable.mat")
+%%%%%%%%%%%%%%%%%%%%
+% 対象：ワイヤターゲット，境界厚さ：2mm~19mm
+% 設定音速：1580[m/s]＝正解音速
+% 焦点水平位置固定：y=0
+% 境界位置：既知
+% IMCL割合を0 %に固定する．
+% 波面遅延プロファイルにより音速推定
+% 素子間受信波時間差は実信号の正規化相互相関を用いる
+%%%%%%%%%%%%%%%%%%%%
+
+%% 境界深さと音速推定精度の関係
+
+% 全体図
+figure;
+plot(focal_depth*1e3,estimated_velocity);
+hold on
+plot(focal_depth*1e3,correct_velocity,'REPLACE_WITH_DASH_DASH');
+hold off
+xlabel('boundary depth[mm]');
+ylabel('estimated velocity');
+legend('estimated','correct');
+savefilename = sprintf('/estimation_velocity');
+savefig([dst_path,savefilename,'.fig']);
+exportfig([dst_path,savefilename],'png',[400,300]);
+% 4mm以降の拡大図
+figure;
+plot(focal_depth(3:end)*1e3,estimated_velocity(3:end));
+hold on
+plot(focal_depth(3:end)*1e3,correct_velocity(3:end),'REPLACE_WITH_DASH_DASH');
+hold off
+xlabel('boundary depth[mm]');
+ylabel('estimated velocity');
+legend('estimated','correct')
+savefilename = sprintf('/estimation_velocity_detail');
+savefig([dst_path,savefilename,'.fig']);
+exportfig([dst_path,savefilename],'png',[400,300]);
+% 深度ごとの推定誤差を棒グラフで示す
+figure;
+bar(focal_depth*1e3,estimated_velocity - correct_velocity);
+xlabel('boundary depth[mm]');
+ylabel('error of estimation[m/s] ');
+savefilename = sprintf('/error_of_estimation');
+savefig([dst_path,savefilename,'.fig']);
+exportfig([dst_path,savefilename],'png',[400,300]);
+% 4mm以降の拡大図
+figure;
+bar(focal_depth(3:end)*1e3,estimated_velocity(3:end) - correct_velocity(3:end));
+xlabel('boundary depth[mm]');
+ylabel('error of estimation[m/s] ');
+savefilename = sprintf('/error_of_estimation_detail');
+savefig([dst_path,savefilename,'.fig']);
+exportfig([dst_path,savefilename],'png',[400,300]);
+##### SOURCE END #####
+--></body></html>

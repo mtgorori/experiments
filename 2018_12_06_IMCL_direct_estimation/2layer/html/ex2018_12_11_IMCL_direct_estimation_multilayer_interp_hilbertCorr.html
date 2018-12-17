@@ -1,0 +1,445 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ex2018_12_11_IMCL_direct_estimation_multilayer_interp_hilbertCorr</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-12-11"><meta name="DC.source" content="ex2018_12_11_IMCL_direct_estimation_multilayer_interp_hilbertCorr.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">&#21021;&#26399;&#35373;&#23450;&#65288;&#20849;&#36890;&#65289;</a></li><li><a href="#3">&#23186;&#36074;&#12398;&#36984;&#25246;</a></li><li><a href="#5">&#12501;&#12457;&#12540;&#12459;&#12471;&#12531;&#12464;</a></li><li><a href="#6">&#38899;&#36895;&#25512;&#23450;</a></li><li><a href="#7">&#20445;&#23384;&#37096;</a></li></ul></div><pre class="codeinput"><span class="comment">%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% &#23550;&#35937;&#65306;&#12527;&#12452;&#12516;&#12479;&#12540;&#12466;&#12483;&#12488;&#65292;&#22659;&#30028;&#21402;&#12373;&#65306;2mm~19mm</span>
+<span class="comment">% &#35373;&#23450;&#38899;&#36895;&#65306;1580[m/s]&#65309;&#27491;&#35299;&#38899;&#36895;</span>
+<span class="comment">% &#28966;&#28857;&#27700;&#24179;&#20301;&#32622;&#22266;&#23450;&#65306;y=0</span>
+<span class="comment">% &#22659;&#30028;&#20301;&#32622;&#65306;&#26082;&#30693;</span>
+<span class="comment">% IMCL&#21106;&#21512;&#12434;0 %&#12395;&#22266;&#23450;&#12377;&#12427;&#65294;</span>
+<span class="comment">% &#27874;&#38754;&#36933;&#24310;&#12503;&#12525;&#12501;&#12449;&#12452;&#12523;&#12395;&#12424;&#12426;&#38899;&#36895;&#25512;&#23450;</span>
+<span class="comment">% &#32032;&#23376;&#38291;&#21463;&#20449;&#27874;&#26178;&#38291;&#24046;&#12399;&#35299;&#26512;&#20449;&#21495;&#12398;&#27491;&#35215;&#21270;&#30456;&#20114;&#30456;&#38306;&#12434;&#29992;&#12356;&#12427;</span>
+<span class="comment">% &#20869;&#25407;&#20966;&#29702;&#12395;&#12424;&#12426;&#35299;&#26512;&#29992;&#12469;&#12531;&#12503;&#12522;&#12531;&#12464;&#25968;&#12434;&#23455;&#20449;&#21495;&#12398;&#12469;&#12531;&#12503;&#12522;&#12531;&#12464;&#25968;&#12398;&#65300;&#20493;&#12395;&#12377;&#12427;</span>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%</span>
+</pre><pre class="codeoutput error">&#12456;&#12521;&#12540;: evalin
+&#38306;&#25968;&#12414;&#12383;&#12399;&#22793;&#25968; 'ex2018_12_11_IMCL_direct_estimation_multilayer_interp_hilbertCo' &#12364;&#26410;&#23450;&#32681;&#12391;&#12377;&#12290;
+</pre><h2 id="2">&#21021;&#26399;&#35373;&#23450;&#65288;&#20849;&#36890;&#65289;</h2><pre class="codeinput">clear
+dst_path = sprintf(<span class="string">'H:/result/2018_12_06_IMCL_direct_estimation/2layer/2018_12_11_rawsignal_hilbert_corr'</span>);
+<span class="keyword">if</span> ~exist(dst_path, <span class="string">'dir'</span>)
+    mkdir(dst_path);
+<span class="keyword">end</span>
+load(<span class="string">"H:/data/kwave/config/t_pos_2board.mat"</span>);
+load(<span class="string">"H:/data/kwave/medium/2018_11_07_layer_medium/Layer_medium_boundary_2.0mm_ IMCL0%.mat"</span>)
+load(<span class="string">"H:/data/kwave/result/2018_11_07_layer_medium/Layer_medium_boundary_2.0mm_ IMCL0%/rfdata.mat"</span>)
+load(<span class="string">"H:/data/kwave/result/2018_11_07_layer_medium/Layer_medium_boundary_2.0mm_ IMCL0%/kgrid.mat"</span>)
+v_fat = 1450;<span class="comment">%[m/s]</span>
+v_muscle = 1580;<span class="comment">%[m/s]</span>
+v_reference = v_muscle;
+t_facing_distance = 0.04;<span class="comment">%[m]</span>
+[~,num_receiver,num_transmitter] = size(rfdata);
+num_echo_receiver = num_transmitter;
+num_medium = length(ind_focal_point);
+reference_point = zeros(1,num_echo_receiver);
+reference_point_lowerlimit = zeros(1,num_echo_receiver);<span class="comment">%&#22343;&#36074;&#24615;&#35413;&#20385;&#12398;&#12383;&#12417;&#12398;RF&#12487;&#12540;&#12479;&#12510;&#12473;&#12461;&#12531;&#12464;&#12395;&#20351;&#12358;</span>
+reference_point_upperlimit = zeros(1,num_echo_receiver);<span class="comment">%&#22343;&#36074;&#24615;&#35413;&#20385;&#12398;&#12383;&#12417;&#12398;RF&#12487;&#12540;&#12479;&#12510;&#12473;&#12461;&#12531;&#12464;&#12395;&#20351;&#12358;</span>
+distance_from_focal_point_all = zeros(1,num_echo_receiver);
+delay_time_all = zeros(1,num_echo_receiver);
+num_depth = (t_pos(2,1)-t_pos(2,101))/kgrid.dx/2 - 3;<span class="comment">%'3'&#12392;&#12354;&#12427;&#12398;&#12399;&#65292;&#26368;&#36817;&#25509;&#36317;&#38626;&#12364;0.4 mm&#12391;&#12354;&#12427;&#12371;&#12392;&#12434;&#32771;&#24942;&#12375;&#12390;&#12356;&#12427;&#65294;</span>
+focal_point = zeros(2,num_medium);
+focal_point(2,:) = kgrid.x_vec(ind_focal_point);
+focal_depth = 20*1e-3 - focal_point(2,:);
+element_pitch = abs(t_pos(1,1) - t_pos(1,2));
+lateral_range_max = 0;
+lateral_range_min = 0;
+num_lateral = round((lateral_range_max -lateral_range_min) / element_pitch)+1;<span class="comment">%0.0~4.8 mm&#12414;&#12391;</span>
+ind_max_signal = 0;
+max_signal = 0;
+displacement = zeros(num_echo_receiver,num_medium);
+displacement_ref = zeros(num_echo_receiver,num_medium);
+error_wavefront = zeros(1,num_medium);
+estimated_velocity = zeros(1,num_medium);
+correct_velocity = v_muscle*ones(1,num_medium);
+aberration_error = zeros(num_echo_receiver,num_medium);
+aberration_ave_error = zeros(1,num_medium);
+</pre><h2 id="3">&#23186;&#36074;&#12398;&#36984;&#25246;</h2><pre class="codeinput"><span class="keyword">for</span> mm = 1:num_medium
+</pre><pre class="codeinput">    loadpath = sprintf(<span class="string">'H:/data/kwave/result/2018_11_07_layer_medium/Layer_medium_boundary_%0.1fmm_ IMCL0%%/'</span>,focal_depth(mm)*1e3);
+    load([loadpath,<span class="string">'\rfdata.mat'</span>])
+    load([loadpath,<span class="string">'\kgrid.mat'</span>])
+    load([loadpath,<span class="string">'\sourse_wave.mat'</span>])
+    [num_sample,~,~] = size(rfdata);
+</pre><h2 id="5">&#12501;&#12457;&#12540;&#12459;&#12471;&#12531;&#12464;</h2><pre class="codeinput">    <span class="comment">%&#39366;&#21205;&#32032;&#23376;&#12398;&#27770;&#23450;</span>
+    target_element = find((-focal_depth(mm)/2&lt;=t_pos(1,1:100)&amp;(t_pos(1,1:100)&lt;=focal_depth(mm)/2)));
+    <span class="comment">%&#21463;&#20449;&#29992;&#12398;&#21442;&#29031;&#28857;&#31639;&#20986;</span>
+    <span class="keyword">for</span> jj = 1:num_echo_receiver
+        distance_from_focal_point_all(1,jj) = norm(t_pos(:,jj) - focal_point(:,mm));
+        delay_time_all(1,jj) = floor(((distance_from_focal_point_all(1,jj) - focal_depth(mm))/v_reference)/kgrid.dt);<span class="comment">%[sample]</span>
+        reference_point(1,jj) = floor(delay_time_all(1,jj)+(2*focal_depth(mm)/v_reference)/kgrid.dt+25-1);
+    <span class="keyword">end</span>
+    <span class="comment">%&#36865;&#20449;&#12499;&#12540;&#12512;&#12501;&#12457;&#12540;&#12511;&#12531;&#12464;&#65288;&#20849;&#36890;&#65289;</span>
+    focused_rfdata = transmit_focus(rfdata,target_element,num_sample,delay_time_all,num_echo_receiver);
+    <span class="comment">%&#21463;&#20449;&#12499;&#12540;&#12512;&#12501;&#12457;&#12540;&#12459;&#12471;&#12531;&#12464;</span>
+    focal_signal_total =  receive_focus(focused_rfdata,target_element,reference_point);
+    interp_rfdata = zeros(num_sample*4,num_echo_receiver);
+    <span class="keyword">for</span> jj = 1:num_echo_receiver
+        interp_rfdata(:,jj) = interp(focused_rfdata(:,jj),4);
+    <span class="keyword">end</span>
+    source_wave = interp(source_wave,4);
+</pre><h2 id="6">&#38899;&#36895;&#25512;&#23450;</h2><p>RF&#12487;&#12540;&#12479;&#12510;&#12473;&#12461;&#12531;&#12464;(&#35336;&#31639;&#38936;&#22495;)</p><pre class="codeinput">    min_mask = (min(reference_point) - 10)*4;
+    max_mask = (min(reference_point) + 100 - 1)*4;
+    mask_rfdata = zeros(size(interp_rfdata));
+    mask_rfdata(min_mask:max_mask,:) = 1;
+    focused_rfdata_mask = mask_rfdata .* interp_rfdata;
+    hilb_focused_rfdata_mask = hilbert(focused_rfdata_mask);
+    min_reference = (min(reference_point) - 30)*4;
+    max_reference = (min(reference_point) + 500 - 1)*4;
+    reference_rfdata = zeros(size(interp_rfdata));
+    reference_rfdata(min_reference:max_reference,:) = 1;
+    focused_rfdata_reference = reference_rfdata .* interp_rfdata;
+    hilb_focused_rfdata_reference = hilbert(focused_rfdata_reference);
+    <span class="comment">% &#27874;&#38754;&#24418;&#29366;&#25512;&#23450;</span>
+    delay_profile = zeros(1,length(target_element));
+    <span class="keyword">for</span> jj = 1:length(target_element)-1
+        [acor,lag] = xcorr(hilb_focused_rfdata_mask(:,target_element(jj+1)),hilb_focused_rfdata_reference(:,target_element(jj)),<span class="string">'coeff'</span>);
+        [~,I] = max(abs(acor));
+        displacement(1,target_element(jj)+1) = lag(I);
+        delay_profile(1,jj+1) = sum(displacement(1,target_element(1):target_element(jj)+1));
+    <span class="keyword">end</span>
+    ind_central_element = find(target_element == 50);
+    delay_profile = delay_profile + abs(delay_profile(1,ind_central_element));
+    [~,delay_offset] = findpeaks(abs(hilbert(focused_rfdata_mask(:,50))),<span class="string">'NPeaks'</span>,1,<span class="string">'SortStr'</span>,<span class="string">'descend'</span>);
+    [~,source_wave_offset] = findpeaks(abs(hilbert(source_wave)),<span class="string">'NPeaks'</span>,1,<span class="string">'SortStr'</span>,<span class="string">'descend'</span>);
+    delay_offset = delay_offset - source_wave_offset;
+    delay_profile = delay_profile + delay_offset/2;
+    poly_delay_profile_fitted = polyfit(t_pos(1,target_element),(delay_profile*kgrid.dt/4).^2,2);
+    displacement_ref(1,target_element(2:end)) = diff(reference_point(target_element));
+    estimated_velocity(mm) = 1/sqrt(poly_delay_profile_fitted(1));
+    f = polyval(poly_delay_profile_fitted.',t_pos(1,target_element).');
+    T = table(t_pos(1,target_element).',(delay_profile*kgrid.dt/4).^2.',f,(delay_profile*kgrid.dt/4).^2.'-f,<span class="string">'VariableNames'</span>,{<span class="string">'X'</span>,<span class="string">'Y'</span>,<span class="string">'Fit'</span>,<span class="string">'FitError'</span>});
+    aberration_error(target_element,mm) = T.FitError;
+    aberration_ave_error(1,mm) = sum(abs(T.FitError))/length(target_element);
+</pre><h2 id="7">&#20445;&#23384;&#37096;</h2><pre class="codeinput">    delay_profile = zeros(1,length(target_element));
+    <span class="keyword">for</span> jj = 1:length(target_element)-1
+        [acor,lag] = xcorr(hilb_focused_rfdata_mask(:,target_element(jj+1)),hilb_focused_rfdata_reference(:,target_element(jj)),<span class="string">'coeff'</span>);
+        [~,I] = max(abs(acor));
+        displacement(1,target_element(jj)+1) = lag(I);
+        delay_profile(1,jj+1) = sum(displacement(1,target_element(1):target_element(jj)+1));
+    <span class="keyword">end</span>
+    delay_profile = delay_profile + abs(delay_profile(1,ind_central_element));
+    [~,delay_offset] = findpeaks(abs(hilbert(focused_rfdata_mask(:,50))),<span class="string">'NPeaks'</span>,1,<span class="string">'SortStr'</span>,<span class="string">'descend'</span>);
+    [~,source_wave_offset] = findpeaks(abs(hilbert(source_wave)),<span class="string">'NPeaks'</span>,1,<span class="string">'SortStr'</span>,<span class="string">'descend'</span>);
+    delay_profile = delay_profile + delay_offset;
+    figure;
+    imagesc(t_pos(1,:)*1e3,kgrid.t_array*1e9,abs(hilbert(interp_rfdata)));
+    hold <span class="string">on</span>
+    scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,delay_profile*kgrid.dt/4*1e9,<span class="string">'blue'</span>,<span class="string">'filled'</span>);
+    plot(t_pos(1,(min(target_element):max(target_element)))*1e3,sqrt(f),<span class="string">'red'</span>);
+    hold <span class="string">off</span>
+    xlabel(<span class="string">'lateral[mm]'</span>);
+    ylabel(<span class="string">'time[ns]'</span>);
+    axis <span class="string">square</span>;
+    axis <span class="string">tight</span>;
+    xlim([t_pos(1,(min(target_element))-1)*1e3 t_pos(1,(max(target_element)+1))*1e3])
+    ylim([min_reference*kgrid.dt*1e9/4 max_mask*kgrid.dt*1e9/4])
+    colormap(bone);
+    colorbar;
+    caxis([0 max(max(abs(hilbert(focused_rfdata_mask))))])
+    savefilename = sprintf(<span class="string">'/rfdata_detail_interp_rawsignal_%0.1fmm'</span>,focal_depth(mm)*1e3);
+    savefig([dst_path,savefilename,<span class="string">'.fig'</span>])
+    exportfig([dst_path,savefilename],<span class="string">'png'</span>,[400,400])
+    figure;
+    imagesc(t_pos(1,:)*1e3,kgrid.t_array*1e9,abs(hilbert(interp_rfdata)));
+    hold <span class="string">on</span>
+    scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,delay_profile*kgrid.dt/4*1e9,<span class="string">'blue'</span>,<span class="string">'filled'</span>);
+    <span class="comment">% scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,(reference_point(1,(min(target_element):max(target_element)))+3)*kgrid.dt*1e9,'red');</span>
+    hold <span class="string">off</span>
+    xlabel(<span class="string">'lateral[mm]'</span>);
+    ylabel(<span class="string">'time[ns]'</span>);
+    axis <span class="string">square</span>;
+    axis <span class="string">tight</span>;
+    xlim([t_pos(1,(min(target_element))-1)*1e3 t_pos(1,(max(target_element)+1))*1e3])
+    ylim([0 max_mask*kgrid.dt*1e9/2])
+    colormap(bone);
+    colorbar;
+    caxis([0 max(max(abs(hilbert(focused_rfdata_mask))))])
+    savefilename = sprintf(<span class="string">'/rfdata_whole_interp_rawsignal_%0.1fmm'</span>,focal_depth(mm)*1e3);
+    savefig([dst_path,savefilename,<span class="string">'.fig'</span>])
+    exportfig([dst_path,savefilename],<span class="string">'png'</span>,[400,400])
+    figure;
+    histogram(aberration_error(target_element,mm),<span class="string">'Normalization'</span>,<span class="string">'probability'</span>,<span class="string">'NumBins'</span>,round(sqrt(length(target_element))));
+    xlim([-5*1e-13 5*1e-13])
+    ylim([0 0.8])
+    xlabel(<span class="string">'error of fitting[(m/s)^2]'</span>);
+    titlename = sprintf(<span class="string">'boundary depth: %0.1f mm'</span>,focal_depth(mm)*1e3);
+    title(titlename);
+    savefilename = sprintf(<span class="string">'/aberration_interp_rawsignal_%0.1fmm'</span>,focal_depth(mm)*1e3);
+    savefig([dst_path,savefilename,<span class="string">'.fig'</span>])
+    exportfig([dst_path,savefilename],<span class="string">'png'</span>,[250,200])
+</pre><pre class="codeinput"><span class="keyword">end</span>
+figure;
+plot(focal_depth*1e3,estimated_velocity);
+hold <span class="string">on</span>
+plot(focal_depth*1e3,correct_velocity,<span class="string">'--'</span>)
+hold <span class="string">off</span>
+xlabel(<span class="string">'boundary depth[mm]'</span>)
+ylabel(<span class="string">'estimated velocity'</span>);
+legend(<span class="string">'estimated'</span>,<span class="string">'correct'</span>)
+savefilename = sprintf(<span class="string">'/estimation_velociry'</span>);
+savefig([dst_path,savefilename,<span class="string">'.fig'</span>])
+exportfig([dst_path,savefilename],<span class="string">'png'</span>,[600,500])
+figure;
+plot(focal_depth*1e3,sqrt(aberration_ave_error)*1e9);
+xlabel(<span class="string">'boundary depth[mm]'</span>);
+ylabel(<span class="string">'RMS error[ns]'</span>);
+savefilename = sprintf(<span class="string">'/ave_aberration_interp_rawsignal'</span>);
+savefig([dst_path,savefilename,<span class="string">'.fig'</span>])
+exportfig([dst_path,savefilename],<span class="string">'png'</span>,[300,250])
+save([dst_path,<span class="string">'\2018_12_11_multi_layer_variable'</span>]);
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%%%%%%%%%%%%%%%%%%%%
+% 対象：ワイヤターゲット，境界厚さ：2mm~19mm
+% 設定音速：1580[m/s]＝正解音速
+% 焦点水平位置固定：y=0
+% 境界位置：既知
+% IMCL割合を0 %に固定する．
+% 波面遅延プロファイルにより音速推定
+% 素子間受信波時間差は解析信号の正規化相互相関を用いる
+% 内挿処理により解析用サンプリング数を実信号のサンプリング数の４倍にする
+%%%%%%%%%%%%%%%%%%%%
+
+%% 初期設定（共通）
+clear
+dst_path = sprintf('H:/result/2018_12_06_IMCL_direct_estimation/2layer/2018_12_11_rawsignal_hilbert_corr');
+if ~exist(dst_path, 'dir')
+    mkdir(dst_path);
+end
+load("H:/data/kwave/config/t_pos_2board.mat");
+load("H:/data/kwave/medium/2018_11_07_layer_medium/Layer_medium_boundary_2.0mm_ IMCL0%.mat")
+load("H:/data/kwave/result/2018_11_07_layer_medium/Layer_medium_boundary_2.0mm_ IMCL0%/rfdata.mat")
+load("H:/data/kwave/result/2018_11_07_layer_medium/Layer_medium_boundary_2.0mm_ IMCL0%/kgrid.mat")
+v_fat = 1450;%[m/s]
+v_muscle = 1580;%[m/s]
+v_reference = v_muscle;
+t_facing_distance = 0.04;%[m]
+[~,num_receiver,num_transmitter] = size(rfdata);
+num_echo_receiver = num_transmitter;
+num_medium = length(ind_focal_point);
+reference_point = zeros(1,num_echo_receiver);
+reference_point_lowerlimit = zeros(1,num_echo_receiver);%均質性評価のためのRFデータマスキングに使う
+reference_point_upperlimit = zeros(1,num_echo_receiver);%均質性評価のためのRFデータマスキングに使う
+distance_from_focal_point_all = zeros(1,num_echo_receiver);
+delay_time_all = zeros(1,num_echo_receiver);
+num_depth = (t_pos(2,1)-t_pos(2,101))/kgrid.dx/2 - 3;%'3'とあるのは，最近接距離が0.4 mmであることを考慮している．
+focal_point = zeros(2,num_medium);
+focal_point(2,:) = kgrid.x_vec(ind_focal_point);
+focal_depth = 20*1e-3 - focal_point(2,:);
+element_pitch = abs(t_pos(1,1) - t_pos(1,2));
+lateral_range_max = 0;
+lateral_range_min = 0;
+num_lateral = round((lateral_range_max -lateral_range_min) / element_pitch)+1;%0.0~4.8 mmまで
+ind_max_signal = 0;
+max_signal = 0;
+displacement = zeros(num_echo_receiver,num_medium);
+displacement_ref = zeros(num_echo_receiver,num_medium);
+error_wavefront = zeros(1,num_medium);
+estimated_velocity = zeros(1,num_medium);
+correct_velocity = v_muscle*ones(1,num_medium);
+aberration_error = zeros(num_echo_receiver,num_medium);
+aberration_ave_error = zeros(1,num_medium);
+
+%% 媒質の選択
+for mm = 1:num_medium
+    loadpath = sprintf('H:/data/kwave/result/2018_11_07_layer_medium/Layer_medium_boundary_%0.1fmm_ IMCL0%%/',focal_depth(mm)*1e3);
+    load([loadpath,'\rfdata.mat'])
+    load([loadpath,'\kgrid.mat'])
+    load([loadpath,'\sourse_wave.mat'])
+    [num_sample,~,~] = size(rfdata);
+    %% フォーカシング
+    %駆動素子の決定
+    target_element = find((-focal_depth(mm)/2<=t_pos(1,1:100)&(t_pos(1,1:100)<=focal_depth(mm)/2)));
+    %受信用の参照点算出
+    for jj = 1:num_echo_receiver
+        distance_from_focal_point_all(1,jj) = norm(t_pos(:,jj) - focal_point(:,mm));
+        delay_time_all(1,jj) = floor(((distance_from_focal_point_all(1,jj) - focal_depth(mm))/v_reference)/kgrid.dt);%[sample]
+        reference_point(1,jj) = floor(delay_time_all(1,jj)+(2*focal_depth(mm)/v_reference)/kgrid.dt+25-1);
+    end
+    %送信ビームフォーミング（共通）
+    focused_rfdata = transmit_focus(rfdata,target_element,num_sample,delay_time_all,num_echo_receiver);
+    %受信ビームフォーカシング
+    focal_signal_total =  receive_focus(focused_rfdata,target_element,reference_point);
+    interp_rfdata = zeros(num_sample*4,num_echo_receiver);
+    for jj = 1:num_echo_receiver
+        interp_rfdata(:,jj) = interp(focused_rfdata(:,jj),4);
+    end
+    source_wave = interp(source_wave,4);
+    
+    %% 音速推定
+    % RFデータマスキング(計算領域)
+    min_mask = (min(reference_point) - 10)*4;
+    max_mask = (min(reference_point) + 100 - 1)*4;
+    mask_rfdata = zeros(size(interp_rfdata));
+    mask_rfdata(min_mask:max_mask,:) = 1;
+    focused_rfdata_mask = mask_rfdata .* interp_rfdata;
+    hilb_focused_rfdata_mask = hilbert(focused_rfdata_mask);
+    min_reference = (min(reference_point) - 30)*4;
+    max_reference = (min(reference_point) + 500 - 1)*4;
+    reference_rfdata = zeros(size(interp_rfdata));
+    reference_rfdata(min_reference:max_reference,:) = 1;
+    focused_rfdata_reference = reference_rfdata .* interp_rfdata;
+    hilb_focused_rfdata_reference = hilbert(focused_rfdata_reference);
+    % 波面形状推定
+    delay_profile = zeros(1,length(target_element));
+    for jj = 1:length(target_element)-1
+        [acor,lag] = xcorr(hilb_focused_rfdata_mask(:,target_element(jj+1)),hilb_focused_rfdata_reference(:,target_element(jj)),'coeff');
+        [~,I] = max(abs(acor));
+        displacement(1,target_element(jj)+1) = lag(I);
+        delay_profile(1,jj+1) = sum(displacement(1,target_element(1):target_element(jj)+1));
+    end
+    ind_central_element = find(target_element == 50);
+    delay_profile = delay_profile + abs(delay_profile(1,ind_central_element));
+    [~,delay_offset] = findpeaks(abs(hilbert(focused_rfdata_mask(:,50))),'NPeaks',1,'SortStr','descend');
+    [~,source_wave_offset] = findpeaks(abs(hilbert(source_wave)),'NPeaks',1,'SortStr','descend');
+    delay_offset = delay_offset - source_wave_offset;
+    delay_profile = delay_profile + delay_offset/2;
+    poly_delay_profile_fitted = polyfit(t_pos(1,target_element),(delay_profile*kgrid.dt/4).^2,2);
+    displacement_ref(1,target_element(2:end)) = diff(reference_point(target_element));
+    estimated_velocity(mm) = 1/sqrt(poly_delay_profile_fitted(1));
+    f = polyval(poly_delay_profile_fitted.',t_pos(1,target_element).');
+    T = table(t_pos(1,target_element).',(delay_profile*kgrid.dt/4).^2.',f,(delay_profile*kgrid.dt/4).^2.'-f,'VariableNames',{'X','Y','Fit','FitError'});
+    aberration_error(target_element,mm) = T.FitError;
+    aberration_ave_error(1,mm) = sum(abs(T.FitError))/length(target_element);
+    %% 保存部
+    delay_profile = zeros(1,length(target_element));
+    for jj = 1:length(target_element)-1
+        [acor,lag] = xcorr(hilb_focused_rfdata_mask(:,target_element(jj+1)),hilb_focused_rfdata_reference(:,target_element(jj)),'coeff');
+        [~,I] = max(abs(acor));
+        displacement(1,target_element(jj)+1) = lag(I);
+        delay_profile(1,jj+1) = sum(displacement(1,target_element(1):target_element(jj)+1));
+    end
+    delay_profile = delay_profile + abs(delay_profile(1,ind_central_element));
+    [~,delay_offset] = findpeaks(abs(hilbert(focused_rfdata_mask(:,50))),'NPeaks',1,'SortStr','descend');
+    [~,source_wave_offset] = findpeaks(abs(hilbert(source_wave)),'NPeaks',1,'SortStr','descend');
+    delay_profile = delay_profile + delay_offset;
+    figure;
+    imagesc(t_pos(1,:)*1e3,kgrid.t_array*1e9,abs(hilbert(interp_rfdata)));
+    hold on
+    scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,delay_profile*kgrid.dt/4*1e9,'blue','filled');
+    plot(t_pos(1,(min(target_element):max(target_element)))*1e3,sqrt(f),'red');
+    hold off
+    xlabel('lateral[mm]');
+    ylabel('time[ns]');
+    axis square;
+    axis tight;
+    xlim([t_pos(1,(min(target_element))-1)*1e3 t_pos(1,(max(target_element)+1))*1e3])
+    ylim([min_reference*kgrid.dt*1e9/4 max_mask*kgrid.dt*1e9/4])
+    colormap(bone);
+    colorbar;
+    caxis([0 max(max(abs(hilbert(focused_rfdata_mask))))])
+    savefilename = sprintf('/rfdata_detail_interp_rawsignal_%0.1fmm',focal_depth(mm)*1e3);
+    savefig([dst_path,savefilename,'.fig'])
+    exportfig([dst_path,savefilename],'png',[400,400])
+    figure;
+    imagesc(t_pos(1,:)*1e3,kgrid.t_array*1e9,abs(hilbert(interp_rfdata)));
+    hold on
+    scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,delay_profile*kgrid.dt/4*1e9,'blue','filled');
+    % scatter(t_pos(1,(min(target_element):max(target_element)))*1e3,(reference_point(1,(min(target_element):max(target_element)))+3)*kgrid.dt*1e9,'red');
+    hold off
+    xlabel('lateral[mm]');
+    ylabel('time[ns]');
+    axis square;
+    axis tight;
+    xlim([t_pos(1,(min(target_element))-1)*1e3 t_pos(1,(max(target_element)+1))*1e3])
+    ylim([0 max_mask*kgrid.dt*1e9/2])
+    colormap(bone);
+    colorbar;
+    caxis([0 max(max(abs(hilbert(focused_rfdata_mask))))])
+    savefilename = sprintf('/rfdata_whole_interp_rawsignal_%0.1fmm',focal_depth(mm)*1e3);
+    savefig([dst_path,savefilename,'.fig'])
+    exportfig([dst_path,savefilename],'png',[400,400])
+    figure;
+    histogram(aberration_error(target_element,mm),'Normalization','probability','NumBins',round(sqrt(length(target_element))));
+    xlim([-5*1e-13 5*1e-13])
+    ylim([0 0.8])
+    xlabel('error of fitting[(m/s)^2]');
+    titlename = sprintf('boundary depth: %0.1f mm',focal_depth(mm)*1e3);
+    title(titlename);
+    savefilename = sprintf('/aberration_interp_rawsignal_%0.1fmm',focal_depth(mm)*1e3);
+    savefig([dst_path,savefilename,'.fig'])
+    exportfig([dst_path,savefilename],'png',[250,200])
+end
+figure;
+plot(focal_depth*1e3,estimated_velocity);
+hold on
+plot(focal_depth*1e3,correct_velocity,'REPLACE_WITH_DASH_DASH')
+hold off
+xlabel('boundary depth[mm]')
+ylabel('estimated velocity');
+legend('estimated','correct')
+savefilename = sprintf('/estimation_velociry');
+savefig([dst_path,savefilename,'.fig'])
+exportfig([dst_path,savefilename],'png',[600,500])
+figure;
+plot(focal_depth*1e3,sqrt(aberration_ave_error)*1e9);
+xlabel('boundary depth[mm]');
+ylabel('RMS error[ns]');
+savefilename = sprintf('/ave_aberration_interp_rawsignal');
+savefig([dst_path,savefilename,'.fig'])
+exportfig([dst_path,savefilename],'png',[300,250])
+save([dst_path,'\2018_12_11_multi_layer_variable']);
+##### SOURCE END #####
+--></body></html>
