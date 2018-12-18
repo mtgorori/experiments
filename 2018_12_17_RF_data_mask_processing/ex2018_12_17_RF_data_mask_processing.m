@@ -1,12 +1,3 @@
-%%%%%%%%%%%%%%%%%%%%
-% 対象：ワイヤ，境界厚さ：5mm
-% 設定音速：1580[m/s]＝正解音速
-% IMCL割合を0 %に固定する．
-% 波面遅延プロファイルにより音速推定
-% 仮定遅延プロファイルと実測遅延プロファイルの相互相関
-% を用いて音速を推定する
-%%%%%%%%%%%%%%%%%%%%
-
 %% 初期設定（共通）
 clear
 dst_path = sprintf('H:/result/2018_12_06_IMCL_direct_estimation');
@@ -50,8 +41,6 @@ num_receiver = num_receiver/2;
 element_pitch = abs(t_pos(1,1) - t_pos(1,2));
 % 遅延プロファイル
 distance_from_assumed_point = zeros(1,num_receiver);
-distance_round_trip = zeros(1,num_receiver);
-delay_time_assumed = zeros(1,num_receiver);
 % 推定値
 assumed_SOS = v_muscle:-1:v_muscle_with_IMCL(end);
 num_assumed_SOS = length(v_muscle_with_IMCL(end):v_muscle);
@@ -62,8 +51,9 @@ correct_velocity = zeros(num_boundary,num_IMCL);
 for i = 1:num_IMCL
     correct_velocity(:,i) = v_muscle_with_IMCL(i);
 end
-%% 音速推定処理部
-loadpath = sprintf('H:/data/kwave/result/2018_12_14_point_medium_various/boundary_5.0mm_IMCL0%%');
+%% RFデータマスク処理部
+loadpath = sprintf('H:/data/kwave/result/2018_12_13_layer_medium_various/boundary_5.0mm_IMCL10%%');
+% loadpath = sprintf('H:/data/kwave/result/2018_12_14_point_medium_various/boundary_5.0mm_IMCL0%%');
 load([loadpath,'/rfdata.mat'])
 load([loadpath,'/kgrid.mat'])
 load([loadpath,'/sourse_wave.mat'])
@@ -71,13 +61,37 @@ load([loadpath,'/sourse_wave.mat'])
 % サンプル数を4倍にするためにスプライン補間
 interp_sourcewave = interp1(source_wave,linspace(1,num_sample,num_sample*4)','spline');
 interp_rfdata = zeros(num_sample*4,num_receiver);
+rfdata_echo_only = zeros(num_sample*4,num_receiver);
+delay_transmitted_wave = zeros(1,num_receiver);
+% 透過波情報を消す
 for jj = 1:num_receiver
     interp_rfdata(:,jj) = interp1(rfdata(:,jj),linspace(1,num_sample,num_sample*4),'spline');
+    delay_transmitted_wave(1,jj) = round(((abs(assumed_point(1,1) - t_pos(1,jj)))/v_muscle)/(kgrid.dt/4));
+    rfdata_echo_only(:,jj) = interp_rfdata(:,jj);
+    rfdata_echo_only(1:delay_transmitted_wave(1,jj)+200,jj) = mean(rfdata_echo_only(1:delay_transmitted_wave(1,jj)+200,jj));
+    rfdata_echo_only(:,jj) = abs(hilbert(rfdata_echo_only(:,jj)));
 end
-auto_correlation_rfdata = diag(interp_rfdata.' * interp_rfdata);
-auto_correlation_source_wave = interp_sourcewave.' * interp_sourcewave;
+figure;
+imagesc(rfdata_echo_only);
+% 大津の二値化
+BW_rfdata_echo_only = imbinarize(rfdata_echo_only);
+figure;
+imagesc(BW_rfdata_echo_only);
+CC = bwconncomp(BW_rfdata_echo_only);
+L = labelmatrix(CC);
+S = regionprops(CC,'Area');
+% 小さい検出領域を消す
+mask_rfdata =  ismember(L, find([S.Area] >= max(struct2array(S))));
+masked_rfdata = mask_rfdata .* interp_rfdata;
+amp_masked_rfdata = abs(hilbert(masked_rfdata));
+figure;
+imagesc(amp_masked_rfdata);
+% 送信波の包絡線
+amp_sourcewave = abs(hilbert(interp_sourcewave));
+auto_correlation_rfdata = diag(amp_masked_rfdata.' * amp_masked_rfdata);
+auto_correlation_source_wave = amp_sourcewave.' * amp_sourcewave;
 auto_correlation_source_wave = repmat(auto_correlation_source_wave,length(auto_correlation_rfdata),1);
-delay_sourcewave = repmat(interp_sourcewave,1,num_receiver);
+delay_sourcewave = repmat(amp_sourcewave,1,num_receiver);
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
 figure;
 for  kk = 1:num_assumed_depth
@@ -88,11 +102,11 @@ for  kk = 1:num_assumed_depth
         distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
         delay_time_assumed = round(distance_round_trip / assumed_SOS(ll) / (kgrid.dt/4));%[sample]
         for ii = 1:num_receiver
-            source_wave2cat = interp_sourcewave;
+            source_wave2cat = amp_sourcewave;
             source_wave2cat(num_sample*4-delay_time_assumed(ii)+1:end,1)=NaN;
             source_wave2cat(isnan(source_wave2cat)) = [];
             delay_sourcewave(:,ii) = cat(1,zeros(delay_time_assumed(ii),1),source_wave2cat);
-            correlation(kk,ll) = correlation(kk,ll) + (interp_rfdata(:,ii).'*delay_sourcewave(:,ii)...
+            correlation(kk,ll) = correlation(kk,ll) + (amp_masked_rfdata(:,ii).'*delay_sourcewave(:,ii)...
                 /sqrt(auto_correlation_rfdata(ii,1)*auto_correlation_source_wave(ii,1)));
         end
         correlation(kk,ll) = correlation(kk,ll)/num_receiver;
@@ -104,33 +118,33 @@ for  kk = 1:num_assumed_depth
 %         distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
 %         delay_time_assumed = round(distance_round_trip / assumed_SOS(ll) / (kgrid.dt/4));%[sample]
 %         for ii = 1:num_receiver
-%             source_wave2cat = interp_sourcewave;
+%             source_wave2cat = amp_sourcewave;
 %             source_wave2cat(num_sample*4-delay_time_assumed(ii)+1:end,1)=NaN;
 %             source_wave2cat(isnan(source_wave2cat)) = [];
 %             delay_sourcewave(:,ii) = cat(1,zeros(delay_time_assumed(ii),1),source_wave2cat);
-%             correlation(kk,ll) = correlation(kk,ll) + (interp_rfdata(:,ii).'*delay_sourcewave(:,ii)...
+%             correlation(kk,ll) = correlation(kk,ll) + (amp_masked_rfdata(:,ii).'*delay_sourcewave(:,ii)...
 %                 /sqrt(auto_correlation_rfdata(ii,1)*auto_correlation_source_wave(ii,1)));
 %         end
 %         correlation(kk,ll) = correlation(kk,ll)/num_receiver;
 %     end
-    imagesc(delay_sourcewave+interp_rfdata);
-    caxis([0 0.2])
-    ylim([0 5000])
-    pause(1)
-    disp(kk)
+%     imagesc(delay_sourcewave+amp_masked_rfdata);
+%     caxis([0 0.1])
+%     pause(0.2)
+%     close gcf;
+    disp(kk);
 end
 %% 保存部
-dst_path = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/wire/2018_12_14_depth5.0mmIMCL0%%');
-if ~exist(dst_path, 'dir')
-    mkdir(dst_path);
-end
-figure;
-imagesc(IMCL_rate,20-assumed_depth*1e3,correlation);
-ylim([3 7])
-xlabel('IMCL content[%]')
-ylabel('depth[mm]')
-title('Correlation of delay curve')
-colorbar
-savefilename = sprintf('/correlation');
-savefig([dst_path,savefilename,'.fig'])
-exportfig([dst_path,savefilename],'png',[300,200])
+% dst_path = sprintf('H:/result/2018_12_17_RF_data_mask_processing/2layer/2018_12_17_depth5.0mmIMCL0%%');
+% if ~exist(dst_path, 'dir')
+%     mkdir(dst_path);
+% end
+% figure;
+% imagesc(IMCL_rate,20-assumed_depth*1e3,correlation);
+% ylim([3 7])
+% xlabel('IMCL content[%]')
+% ylabel('depth[mm]')
+% title('Correlation of delay curve')
+% colorbar
+% savefilename = sprintf('/correlation');
+% savefig([dst_path,savefilename,'.fig'])
+% exportfig([dst_path,savefilename],'png',[300,200])
