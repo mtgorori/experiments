@@ -90,7 +90,7 @@ for mm = 1:num_boundary_depth
         auto_correlation_source_wave = repmat(auto_correlation_source_wave,length(auto_correlation_rfdata),1);
         delay_sourcewave = repmat(interp_sourcewave,1,num_receiver);
         % âπë¨êÑíË%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        for  kk = 1:5
+        for  kk = 1:num_assumed_depth
             for ll = 1:num_assumed_SOS
                 for ii = 1:num_receiver
                     distance_from_assumed_point(1,ii) = norm(assumed_point(:,kk)-t_pos(:,ii));%[m]
@@ -154,13 +154,39 @@ for mm = 1:num_boundary_depth
         close gcf
     end
 end
+dst_path2 = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/wire/2018_12_18/figure');
+if ~exist(dst_path2, 'dir')
+    mkdir(dst_path2);
+end
 for mm = 1:num_boundary_depth
     figure;
-    plot(correct_velocity(mm,:),estimated_velocity(mm,:))
+    plot(correct_velocity(mm,:),estimated_velocity(mm,:));
+    xlabel('correct velocity [m/s]')
+    ylabel('estimated velocity [m/s]')
+    titlename = sprintf('depth: %0.1f mm',boundary_depth(mm)*1e3);
+    title(titlename)
+    xlim([v_fat v_muscle])
+    savefilename = sprintf('/velocity_depth_%0.1f mm',boundary_depth(mm)*1e3);
+    savefig([dst_path2,savefilename,'.fig'])
+    exportfig([dst_path2,savefilename],'png',[300,300])
+    close gcf
+    figure;
+    plot(IMCL_rate(1,mm),estimated_IMCL(mm,:));
+    xlabel('correct IMCL content [%]')
+    ylabel('estimated IMCL content [%]')
+    titlename = sprintf('depth: %0.1f mm',boundary_depth(mm)*1e3);
+    title(titlename)
+    xlim([0 20])
+    ylim([0 20])
+    savefilename = sprintf('/IMCL_depth_%0.1f mm',boundary_depth(mm)*1e3);
+    savefig([dst_path2,savefilename,'.fig'])
+    exportfig([dst_path2,savefilename],'png',[300,300])
     close gcf
 end
-dst_path2 = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/wire/2018_12_18/');
-savefilename = sprintf('2018_12_18_all_result');
-save([dst_path2,savefilename])
 
-function 
+dst_path3 = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/wire/2018_12_18/');
+if ~exist(dst_path3, 'dir')
+    mkdir(dst_path3);
+end
+savefilename = sprintf('2018_12_18_all_result');
+save([dst_path3,savefilename])
