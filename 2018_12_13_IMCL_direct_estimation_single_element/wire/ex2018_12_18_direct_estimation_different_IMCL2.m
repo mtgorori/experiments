@@ -107,7 +107,7 @@ for mm = 1:num_boundary_depth
                 end
                 correlation(kk,ll) = correlation(kk,ll)/num_receiver;
             end
-            dispname = sprintf('depth # is %d, IMCL # is %d',kk,nn);
+            dispname = sprintf('estimated depth # is %d, IMCL # is %d, depth #is %d',kk,nn,mm);
             disp(dispname) %#ok<DSPS>
         end
         [~,ind_estimate_v] = max(max(correlation));
@@ -154,6 +154,7 @@ for mm = 1:num_boundary_depth
         close gcf
     end
 end
+%% •Û‘¶•”
 dst_path2 = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/wire/2018_12_18/figure');
 if ~exist(dst_path2, 'dir')
     mkdir(dst_path2);
