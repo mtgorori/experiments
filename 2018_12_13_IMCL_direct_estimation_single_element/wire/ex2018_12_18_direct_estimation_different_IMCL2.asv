@@ -64,8 +64,8 @@ for i = 1:num_IMCL
 end
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
-for mm = 1
-    for nn = 1
+for mm = 1:num_boundary_depth
+    for nn = 1:num_IMCL
         loadpath = sprintf('H:/data/kwave/result/2018_12_14_point_medium_various/boundary_%0.1fmm_IMCL%d%%',...
             boundary_depth(mm)*1e3,IMCL_rate(nn));
         load([loadpath,'/rfdata.mat'])
@@ -90,7 +90,7 @@ for mm = 1
         auto_correlation_source_wave = repmat(auto_correlation_source_wave,length(auto_correlation_rfdata),1);
         delay_sourcewave = repmat(interp_sourcewave,1,num_receiver);
         % 音速推定%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        for  kk = 1:5
+        for  kk = 1:num_assumed_depth
             for ll = 1:num_assumed_SOS
                 for ii = 1:num_receiver
                     distance_from_assumed_point(1,ii) = norm(assumed_point(:,kk)-t_pos(:,ii));%[m]
@@ -107,7 +107,7 @@ for mm = 1
                 end
                 correlation(kk,ll) = correlation(kk,ll)/num_receiver;
             end
-            dispname = sprintf('depth # is %d, IMCL # is %d',kk,nn);
+            dispname = sprintf('estimated depth # is %d, IMCL # is %d, depth #is %d',kk,nn,mm);
             disp(dispname) %#ok<DSPS>
         end
         [~,ind_estimate_v] = max(max(correlation));
@@ -154,14 +154,42 @@ for mm = 1
         close gcf
     end
 end
+%% 保存部
+dst_path2 = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/wire/2018_12_18/figure');
+if ~exist(dst_path2, 'dir')
+    mkdir(dst_path2);
+end
+
 for mm = 1:num_boundary_depth
     figure;
     plot(correct_velocity(mm,:),estimated_velocity(mm,:));
     xlabel('correct velocity [m/s]')
     ylabel('estimated velocity [m/s]')
-    titlename = sprintf()
+    titlename = sprintf('depth: %0.1f mm',boundary_depth(mm)*1e3);
+    title(titlename)
+    xlim([v_fat*0.2+v_muscle*0.8 v_muscle])
+    ylim()
+    savefilename = sprintf('/velocity_depth_%0.1f mm',boundary_depth(mm)*1e3);
+    savefig([dst_path2,savefilename,'.fig'])
+    exportfig([dst_path2,savefilename],'png',[300,300])
     close gcf
+%     figure;
+%     plot(IMCL_rate(1,mm),estimated_IMCL(mm,:));
+%     xlabel('correct IMCL content [%]')
+%     ylabel('estimated IMCL content [%]')
+%     titlename = sprintf('depth: %0.1f mm',boundary_depth(mm)*1e3);
+%     title(titlename)
+%     xlim([0 20])
+%     ylim([0 20])
+%     savefilename = sprintf('/IMCL_depth_%0.1f mm',boundary_depth(mm)*1e3);
+%     savefig([dst_path2,savefilename,'.fig'])
+%     exportfig([dst_path2,savefilename],'png',[300,300])
+%     close gcf
 end
-dst_path2 = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/wire/2018_12_18/');
-savefilename = sprintf('2018_12_18_all_result');
-save([dst_path2,savefilename])
+% 
+% dst_path3 = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/wire/2018_12_18/');
+% if ~exist(dst_path3, 'dir')
+%     mkdir(dst_path3);
+% end
+% savefilename = sprintf('2018_12_18_all_result');
+% save([dst_path3,savefilename])
