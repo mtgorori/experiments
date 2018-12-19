@@ -101,7 +101,7 @@ for mm = 1%:num_boundary_depth
         end
         
         % ‰¹‘¬„’è%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        for  kk = 1:num_assumed_depth
+        for  kk = 1:50
             for ll = 1:num_assumed_SOS
                 
                 for ii = 1:num_transmitter
