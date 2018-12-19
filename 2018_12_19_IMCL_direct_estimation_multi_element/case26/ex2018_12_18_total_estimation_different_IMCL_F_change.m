@@ -25,6 +25,7 @@ v_muscle_with_IMCL = v_fat * IMCL_rate/100 + v_muscle*(1-IMCL_rate/100);%³‰ğ‰¹‘
 
 % ’TõˆÊ’u
 assumed_depth          = 19e-3:-kgrid.dx:0;
+assumed_distance = 20e-3 - assumed_depth;
 num_assumed_depth = length(assumed_depth);
 ind_assumed_depth   = zeros(num_assumed_depth,1);% kgridã‚Å‚Í‹«ŠEˆÊ’u‚Í‚Ç‚ÌƒCƒ“ƒfƒbƒNƒX‚Å•\‚³‚ê‚é‚©‚ğ‚à‚Æ‚ß‚éD
 for i = 1:num_assumed_depth
@@ -40,7 +41,7 @@ t_facing_distance      = 0.04;%[m]
 num_transmitter        = num_receiver/2;
 num_receiver             = num_receiver/2; 
 element_pitch           = abs(t_pos(1,1) - t_pos(1,2));
-target_element         = linspace(1,num_transmitter,num_transmitter);
+minimum_elementNum = 20;
 
 % ’x‰„ƒvƒƒtƒ@ƒCƒ‹
 distance_from_assumed_point = zeros(1,num_transmitter);
@@ -86,6 +87,9 @@ end
         
         % ‰¹‘¬„’è%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         for  kk = 1:num_assumed_depth
+            % ‹ì“®‘fq‚Ì‘I‘ğ
+                target_element = find_target_element(assumed_distance,num_receiver,t_pos,minimum_elementNum,kk);
+            
             for ll = 1:num_assumed_SOS
                 
                 % ‘—MƒtƒH[ƒJƒX
@@ -101,21 +105,21 @@ end
                 delay_time_assumed = round(distance_round_trip / assumed_SOS(ll) / (kgrid.dt/4));%[sample]
                 delay_sourcewave     = zeros(num_sample*4, num_receiver);
                 
-                for ii = 1:num_receiver
+                for ii = 1:length(target_element)
                     source_wave2cat = interp_sourcewave;
-                    source_wave2cat(num_sample*4-delay_time_assumed(ii)+1:end,1)=NaN;
+                    source_wave2cat(num_sample*4-delay_time_assumed(target_element(ii))+1:end,1)=NaN;
                     source_wave2cat(isnan(source_wave2cat)) = [];
-                    delay_sourcewave(:,ii) = cat(1,zeros(delay_time_assumed(ii),1),source_wave2cat);
+                    delay_sourcewave(:,target_element(ii)) = cat(1,zeros(delay_time_assumed(target_element(ii)),1),source_wave2cat);
                     % ‘ŠŒİ‘ŠŠÖ‚ÌÏZ
-                    correlation(kk,ll) = correlation(kk,ll) + (focused_rfdata(:,ii).'*delay_sourcewave(:,ii)...
-                        /sqrt(auto_correlation_rfdata(ii,1)*auto_correlation_source_wave(ii,1)));
+                    correlation(kk,ll) = correlation(kk,ll) + (focused_rfdata(:,target_element(ii)).'*delay_sourcewave(:,target_element(ii))...
+                        /sqrt(auto_correlation_rfdata(target_element(ii),1)*auto_correlation_source_wave(target_element(ii),1)));
                 end
                 
-                correlation(kk,ll) = correlation(kk,ll)/num_receiver;
+                correlation(kk,ll) = correlation(kk,ll)/length(target_element);
                 
             end
             
-            dispname = sprintf('estimated depth # is %d, IMCL # is %d',kk,nn);
+            dispname = sprintf('estimated depth # is %d, IMCL # is %d, target element # is %d',kk,nn,length(target_element));
             disp(dispname) %#ok<DSPS>
             
         end
@@ -126,6 +130,7 @@ end
         estimated_IMCL(1,nn) = 100*((v_muscle-estimated_velocity(1,nn))/(v_muscle-v_fat));
         
         % delay sourcewave ‚Æ rfdata ‚ğd‚Ë‚Ä•\¦‚·‚é‚½‚ß‚Ìˆ—D%%%%%%
+        target_element = find_target_element(assumed_distance,num_receiver,t_pos,minimum_elementNum,ind_estimate_d);
         [focused_rfdata,distance_from_assumed_point] = transmit_focusing(num_transmitter,assumed_point,t_pos,ind_estimate_d,ind_estimate_v,assumed_SOS,kgrid,rfdata_echo_only,target_element,num_sample,num_receiver);
         distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
         delay_time_assumed = round(distance_round_trip / assumed_SOS(ind_estimate_v) / (kgrid.dt/4));%[sample]
@@ -152,9 +157,9 @@ end
         figure;
         imagesc(focused_rfdata);
         hold on
-        scatter(1:num_transmitter,delay_time_assumed+offset_interp_sourcewave,'r.')
+        scatter(target_element,delay_time_assumed(target_element)+offset_interp_sourcewave,'r.')
         caxis([min(min(focused_rfdata))/5 max(max(focused_rfdata))/5])
-        ylim([min(delay_time_assumed) max(delay_time_assumed+2*offset_interp_sourcewave)])
+        ylim([min(delay_time_assumed(target_element)) max(delay_time_assumed(target_element)+2*offset_interp_sourcewave)])
         xlabel('element number')
         ylabel('time[sample]')
         axis square
@@ -215,6 +220,14 @@ save([dst_path3,savefilename],'estimated_IMCL','estimated_velocity',...
     'v_muscle_with_IMCL','target_element','correct_velocity','IMCL_rate','t_pos');
 
 %% ŠÖ”•”
+
+function target_element = find_target_element(assumed_distance,num_receiver,t_pos,minimum_elementNum,kk)
+       target_element = find((-assumed_distance(1,kk)<=t_pos(1,1:num_receiver))&((t_pos(1,1:num_receiver)<=assumed_distance(1,kk))));
+        if length(target_element) < minimum_elementNum
+            target_element = ceil((num_receiver-minimum_elementNum)/2+1):ceil((num_receiver+minimum_elementNum)/2) ;
+       end
+end
+
 function [focused_rfdata,distance_from_assumed_point] = transmit_focusing(num_transmitter,assumed_point,t_pos,kk,ll,assumed_SOS,kgrid,rfdata_echo_only,target_element,num_sample,num_receiver)
        distance_from_assumed_point = zeros(1,num_transmitter);
 
