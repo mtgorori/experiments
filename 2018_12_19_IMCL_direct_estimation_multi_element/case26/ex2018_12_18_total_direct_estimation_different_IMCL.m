@@ -141,7 +141,7 @@ end
         imagesc(IMCL_rate,20-assumed_depth*1e3,correlation);
         xlabel('IMCL content[%]')
         ylabel('depth[mm]')
-        titlename = sprintf('IMCL: %d %%',IMCL_rate(nn)*1e3);
+        titlename = sprintf('IMCL: %0.1f %%',IMCL_rate(nn));
         title({'Correlation of delay curve';titlename})
         colorbar
         savefilename = sprintf('/correlation');
