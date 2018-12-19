@@ -112,7 +112,7 @@ for mm = 1%:num_boundary_depth
                 
                 % 送信フォーカス
                 delay_length_focusing = distance_from_assumed_point - min(distance_from_assumed_point);
-                delay_time_focusing    = round(delay_length_focusing) / assumed_SOS(ll) / (kgrid.dt/4);
+                delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ll) / (kgrid.dt/4));
                 rfdata_echo_only        = transmit_focus(rfdata_echo_only,target_element,...
                     num_sample*4,delay_time_focusing,num_receiver);
                 
