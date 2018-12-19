@@ -137,7 +137,7 @@ end
         
                 
         % ‰æ‘œ•Û‘¶%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_focused/IMCL%d%%',IMCL_rate(nn));
+        dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_variousF/IMCL%d%%',IMCL_rate(nn));
         if ~exist(dst_path, 'dir')
             mkdir(dst_path);
         end
@@ -146,7 +146,7 @@ end
         imagesc(IMCL_rate,20-assumed_depth*1e3,correlation);
         xlabel('IMCL content[%]')
         ylabel('depth[mm]')
-        titlename = sprintf('IMCL: %d %%',IMCL_rate(nn)*1e3);
+        titlename = sprintf('IMCL: %0.1f %%',IMCL_rate(nn));
         title({'Correlation of delay curve';titlename})
         colorbar
         savefilename = sprintf('/correlation');
@@ -176,7 +176,7 @@ end
     end
 
 %% •Û‘¶•”
-dst_path2 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_focused/figure');
+dst_path2 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_variousF/figure');
 if ~exist(dst_path2, 'dir')
     mkdir(dst_path2);
 end
@@ -211,7 +211,7 @@ end
     close gcf
     
 
-dst_path3 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_focused/');
+dst_path3 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_variousF/');
 if ~exist(dst_path3, 'dir')
     mkdir(dst_path3);
 end
