@@ -75,7 +75,7 @@ end
 
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
-for mm = 1:num_boundary_depth
+for mm = 1
     for nn = 1:num_IMCL
         
         loadpath = sprintf('H:/data/kwave/result/2018_12_13_layer_medium_various/SA/boundary_%0.1fmm_IMCL%d%%',...
@@ -167,7 +167,7 @@ for mm = 1:num_boundary_depth
             num_sample*4,delay_time_focusing,num_receiver);
                 
         % 画像保存%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_multidepth/2018_12_19_depth%0.1fmmIMCL%d%%',...
+        dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_single_element/2layer/2018_12_19_singledepth/2018_12_19_depth%0.1fmmIMCL%d%%',...
             boundary_depth(mm)*1e3,IMCL_rate(nn));
         if ~exist(dst_path, 'dir')
             mkdir(dst_path);
@@ -208,12 +208,12 @@ for mm = 1:num_boundary_depth
 end
 
 %% 保存部
-dst_path2 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_multidepth/figure');
+dst_path2 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_single_element/2layer/2018_12_19_singledepth/figure');
 if ~exist(dst_path2, 'dir')
     mkdir(dst_path2);
 end
 
-for mm = 1:num_boundary_depth
+for mm = 1
     
     figure;
     plot(correct_velocity(mm,:),estimated_velocity(mm,:),'LineWidth',1);
@@ -249,7 +249,7 @@ for mm = 1:num_boundary_depth
     
 end
 
-dst_path3 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_multidepth/');
+dst_path3 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_single_element/2layer/2018_12_19_singledepth/');
 if ~exist(dst_path3, 'dir')
     mkdir(dst_path3);
 end
