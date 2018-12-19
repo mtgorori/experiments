@@ -128,6 +128,7 @@ for mm = 1%:num_boundary_depth
                 distance_round_trip   = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
                 delay_time_assumed = round(distance_round_trip / assumed_SOS(ll) / (kgrid.dt/4));%[sample]
                 delay_sourcewave     = zeros(num_sample*4, num_receiver);
+                
                 for ii = 1:num_receiver
                     source_wave2cat = interp_sourcewave;
                     source_wave2cat(num_sample*4-delay_time_assumed(ii)+1:end,1)=NaN;
@@ -137,11 +138,16 @@ for mm = 1%:num_boundary_depth
                     correlation(kk,ll) = correlation(kk,ll) + (focused_rfdata(:,ii).'*delay_sourcewave(:,ii)...
                         /sqrt(auto_correlation_rfdata(ii,1)*auto_correlation_source_wave(ii,1)));
                 end
+                
                 correlation(kk,ll) = correlation(kk,ll)/num_receiver;
+                
             end
+            
             dispname = sprintf('estimated depth # is %d, IMCL # is %d, depth #is %d',kk,nn,mm);
             disp(dispname) %#ok<DSPS>
+            
         end
+        
         [~,ind_estimate_v] = max(max(correlation));
         [~,ind_estimate_d] = max(correlation(:,ind_estimate_v));
         estimated_velocity(mm,nn) = assumed_SOS(1,ind_estimate_v);
@@ -151,8 +157,10 @@ for mm = 1%:num_boundary_depth
         for ii = 1:num_transmitter
             distance_from_assumed_point(1,ii) = norm(assumed_point(:,ind_estimate_d)-t_pos(:,ii));%[m]
         end
+        
         distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
         delay_time_assumed = round(distance_round_trip / assumed_SOS(ind_estimate_v) / (kgrid.dt/4));%[sample]
+        
         % 送信フォーカス
         delay_length_focusing = distance_from_assumed_point - min(distance_from_assumed_point);
         delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ind_estimate_v) / (kgrid.dt/4));
@@ -165,6 +173,7 @@ for mm = 1%:num_boundary_depth
         if ~exist(dst_path, 'dir')
             mkdir(dst_path);
         end
+        
         figure;
         imagesc(IMCL_rate,20-assumed_depth*1e3,correlation);
         xlabel('IMCL content[%]')
@@ -176,6 +185,7 @@ for mm = 1%:num_boundary_depth
         savefig([dst_path,savefilename,'.fig'])
         exportfig([dst_path,savefilename],'png',[300,200])
         close gcf
+        
         figure;
         imagesc(focused_rfdata);
         hold on
