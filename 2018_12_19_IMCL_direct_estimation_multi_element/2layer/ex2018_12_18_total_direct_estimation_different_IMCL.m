@@ -75,8 +75,8 @@ end
 
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
-for mm = 1%:num_boundary_depth
-    for nn = 1%:num_IMCL
+for mm = 1:num_boundary_depth
+    for nn = 1:num_IMCL
         
         loadpath = sprintf('H:/data/kwave/result/2018_12_13_layer_medium_various/SA/boundary_%0.1fmm_IMCL%d%%',...
             boundary_depth(mm)*1e3,IMCL_rate(nn));
@@ -95,13 +95,12 @@ for mm = 1%:num_boundary_depth
             for jj = 1:num_receiver
                 delay_transmitted_wave           = round(((abs(t_pos(1,jj) - t_pos(1,ii)))/v_muscle)/(kgrid.dt));
                 rfdata_echo_only(:,jj,ii)            = rfdata(:,jj,ii);
-                rfdata_echo_only(1:delay_transmitted_wave+50,jj,ii)...
-                                                                  = mean(rfdata_echo_only(1:delay_transmitted_wave+50,jj,ii));
+                rfdata_echo_only(1:delay_transmitted_wave+50,jj,ii) = 0;
             end
         end
         
         % 音速推定%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        for  kk = 1:50
+        for  kk = 1:num_assumed_depth
             for ll = 1:num_assumed_SOS
                 
                 for ii = 1:num_transmitter
@@ -168,7 +167,7 @@ for mm = 1%:num_boundary_depth
             num_sample*4,delay_time_focusing,num_receiver);
                 
         % 画像保存%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19/2018_12_19_depth%0.1fmmIMCL%d%%',...
+        dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_multidepth/2018_12_19_depth%0.1fmmIMCL%d%%',...
             boundary_depth(mm)*1e3,IMCL_rate(nn));
         if ~exist(dst_path, 'dir')
             mkdir(dst_path);
@@ -202,11 +201,14 @@ for mm = 1%:num_boundary_depth
         exportfig([dst_path,savefilename],'png',[350,300])
         close gcf
         
+        % 変数保存
+        savefilename = '/result';
+        save([dst_path,savefilename],'correlation','focused_rfdata','ind_estimate_d','ind_estimate_v');
     end
 end
 
 %% 保存部
-dst_path2 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19/figure');
+dst_path2 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_multidepth/figure');
 if ~exist(dst_path2, 'dir')
     mkdir(dst_path2);
 end
@@ -247,9 +249,10 @@ for mm = 1:num_boundary_depth
     
 end
 
-dst_path3 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19/');
+dst_path3 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_multidepth/');
 if ~exist(dst_path3, 'dir')
     mkdir(dst_path3);
 end
 savefilename = sprintf('2018_12_19_all_result');
-save([dst_path3,savefilename])
+save([dst_path3,savefilename],'estimated_IMCL','estimated_velocity',...
+    'v_muscle_with_IMCL','target_element','correct_velocity','IMCL_rate','t_pos');
