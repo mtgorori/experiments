@@ -164,7 +164,7 @@ for mm = 1
         delay_length_focusing = distance_from_assumed_point - min(distance_from_assumed_point);
         delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ind_estimate_v) / (kgrid.dt/4));
         focused_rfdata        = transmit_focus(rfdata_echo_only,target_element,...
-            num_sample*4,delay_time_focusing,num_receiver);
+            num_sample,delay_time_focusing,num_receiver);
                 
         % ‰æ‘œ•Û‘¶%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_single_element/2layer/2018_12_19_singledepth/2018_12_19_depth%0.1fmmIMCL%d%%',...
