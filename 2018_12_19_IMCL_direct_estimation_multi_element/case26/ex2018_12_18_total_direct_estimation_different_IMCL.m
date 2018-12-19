@@ -19,7 +19,7 @@ v_fat        = 1450;%[m/s]
 v_muscle = 1580;%[m/s]
 
 % IMCLäÑçá
-IMCL_rate                  = linspace(0,20,21);%[%]
+IMCL_rate                  = linspace(1,20,20);%[%]
 num_IMCL                  = length(IMCL_rate);
 v_muscle_with_IMCL = v_fat * IMCL_rate/100 + v_muscle*(1-IMCL_rate/100);%ê≥ââπë¨[m/s]
 
