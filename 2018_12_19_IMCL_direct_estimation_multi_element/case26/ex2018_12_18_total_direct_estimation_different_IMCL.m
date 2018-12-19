@@ -88,20 +88,8 @@ end
         for  kk = 1:num_assumed_depth
             for ll = 1:num_assumed_SOS
                 
-                for ii = 1:num_transmitter
-                    distance_from_assumed_point(1,ii) = norm(assumed_point(:,kk)-t_pos(:,ii));%[m]
-                end
-                
                 % 送信フォーカス
-                delay_length_focusing = distance_from_assumed_point - min(distance_from_assumed_point);
-                delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ll) / (kgrid.dt));
-                focused_rfdata        = transmit_focus(rfdata_echo_only,target_element,...
-                    num_sample,delay_time_focusing,num_receiver);
-                interp_rfdata = zeros(num_sample*4,num_receiver);
-                for jj = 1:num_receiver
-                    interp_rfdata(:,jj) = interp1(focused_rfdata(:,jj),linspace(1,num_sample,num_sample*4),'spline');
-                end
-                focused_rfdata = interp_rfdata;
+                [focused_rfdata,distance_from_assumed_point] = transmit_focusing(num_transmitter,assumed_point,t_pos,kk,ll,assumed_SOS,kgrid,rfdata_echo_only,target_element,num_sample,num_receiver);
                 
                 % 自己相関係数の最大値を各信号で求める（rfdata, source wave）
                 auto_correlation_rfdata            = diag(focused_rfdata.' * focused_rfdata);
@@ -138,18 +126,10 @@ end
         estimated_IMCL(1,nn) = 100*((v_muscle-estimated_velocity(1,nn))/(v_muscle-v_fat));
         
         % delay sourcewave と rfdata を重ねて表示するための処理．%%%%%%
-        for ii = 1:num_transmitter
-            distance_from_assumed_point(1,ii) = norm(assumed_point(:,ind_estimate_d)-t_pos(:,ii));%[m]
-        end
-        
+        [focused_rfdata,distance_from_assumed_point] = transmit_focusing(num_transmitter,assumed_point,t_pos,ind_estimate_d,ind_estimate_v,assumed_SOS,kgrid,rfdata_echo_only,target_element,num_sample,num_receiver);
         distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
         delay_time_assumed = round(distance_round_trip / assumed_SOS(ind_estimate_v) / (kgrid.dt/4));%[sample]
         
-        % 送信フォーカス
-        delay_length_focusing = distance_from_assumed_point - min(distance_from_assumed_point);
-        delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ind_estimate_v) / (kgrid.dt/4));
-        focused_rfdata        = transmit_focus(rfdata_echo_only,target_element,...
-            num_sample,delay_time_focusing,num_receiver);
                 
         % 画像保存%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_focused/IMCL%d%%',IMCL_rate(nn));
@@ -233,3 +213,24 @@ end
 savefilename = sprintf('2018_12_19_all_result');
 save([dst_path3,savefilename],'estimated_IMCL','estimated_velocity',...
     'v_muscle_with_IMCL','target_element','correct_velocity','IMCL_rate','t_pos');
+
+%% 関数部
+function [focused_rfdata,distance_from_assumed_point] = transmit_focusing(num_transmitter,assumed_point,t_pos,kk,ll,assumed_SOS,kgrid,rfdata_echo_only,target_element,num_sample,num_receiver)
+       distance_from_assumed_point = zeros(1,num_transmitter);
+
+    for ii = 1:num_transmitter
+        distance_from_assumed_point(1,ii) = norm(assumed_point(:,kk)-t_pos(:,ii));%[m]
+    end
+
+    delay_length_focusing = distance_from_assumed_point - min(distance_from_assumed_point);
+    delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ll) / (kgrid.dt));
+    focused_rfdata        = transmit_focus(rfdata_echo_only,target_element,...
+        num_sample,delay_time_focusing,num_receiver);
+    interp_rfdata = zeros(num_sample*4,num_receiver);
+
+    for jj = 1:num_receiver
+        interp_rfdata(:,jj) = interp1(focused_rfdata(:,jj),linspace(1,num_sample,num_sample*4),'spline');
+    end
+
+    focused_rfdata = interp_rfdata;
+end
