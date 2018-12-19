@@ -103,8 +103,8 @@ for mm = 1%:num_boundary_depth
         end
         
         % âπë¨êÑíË%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        for  kk = 41%:num_assumed_depth
-            for ll = 1%:num_assumed_SOS
+        for  kk = 1:num_assumed_depth
+            for ll = 1:num_assumed_SOS
                 
                 for ii = 1:num_transmitter
                     distance_from_assumed_point(1,ii) = norm(assumed_point(:,kk)-t_pos(:,ii));%[m]
