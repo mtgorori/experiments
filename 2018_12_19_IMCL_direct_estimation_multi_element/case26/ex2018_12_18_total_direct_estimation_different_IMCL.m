@@ -1,19 +1,18 @@
 %%%%%%%%%%%%%%%%%%%%
-% 対象：二層媒質
+% 対象：case26
 % 波面遅延プロファイルにより音速推定
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関
 % を用いて音速を推定する
 % 媒質   IMCL0%~20%(21種類)
-% 深さ:5mm
 %%%%%%%%%%%%%%%%%%%%
 
 %% 初期設定（共通）
 clear
 dst_path = sprintf('H:/result/2018_12_06_IMCL_direct_estimation');
 load("H:/data/kwave/config/t_pos_2board.mat");
-load("H:\data\kwave\medium\2018_11_07_layer_medium\Layer_medium_boundary_5.0mm_ IMCL0%.mat")
-load("H:\data\kwave\result\2018_12_13_layer_medium_various\SA\boundary_5.0mm_IMCL0%\rfdata.mat")
-load("H:\data\kwave\result\2018_12_13_layer_medium_various\SA\boundary_5.0mm_IMCL0%\kgrid.mat")
+load("H:\data\kwave\medium\2018_09_28_realisticScatter_variousIMCL\corrected\case26_IMCL0.0_pure.mat")
+load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\rfdata.mat")
+load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\kgrid.mat")
 
 % 音速値
 v_fat        = 1450;%[m/s]
@@ -24,24 +23,12 @@ IMCL_rate                  = linspace(0,20,21);%[%]
 num_IMCL                  = length(IMCL_rate);
 v_muscle_with_IMCL = v_fat * IMCL_rate/100 + v_muscle*(1-IMCL_rate/100);%正解音速[m/s]
 
-% 媒質境界位置
-boundary_depth          = linspace(15,0,4)*1e-3;
-num_boundary_depth = length(boundary_depth);
-ind_boundary_depth   = zeros(num_boundary_depth,1);% kgrid上では境界位置はどのインデックスで表されるかをもとめる．
-for i = 1:num_boundary_depth
-    ind_boundary_depth(i) = find(single(kgrid.x_vec) == single(boundary_depth(i)));
-end
-boundary_point         = zeros(2,num_boundary_depth);
-boundary_point(1,:) = t_pos(1,51);%送信フォーカス点
-boundary_point(2,:) = kgrid.x_vec(ind_boundary_depth);
-boundary_depth       = (20 - linspace(15,0,4))*1e-3;% 実際の境界厚さ
-
 % 探索位置
 assumed_depth          = 19e-3:-kgrid.dx:0;
 num_assumed_depth = length(assumed_depth);
 ind_assumed_depth   = zeros(num_assumed_depth,1);% kgrid上では境界位置はどのインデックスで表されるかをもとめる．
 for i = 1:num_assumed_depth
-    ind_assumed_depth(i) = find(single(kgrid.x_vec) == single(assumed_depth(i)));
+    ind_assumed_depth(i) = find(multi(kgrid.x_vec) == single(assumed_depth(i)));
 end
 assumed_point         = zeros(2,num_assumed_depth);
 assumed_point(1,:) = t_pos(1,51);%送信フォーカス点
@@ -64,22 +51,20 @@ delay_time_assumed                = zeros(1,num_transmitter);
 assumed_SOS           = v_muscle:-1:v_muscle_with_IMCL(end);
 num_assumed_SOS  = length(v_muscle_with_IMCL(end):v_muscle);
 correlation                = zeros(num_assumed_depth,num_assumed_SOS);
-estimated_velocity   = zeros(num_boundary_depth,num_IMCL);
-estimated_IMCL       = zeros(num_boundary_depth,num_IMCL);
+estimated_velocity   = zeros(1,num_IMCL);
+estimated_IMCL       = zeros(1,num_IMCL);
 
 % 正解値
-correct_velocity = zeros(num_boundary_depth,num_IMCL);
+correct_velocity = zeros(1,num_IMCL);
 for i = 1:num_IMCL
     correct_velocity(:,i) = v_muscle_with_IMCL(i);
 end
 
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
-for mm = 1
     for nn = 1:num_IMCL
         
-        loadpath = sprintf('H:/data/kwave/result/2018_12_13_layer_medium_various/SA/boundary_%0.1fmm_IMCL%d%%',...
-            boundary_depth(mm)*1e3,IMCL_rate(nn));
+        loadpath = sprintf('H:/data/kwave/result/2018_11_11_case26_variousIMCL/case26_IMCL%0.1f_pure',IMCL_rate(nn));
         load([loadpath,'/rfdata.mat'])
         load([loadpath,'/kgrid.mat'])
         load([loadpath,'/sourse_wave.mat'])
@@ -142,15 +127,15 @@ for mm = 1
                 
             end
             
-            dispname = sprintf('estimated depth # is %d, IMCL # is %d, depth #is %d',kk,nn,mm);
+            dispname = sprintf('estimated depth # is %d, IMCL # is %d',kk,nn);
             disp(dispname) %#ok<DSPS>
             
         end
         
         [~,ind_estimate_v] = max(max(correlation));
         [~,ind_estimate_d] = max(correlation(:,ind_estimate_v));
-        estimated_velocity(mm,nn) = assumed_SOS(1,ind_estimate_v);
-        estimated_IMCL(mm,nn) = 100*((v_muscle-estimated_velocity(mm,nn))/(v_muscle-v_fat));
+        estimated_velocity(1,nn) = assumed_SOS(1,ind_estimate_v);
+        estimated_IMCL(1,nn) = 100*((v_muscle-estimated_velocity(1,nn))/(v_muscle-v_fat));
         
         % delay sourcewave と rfdata を重ねて表示するための処理．%%%%%%
         for ii = 1:num_transmitter
@@ -167,8 +152,7 @@ for mm = 1
             num_sample*4,delay_time_focusing,num_receiver);
                 
         % 画像保存%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_single_element/2layer/2018_12_19_singledepth/2018_12_19_depth%0.1fmmIMCL%d%%',...
-            boundary_depth(mm)*1e3,IMCL_rate(nn));
+        dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_focused/IMCL%d%%',IMCL_rate(nn));
         if ~exist(dst_path, 'dir')
             mkdir(dst_path);
         end
@@ -177,7 +161,7 @@ for mm = 1
         imagesc(IMCL_rate,20-assumed_depth*1e3,correlation);
         xlabel('IMCL content[%]')
         ylabel('depth[mm]')
-        titlename = sprintf('IMCL: %d %%, depth: %0.1f mm',IMCL_rate(nn),boundary_depth(mm)*1e3);
+        titlename = sprintf('IMCL: %d %%',IMCL_rate(nn)*1e3);
         title({'Correlation of delay curve';titlename})
         colorbar
         savefilename = sprintf('/correlation');
@@ -205,51 +189,44 @@ for mm = 1
         savefilename = '/result';
         save([dst_path,savefilename],'correlation','focused_rfdata','ind_estimate_d','ind_estimate_v');
     end
-end
 
 %% 保存部
-dst_path2 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_single_element/2layer/2018_12_19_singledepth/figure');
+dst_path2 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_focused/figure');
 if ~exist(dst_path2, 'dir')
     mkdir(dst_path2);
 end
 
-for mm = 1
     
     figure;
-    plot(correct_velocity(mm,:),estimated_velocity(mm,:),'LineWidth',1);
+    plot(correct_velocity(1,:),estimated_velocity(1,:),'LineWidth',1);
     hold on
-    plot(correct_velocity(mm,:),correct_velocity(mm,:),'k--','LineWidth',0.25);
+    plot(correct_velocity(1,:),correct_velocity(1,:),'k--','LineWidth',0.25);
     hold off
     xlabel('correct velocity [m/s]')
     ylabel('estimated velocity [m/s]')
-    titlename = sprintf('depth: %0.1f mm',boundary_depth(mm)*1e3);
-    title(titlename)
     xlim([v_fat*0.2+v_muscle*0.8 v_muscle])
     ylim([v_fat*0.2+v_muscle*0.8 v_muscle])
-    savefilename = sprintf('/velocity_depth_%0.1f mm',boundary_depth(mm)*1e3);
+    savefilename = sprintf('/velocity');
     savefig([dst_path2,savefilename,'.fig'])
     exportfig([dst_path2,savefilename],'png',[300,300])
     close gcf
     
     figure;
-    plot(IMCL_rate(1,:),estimated_IMCL(mm,:),'LineWidth',1);
+    plot(IMCL_rate(1,:),estimated_IMCL(1,:),'LineWidth',1);
     hold on
     plot(IMCL_rate(1,:),IMCL_rate(1,:),'k--','LineWidth',0.25);
     hold off
     xlabel('correct IMCL content [%]')
     ylabel('estimated IMCL content [%]')
-    titlename = sprintf('depth: %0.1f mm',boundary_depth(mm)*1e3);
-    title(titlename)
     xlim([0 20])
     ylim([0 20])
-    savefilename = sprintf('/IMCL_depth_%0.1f mm',boundary_depth(mm)*1e3);
+    savefilename = sprintf('/IMCL');
     savefig([dst_path2,savefilename,'.fig'])
     exportfig([dst_path2,savefilename],'png',[300,300])
     close gcf
     
-end
 
-dst_path3 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_single_element/2layer/2018_12_19_singledepth/');
+dst_path3 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_focused/');
 if ~exist(dst_path3, 'dir')
     mkdir(dst_path3);
 end
