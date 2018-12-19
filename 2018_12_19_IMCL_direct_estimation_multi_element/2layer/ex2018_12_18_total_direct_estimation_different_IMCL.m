@@ -89,12 +89,10 @@ for mm = 1%:num_boundary_depth
         % サンプル数を4倍にするためにスプライン補間
         interp_sourcewave                     = interp1(source_wave,linspace(1,num_sample,num_sample*4)','spline');
         [~,offset_interp_sourcewave]   = max(interp_sourcewave);% 送信波形の最大値を取る点．遅延曲線に散布図を重ね合わせることに使う．
-%         interp_rfdata                              = zeros(num_sample*4,num_receiver,num_transmitter);
         rfdata_echo_only                       = zeros(num_sample,num_receiver,num_transmitter);
 
         for ii = 1:num_transmitter
             for jj = 1:num_receiver
-%                 interp_rfdata(:,jj,ii)                   = interp1(rfdata(:,jj,ii),linspace(1,num_sample,num_sample*4),'spline');
                 delay_transmitted_wave           = round(((abs(t_pos(1,jj) - t_pos(1,ii)))/v_muscle)/(kgrid.dt));
                 rfdata_echo_only(:,jj,ii)            = rfdata(:,jj,ii);
                 rfdata_echo_only(1:delay_transmitted_wave+50,jj,ii)...
@@ -182,7 +180,7 @@ for mm = 1%:num_boundary_depth
         imagesc(focused_rfdata);
         hold on
         scatter(1:num_transmitter,delay_time_assumed+offset_interp_sourcewave,'r.')
-        caxis([0 0.2])
+        caxis([min(min(focused_rfdata))/5 max(max(focused_rfdata))/5])
         ylim([min(delay_time_assumed) max(delay_time_assumed+2*offset_interp_sourcewave)])
         xlabel('element number')
         ylabel('time[sample]')
