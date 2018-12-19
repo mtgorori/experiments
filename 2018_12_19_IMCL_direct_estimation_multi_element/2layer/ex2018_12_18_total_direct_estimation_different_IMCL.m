@@ -74,7 +74,7 @@ end
 
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
-for mm = 1:num_boundary_depth
+for mm = 1
     for nn = 1:num_IMCL
         
         loadpath = sprintf('H:/data/kwave/result/2018_12_13_layer_medium_various/SA/boundary_%0.1fmm_IMCL%d%%',...
@@ -193,7 +193,7 @@ if ~exist(dst_path2, 'dir')
     mkdir(dst_path2);
 end
 
-for mm = 1:num_boundary_depth
+for mm = 1
     
     figure;
     plot(correct_velocity(mm,:),estimated_velocity(mm,:),'LineWidth',1);
