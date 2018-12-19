@@ -162,7 +162,10 @@ end
 
 for mm = 1:num_boundary_depth
     figure;
-    plot(correct_velocity(mm,:),estimated_velocity(mm,:));
+    plot(correct_velocity(mm,:),estimated_velocity(mm,:),'LineWidth',1);
+    hold on
+    plot(correct_velocity(mm,:),correct_velocity(mm,:),'k--','LineWidth',0.25);
+    hold off
     xlabel('correct velocity [m/s]')
     ylabel('estimated velocity [m/s]')
     titlename = sprintf('depth: %0.1f mm',boundary_depth(mm)*1e3);
@@ -174,7 +177,10 @@ for mm = 1:num_boundary_depth
     exportfig([dst_path2,savefilename],'png',[300,300])
     close gcf
     figure;
-    plot(IMCL_rate(1,:),estimated_IMCL(mm,:));
+    plot(IMCL_rate(1,:),estimated_IMCL(mm,:),'LineWidth',1);
+    hold on
+    plot(IMCL_rate(1,:),IMCL_rate(1,:),'k--','LineWidth',0.25);
+    hold off
     xlabel('correct IMCL content [%]')
     ylabel('estimated IMCL content [%]')
     titlename = sprintf('depth: %0.1f mm',boundary_depth(mm)*1e3);
