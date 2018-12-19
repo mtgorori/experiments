@@ -167,13 +167,14 @@ for mm = 1:num_boundary_depth
     ylabel('estimated velocity [m/s]')
     titlename = sprintf('depth: %0.1f mm',boundary_depth(mm)*1e3);
     title(titlename)
-    xlim([v_fat v_muscle])
+    xlim([v_fat*0.2+v_muscle*0.8 v_muscle])
+    ylim([v_fat*0.2+v_muscle*0.8 v_muscle])
     savefilename = sprintf('/velocity_depth_%0.1f mm',boundary_depth(mm)*1e3);
     savefig([dst_path2,savefilename,'.fig'])
     exportfig([dst_path2,savefilename],'png',[300,300])
     close gcf
     figure;
-    plot(IMCL_rate(1,mm),estimated_IMCL(mm,:));
+    plot(IMCL_rate(1,:),estimated_IMCL(mm,:));
     xlabel('correct IMCL content [%]')
     ylabel('estimated IMCL content [%]')
     titlename = sprintf('depth: %0.1f mm',boundary_depth(mm)*1e3);
