@@ -28,7 +28,7 @@ assumed_depth          = 19e-3:-kgrid.dx:0;
 num_assumed_depth = length(assumed_depth);
 ind_assumed_depth   = zeros(num_assumed_depth,1);% kgrid上では境界位置はどのインデックスで表されるかをもとめる．
 for i = 1:num_assumed_depth
-    ind_assumed_depth(i) = find(multi(kgrid.x_vec) == single(assumed_depth(i)));
+    ind_assumed_depth(i) = find(single(kgrid.x_vec) == single(assumed_depth(i)));
 end
 assumed_point         = zeros(2,num_assumed_depth);
 assumed_point(1,:) = t_pos(1,51);%送信フォーカス点
