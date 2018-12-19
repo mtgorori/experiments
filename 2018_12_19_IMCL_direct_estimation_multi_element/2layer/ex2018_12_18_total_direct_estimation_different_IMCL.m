@@ -89,16 +89,16 @@ for mm = 1%:num_boundary_depth
         % サンプル数を4倍にするためにスプライン補間
         interp_sourcewave                     = interp1(source_wave,linspace(1,num_sample,num_sample*4)','spline');
         [~,offset_interp_sourcewave]   = max(interp_sourcewave);% 送信波形の最大値を取る点．遅延曲線に散布図を重ね合わせることに使う．
-        interp_rfdata                              = zeros(num_sample*4,num_receiver,num_transmitter);
-        rfdata_echo_only                       = zeros(num_sample*4,num_receiver,num_transmitter);
+%         interp_rfdata                              = zeros(num_sample*4,num_receiver,num_transmitter);
+        rfdata_echo_only                       = zeros(num_sample,num_receiver,num_transmitter);
 
         for ii = 1:num_transmitter
             for jj = 1:num_receiver
-                interp_rfdata(:,jj,ii)                   = interp1(rfdata(:,jj,ii),linspace(1,num_sample,num_sample*4),'spline');
-                delay_transmitted_wave           = round(((abs(t_pos(1,jj) - t_pos(1,ii)))/v_muscle)/(kgrid.dt/4));
-                rfdata_echo_only(:,jj,ii)            = interp_rfdata(:,jj,ii);
-                rfdata_echo_only(1:delay_transmitted_wave+200,jj,ii)...
-                                                                  = mean(rfdata_echo_only(1:delay_transmitted_wave+200,jj,ii));
+%                 interp_rfdata(:,jj,ii)                   = interp1(rfdata(:,jj,ii),linspace(1,num_sample,num_sample*4),'spline');
+                delay_transmitted_wave           = round(((abs(t_pos(1,jj) - t_pos(1,ii)))/v_muscle)/(kgrid.dt));
+%                 rfdata_echo_only(:,jj,ii)            = interp_rfdata(:,jj,ii);
+                rfdata_echo_only(1:delay_transmitted_wave+50,jj,ii)...
+                                                                  = mean(rfdata_echo_only(1:delay_transmitted_wave+50,jj,ii));
             end
         end
         
@@ -112,9 +112,14 @@ for mm = 1%:num_boundary_depth
                 
                 % 送信フォーカス
                 delay_length_focusing = distance_from_assumed_point - min(distance_from_assumed_point);
-                delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ll) / (kgrid.dt/4));
+                delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ll) / (kgrid.dt));
                 focused_rfdata        = transmit_focus(rfdata_echo_only,target_element,...
-                    num_sample*4,delay_time_focusing,num_receiver);
+                    num_sample,delay_time_focusing,num_receiver);
+                interp_rfdata = zeros(num_sample*4,num_receiver);
+                for jj = 1:num_receiver
+                    interp_rfdata(:,jj) = interp1(focused_rfdata(:,jj),linspace(1,num_sample,num_sample*4),'spline');
+                end
+                focused_rfdata = interp_rfdata;
                 
                 % 自己相関係数の最大値を各信号で求める（rfdata, source wave）
                 auto_correlation_rfdata            = diag(focused_rfdata.' * focused_rfdata);
