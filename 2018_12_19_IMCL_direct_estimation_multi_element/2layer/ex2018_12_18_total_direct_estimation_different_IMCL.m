@@ -51,7 +51,7 @@ assumed_point(2,:) = kgrid.x_vec(ind_assumed_depth);
 t_facing_distance      = 0.04;%[m]
 [~,num_receiver,~]  = size(rfdata);
 num_transmitter        = num_receiver/2;
-num_receiver             = num_receiver/2; 
+num_receiver             = num_receiver/2;
 element_pitch           = abs(t_pos(1,1) - t_pos(1,2));
 target_element         = linspace(1,num_transmitter,num_transmitter);
 
@@ -90,7 +90,7 @@ for mm = 1
         interp_sourcewave                     = interp1(source_wave,linspace(1,num_sample,num_sample*4)','spline');
         [~,offset_interp_sourcewave]   = max(interp_sourcewave);% 送信波形の最大値を取る点．遅延曲線に散布図を重ね合わせることに使う．
         rfdata_echo_only                       = zeros(num_sample,num_receiver,num_transmitter);
-
+        
         for ii = 1:num_transmitter
             for jj = 1:num_receiver
                 delay_transmitted_wave           = round(((abs(t_pos(1,jj) - t_pos(1,ii)))/v_muscle)/(kgrid.dt));
@@ -162,10 +162,14 @@ for mm = 1
         
         % 送信フォーカス
         delay_length_focusing = distance_from_assumed_point - min(distance_from_assumed_point);
-        delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ind_estimate_v) / (kgrid.dt/4));
+        delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ind_estimate_v) / kgrid.dt);
         focused_rfdata        = transmit_focus(rfdata_echo_only,target_element,...
             num_sample,delay_time_focusing,num_receiver);
-                
+        interp_rfdata = zeros(num_sample*4,num_receiver);
+        for jj = 1:num_receiver
+            interp_rfdata(:,jj) = interp1(focused_rfdata(:,jj),linspace(1,num_sample,num_sample*4),'spline');
+        end
+        focused_rfdata = interp_rfdata;
         % 画像保存%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_single_element/2layer/2018_12_19_singledepth/2018_12_19_depth%0.1fmmIMCL%d%%',...
             boundary_depth(mm)*1e3,IMCL_rate(nn));
