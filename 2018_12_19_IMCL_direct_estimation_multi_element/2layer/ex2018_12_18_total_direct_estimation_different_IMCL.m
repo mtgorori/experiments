@@ -147,7 +147,7 @@ for mm = 1
         delay_time_assumed = round(distance_round_trip / assumed_SOS(ind_estimate_v) / (kgrid.dt/4));%[sample]
         
         % ‰æ‘œ•Û‘¶%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_multidepth/2018_12_19_depth%0.1fmmIMCL%d%%',...
+        dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_singledepth/2018_12_19_depth%0.1fmmIMCL%d%%',...
             boundary_depth(mm)*1e3,IMCL_rate(nn));
         if ~exist(dst_path, 'dir')
             mkdir(dst_path);
@@ -188,7 +188,7 @@ for mm = 1
 end
 
 %% •Û‘¶•”
-dst_path2 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_multidepth/figure');
+dst_path2 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_singledepth/figure');
 if ~exist(dst_path2, 'dir')
     mkdir(dst_path2);
 end
@@ -229,7 +229,7 @@ for mm = 1
     
 end
 
-dst_path3 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_multidepth/');
+dst_path3 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19_singledepth/');
 if ~exist(dst_path3, 'dir')
     mkdir(dst_path3);
 end
