@@ -113,11 +113,11 @@ for mm = 1%:num_boundary_depth
                 % 送信フォーカス
                 delay_length_focusing = distance_from_assumed_point - min(distance_from_assumed_point);
                 delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ll) / (kgrid.dt/4));
-                rfdata_echo_only        = transmit_focus(rfdata_echo_only,target_element,...
+                focused_rfdata        = transmit_focus(rfdata_echo_only,target_element,...
                     num_sample*4,delay_time_focusing,num_receiver);
                 
                 % 自己相関係数の最大値を各信号で求める（rfdata, source wave）
-                auto_correlation_rfdata            = diag(rfdata_echo_only.' * rfdata_echo_only);
+                auto_correlation_rfdata            = diag(focused_rfdata.' * focused_rfdata);
                 auto_correlation_source_wave = interp_sourcewave.' * interp_sourcewave;
                 auto_correlation_source_wave = repmat(auto_correlation_source_wave,num_receiver,1);
                 
@@ -131,7 +131,7 @@ for mm = 1%:num_boundary_depth
                     source_wave2cat(isnan(source_wave2cat)) = [];
                     delay_sourcewave(:,ii) = cat(1,zeros(delay_time_assumed(ii),1),source_wave2cat);
                     % 相互相関の積算
-                    correlation(kk,ll) = correlation(kk,ll) + (rfdata_echo_only(:,ii).'*delay_sourcewave(:,ii)...
+                    correlation(kk,ll) = correlation(kk,ll) + (focused_rfdata(:,ii).'*delay_sourcewave(:,ii)...
                         /sqrt(auto_correlation_rfdata(ii,1)*auto_correlation_source_wave(ii,1)));
                 end
                 correlation(kk,ll) = correlation(kk,ll)/num_receiver;
@@ -150,7 +150,12 @@ for mm = 1%:num_boundary_depth
         end
         distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
         delay_time_assumed = round(distance_round_trip / assumed_SOS(ind_estimate_v) / (kgrid.dt/4));%[sample]
-        
+        % 送信フォーカス
+        delay_length_focusing = distance_from_assumed_point - min(distance_from_assumed_point);
+        delay_time_focusing    = round(delay_length_focusing/ assumed_SOS(ind_estimate_v) / (kgrid.dt/4));
+        focused_rfdata        = transmit_focus(rfdata_echo_only,target_element,...
+            num_sample*4,delay_time_focusing,num_receiver);
+                
         % 画像保存%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/2layer/2018_12_19/2018_12_19_depth%0.1fmmIMCL%d%%',...
             boundary_depth(mm)*1e3,IMCL_rate(nn));
@@ -169,7 +174,7 @@ for mm = 1%:num_boundary_depth
         exportfig([dst_path,savefilename],'png',[300,200])
         close gcf
         figure;
-        imagesc(rfdata_echo_only);
+        imagesc(focused_rfdata);
         hold on
         scatter(1:num_transmitter,delay_time_assumed+offset_interp_sourcewave,'r.')
         caxis([0 0.2])
