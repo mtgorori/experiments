@@ -25,16 +25,16 @@ num_IMCL                  = length(IMCL_rate);
 v_muscle_with_IMCL = v_fat * IMCL_rate/100 + v_muscle*(1-IMCL_rate/100);%正解音速[m/s]
 
 % 媒質境界位置
-boundary_depth          = linspace(19,0,20)*1e-3;
+boundary_depth          = linspace(15,0,4)*1e-3;
 num_boundary_depth = length(boundary_depth);
 ind_boundary_depth   = zeros(num_boundary_depth,1);% kgrid上では境界位置はどのインデックスで表されるかをもとめる．
 for i = 1:num_boundary_depth
     ind_boundary_depth(i) = find(single(kgrid.x_vec) == single(boundary_depth(i)));
 end
 boundary_point         = zeros(2,num_boundary_depth);
-boundary_point(1,:) = t_pos(1,51);
+boundary_point(1,:) = t_pos(1,51);%送信フォーカス点
 boundary_point(2,:) = kgrid.x_vec(ind_boundary_depth);
-boundary_depth       = (20 - linspace(19,0,20))*1e-3;% 実際の境界厚さ
+boundary_depth       = (20 - linspace(15,0,4))*1e-3;% 実際の境界厚さ
 
 % 探索位置
 assumed_depth          = 19e-3:-kgrid.dx:0;
@@ -44,7 +44,7 @@ for i = 1:num_assumed_depth
     ind_assumed_depth(i) = find(single(kgrid.x_vec) == single(assumed_depth(i)));
 end
 assumed_point         = zeros(2,num_assumed_depth);
-assumed_point(1,:) = t_pos(1,51);
+assumed_point(1,:) = t_pos(1,51);%送信フォーカス点
 assumed_point(2,:) = kgrid.x_vec(ind_assumed_depth);
 
 % 素子配置
@@ -74,10 +74,10 @@ end
 
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
-for mm = 1:num_boundary_depth
-    for nn = 1:num_IMCL
+for mm = 1%:num_boundary_depth
+    for nn = 1%:num_IMCL
         
-        loadpath = sprintf('H:/data/kwave/result/2018_12_14_point_medium_various/boundary_%0.1fmm_IMCL%d%%',...
+        loadpath = sprintf('H:/data/kwave/result/2018_12_13_layer_medium_various/SA/boundary_%0.1fmm_IMCL%d%%',...
             boundary_depth(mm)*1e3,IMCL_rate(nn));
         load([loadpath,'/rfdata.mat'])
         load([loadpath,'/kgrid.mat'])
@@ -107,9 +107,11 @@ for mm = 1:num_boundary_depth
         % 音速推定%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         for  kk = 1:num_assumed_depth
             for ll = 1:num_assumed_SOS
+           
                 for ii = 1:num_receiver
                     distance_from_assumed_point(1,ii) = norm(assumed_point(:,kk)-t_pos(:,ii));%[m]
                 end
+           
                 % 送信フォーカス
                 distance_round_trip   = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
                 delay_time_assumed = round(distance_round_trip / assumed_SOS(ll) / (kgrid.dt/4));%[sample]
