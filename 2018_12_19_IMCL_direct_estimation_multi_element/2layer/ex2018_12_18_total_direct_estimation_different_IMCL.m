@@ -91,8 +91,7 @@ for mm = 1%:num_boundary_depth
         [~,offset_interp_sourcewave]   = max(interp_sourcewave);% 送信波形の最大値を取る点．遅延曲線に散布図を重ね合わせることに使う．
         interp_rfdata                              = zeros(num_sample*4,num_receiver,num_transmitter);
         rfdata_echo_only                       = zeros(num_sample*4,num_receiver,num_transmitter);
-        auto_correlation_rfdata             = zeros(num_receiver,num_transmitter);
-        
+
         for ii = 1:num_transmitter
             for jj = 1:num_receiver
                 interp_rfdata(:,jj,ii)                   = interp1(rfdata(:,jj,ii),linspace(1,num_sample,num_sample*4),'spline');
@@ -101,36 +100,41 @@ for mm = 1%:num_boundary_depth
                 rfdata_echo_only(1:delay_transmitted_wave+200,jj,ii)...
                                                                   = mean(rfdata_echo_only(1:delay_transmitted_wave+200,jj,ii));
             end
-            auto_correlation_rfdata(:,ii)         = diag(rfdata_echo_only(:,:,ii).' * rfdata_echo_only(:,:,ii));
         end
         
-        auto_correlation_source_wave  = interp_sourcewave.' * interp_sourcewave;
-        auto_correlation_source_wave  = repmat(auto_correlation_source_wave,num_receiver,num_transmitter);
-        delay_sourcewave                      = repmat(interp_sourcewave,num_receiver,num_transmitter);
-        
         % 音速推定%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        for  kk = 1:num_assumed_depth
-            for ll = 1:num_assumed_SOS
+        for  kk = 41%:num_assumed_depth
+            for ll = 1%:num_assumed_SOS
                 
                 for ii = 1:num_transmitter
                     distance_from_assumed_point(1,ii) = norm(assumed_point(:,kk)-t_pos(:,ii));%[m]
                 end
                 
                 % 送信フォーカス
+                delay_length_focusing = distance_from_assumed_point - min(distance_from_assumed_point);
+                delay_time_focusing    = round(delay_length_focusing) / assumed_SOS(ll) / (kgrid.dt/4);
+                rfdata_echo_only        = transmit_focus(rfdata_echo_only,target_element,...
+                    num_sample*4,delay_time_focusing,num_receiver);
+                
+                % 自己相関係数の最大値を各信号で求める（rfdata, source wave）
+                auto_correlation_rfdata            = diag(rfdata_echo_only.' * rfdata_echo_only);
+                auto_correlation_source_wave = interp_sourcewave.' * interp_sourcewave;
+                auto_correlation_source_wave = repmat(auto_correlation_source_wave,num_receiver,1);
+                
+                % 遅延プロファイルの仮定
                 distance_round_trip   = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
                 delay_time_assumed = round(distance_round_trip / assumed_SOS(ll) / (kgrid.dt/4));%[sample]
-                rfdata_echo_only       = transmit_focus(rfdata_echo_only,target_element,...
-                    num_sample*4,delay_time_assumed,num_transmitter);
-                
-                for ii = 1:num_transmitter
+                delay_sourcewave     = zeros(num_sample*4, num_receiver);
+                for ii = 1:num_receiver
                     source_wave2cat = interp_sourcewave;
                     source_wave2cat(num_sample*4-delay_time_assumed(ii)+1:end,1)=NaN;
                     source_wave2cat(isnan(source_wave2cat)) = [];
                     delay_sourcewave(:,ii) = cat(1,zeros(delay_time_assumed(ii),1),source_wave2cat);
+                    % 相互相関の積算
                     correlation(kk,ll) = correlation(kk,ll) + (rfdata_echo_only(:,ii).'*delay_sourcewave(:,ii)...
                         /sqrt(auto_correlation_rfdata(ii,1)*auto_correlation_source_wave(ii,1)));
                 end
-                correlation(kk,ll) = correlation(kk,ll)/num_transmitter;
+                correlation(kk,ll) = correlation(kk,ll)/num_receiver;
             end
             dispname = sprintf('estimated depth # is %d, IMCL # is %d, depth #is %d',kk,nn,mm);
             disp(dispname) %#ok<DSPS>
