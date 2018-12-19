@@ -48,16 +48,16 @@ assumed_point(1,:) = t_pos(1,51);%送信フォーカス点
 assumed_point(2,:) = kgrid.x_vec(ind_assumed_depth);
 
 % 素子配置
-t_facing_distance      = 0.04;%[m]
+t_facing_distance   = 0.04;%[m]
 [~,num_receiver,~]  = size(rfdata);
-num_transmitter        = num_receiver/2;
-element_pitch           = abs(t_pos(1,1) - t_pos(1,2));
-target_element         = linspace(1,num_transmitter,num_transmitter);
+num_receiver         = num_receiver/2;
+element_pitch        = abs(t_pos(1,1) - t_pos(1,2));
+target_element      = linspace(1,num_receiver,num_receiver);
 
 % 遅延プロファイル
-distance_from_assumed_point = zeros(1,num_transmitter);
-distance_round_trip                  = zeros(1,num_transmitter);
-delay_time_assumed                = zeros(1,num_transmitter);
+distance_from_assumed_point = zeros(1,num_receiver);
+distance_round_trip                  = zeros(1,num_receiver);
+delay_time_assumed                = zeros(1,num_receiver);
 
 % 推定値
 assumed_SOS           = v_muscle:-1:v_muscle_with_IMCL(end);
@@ -86,41 +86,42 @@ for mm = 1%:num_boundary_depth
         
         % rfデータ整形%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % サンプル数を4倍にするためにスプライン補間
-        interp_sourcewave                     = interp1(source_wave,linspace(1,num_sample,num_sample*4)','spline');
-        [~,offset_interp_sourcewave]   = max(interp_sourcewave);% 送信波形の最大値を取る点．遅延曲線に散布図を重ね合わせることに使う．
-        interp_rfdata                              = zeros(num_sample*4,num_receiver,num_transmitter);
-        rfdata_echo_only                       = zeros(num_sample*4,num_receiver,num_transmitter);
+        interp_sourcewave = interp1(source_wave,linspace(1,num_sample,num_sample*4)','spline');
+        [~,offset_interp_sourcewave] = max(interp_sourcewave);% 送信波形の最大値を取る点．遅延曲線に散布図を重ね合わせることに使う．
+        interp_rfdata = zeros(num_sample*4,num_receiver);
+        rfdata_echo_only = zeros(num_sample*4,num_receiver);
+        delay_transmitted_wave = zeros(1,num_receiver);
         
-        for ii = 1:num_transmitter
-            for jj = 1:num_receiver
-                interp_rfdata(:,jj,ii)                   = interp1(rfdata(:,jj,ii),linspace(1,num_sample,num_sample*4),'spline');
-                delay_transmitted_wave           = round(((abs(t_pos(1,jj) - t_pos(1,ii)))/v_muscle)/(kgrid.dt/4));
-                rfdata_echo_only(:,jj,ii)            = interp_rfdata(:,jj,ii);
-                rfdata_echo_only(1:delay_transmitted_wave+200,jj,ii)...
-                                                                  = mean(rfdata_echo_only(1:delay_transmitted_wave+200,jj,ii));
-            end
+        for jj = 1:num_receiver
+            interp_rfdata(:,jj) = interp1(rfdata(:,jj),linspace(1,num_sample,num_sample*4),'spline');
+            delay_transmitted_wave(1,jj) = round(((abs(assumed_point(1,1) - t_pos(1,jj)))/v_muscle)/(kgrid.dt/4));
+            rfdata_echo_only(:,jj) = interp_rfdata(:,jj);
+            rfdata_echo_only(1:delay_transmitted_wave(1,jj)+200,jj) = mean(rfdata_echo_only(1:delay_transmitted_wave(1,jj)+200,jj));
         end
         
-        auto_correlation_rfdata              = diag(rfdata_echo_only.' * rfdata_echo_only);
-        auto_correlation_source_wave  = interp_sourcewave.' * interp_sourcewave;
-        auto_correlation_source_wave  = repmat(auto_correlation_source_wave,length(auto_correlation_rfdata),1);
-        delay_sourcewave                      = repmat(interp_sourcewave,1,num_transmitter);
+        rfdata = rfdata_echo_only;
+        num_sample = num_sample * 4;
+        
+        auto_correlation_rfdata = diag(rfdata_echo_only.' * rfdata_echo_only);
+        auto_correlation_source_wave = interp_sourcewave.' * interp_sourcewave;
+        auto_correlation_source_wave = repmat(auto_correlation_source_wave,length(auto_correlation_rfdata),1);
+        delay_sourcewave = repmat(interp_sourcewave,1,num_receiver);
         
         % 音速推定%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         for  kk = 1:num_assumed_depth
             for ll = 1:num_assumed_SOS
-                
-                for ii = 1:num_transmitter
+           
+                for ii = 1:num_receiver
                     distance_from_assumed_point(1,ii) = norm(assumed_point(:,kk)-t_pos(:,ii));%[m]
                 end
-                
+           
                 % 送信フォーカス
                 distance_round_trip   = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
                 delay_time_assumed = round(distance_round_trip / assumed_SOS(ll) / (kgrid.dt/4));%[sample]
-                rfdata_echo_only       = transmit_focus(rfdata_echo_only,target_element,...
-                    num_sample*4,delay_time_assumed,num_transmitter);
-                
-                for ii = 1:num_transmitter
+                focused_rfdata           = transmit_focus(rfdata,target_element,...
+                    num_sample,delay_time_assumed,num_receiver);
+        
+                for ii = 1:num_receiver
                     source_wave2cat = interp_sourcewave;
                     source_wave2cat(num_sample*4-delay_time_assumed(ii)+1:end,1)=NaN;
                     source_wave2cat(isnan(source_wave2cat)) = [];
@@ -128,7 +129,7 @@ for mm = 1%:num_boundary_depth
                     correlation(kk,ll) = correlation(kk,ll) + (rfdata_echo_only(:,ii).'*delay_sourcewave(:,ii)...
                         /sqrt(auto_correlation_rfdata(ii,1)*auto_correlation_source_wave(ii,1)));
                 end
-                correlation(kk,ll) = correlation(kk,ll)/num_transmitter;
+                correlation(kk,ll) = correlation(kk,ll)/num_receiver;
             end
             dispname = sprintf('estimated depth # is %d, IMCL # is %d, depth #is %d',kk,nn,mm);
             disp(dispname) %#ok<DSPS>
@@ -139,7 +140,7 @@ for mm = 1%:num_boundary_depth
         estimated_IMCL(mm,nn) = 100*((v_muscle-estimated_velocity(mm,nn))/(v_muscle-v_fat));
         
         % delay sourcewave と rfdata を重ねて表示するための処理．%%%%%%
-        for ii = 1:num_transmitter
+        for ii = 1:num_receiver
             distance_from_assumed_point(1,ii) = norm(assumed_point(:,ind_estimate_d)-t_pos(:,ii));%[m]
         end
         distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
@@ -165,7 +166,7 @@ for mm = 1%:num_boundary_depth
         figure;
         imagesc(rfdata_echo_only);
         hold on
-        scatter(1:num_transmitter,delay_time_assumed+offset_interp_sourcewave,'r.')
+        scatter(1:num_receiver,delay_time_assumed+offset_interp_sourcewave,'r.')
         caxis([0 0.2])
         ylim([min(delay_time_assumed) max(delay_time_assumed+2*offset_interp_sourcewave)])
         xlabel('element number')
