@@ -66,7 +66,7 @@ end
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
 for mm = 1:num_boundary_depth
     for nn = 1:num_IMCL
-        loadpath = sprintf('H:/data/kwave/result/2018_12_14_point_medium_various/boundary_%0.1fmm_IMCL%d%%',...
+        loadpath = sprintf('H:/data/kwave/result/2018_12_13_layer_medium_various/boundary_%0.1fmm_IMCL%d%%',...
             boundary_depth(mm)*1e3,IMCL_rate(nn));
         load([loadpath,'/rfdata.mat'])
         load([loadpath,'/kgrid.mat'])
@@ -121,7 +121,7 @@ for mm = 1:num_boundary_depth
         distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
         delay_time_assumed = round(distance_round_trip / assumed_SOS(ind_estimate_v) / (kgrid.dt/4));%[sample]
         % 画像保存%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        dst_path = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/wire/2018_12_18/2018_12_18_depth%0.1fmmIMCL%d%%',...
+        dst_path = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/2layer/2018_12_19/2018_12_19_depth%0.1fmmIMCL%d%%',...
             boundary_depth(mm)*1e3,IMCL_rate(nn));
         if ~exist(dst_path, 'dir')
             mkdir(dst_path);
@@ -155,7 +155,7 @@ for mm = 1:num_boundary_depth
     end
 end
 %% 保存部
-dst_path2 = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/wire/2018_12_18/figure');
+dst_path2 = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/2layer/2018_12_19/figure');
 if ~exist(dst_path2, 'dir')
     mkdir(dst_path2);
 end
@@ -193,9 +193,9 @@ for mm = 1:num_boundary_depth
     close gcf
 end
 
-dst_path3 = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/wire/2018_12_18/');
+dst_path3 = sprintf('H:/result/2018_12_13_IMCL_direct_estimation_single_element/2layer/2018_12_19/');
 if ~exist(dst_path3, 'dir')
     mkdir(dst_path3);
 end
-savefilename = sprintf('2018_12_18_all_result');
+savefilename = sprintf('2018_12_19_all_result');
 save([dst_path3,savefilename])
