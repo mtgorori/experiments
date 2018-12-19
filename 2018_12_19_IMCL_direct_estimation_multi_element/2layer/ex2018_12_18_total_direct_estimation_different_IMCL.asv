@@ -100,7 +100,7 @@ for mm = 1%:num_boundary_depth
         end
         
         rfdata = rfdata_echo_only;
-        num_sample = num_sample * 4;
+        num_sample = num_sample * 4 ;
         
         auto_correlation_rfdata = diag(rfdata_echo_only.' * rfdata_echo_only);
         auto_correlation_source_wave = interp_sourcewave.' * interp_sourcewave;
