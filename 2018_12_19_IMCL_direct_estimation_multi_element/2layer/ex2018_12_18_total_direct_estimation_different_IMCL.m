@@ -96,7 +96,7 @@ for mm = 1%:num_boundary_depth
             for jj = 1:num_receiver
 %                 interp_rfdata(:,jj,ii)                   = interp1(rfdata(:,jj,ii),linspace(1,num_sample,num_sample*4),'spline');
                 delay_transmitted_wave           = round(((abs(t_pos(1,jj) - t_pos(1,ii)))/v_muscle)/(kgrid.dt));
-%                 rfdata_echo_only(:,jj,ii)            = interp_rfdata(:,jj,ii);
+                rfdata_echo_only(:,jj,ii)            = rfdata(:,jj,ii);
                 rfdata_echo_only(1:delay_transmitted_wave+50,jj,ii)...
                                                                   = mean(rfdata_echo_only(1:delay_transmitted_wave+50,jj,ii));
             end
