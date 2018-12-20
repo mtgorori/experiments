@@ -13,7 +13,7 @@ load("H:/data/kwave/config/t_pos_2board.mat");
 load("H:\data\kwave\medium\2018_09_28_realisticScatter_variousIMCL\corrected\case26_IMCL0.0_pure.mat")
 load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\rfdata.mat")
 load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\kgrid.mat")
-load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\case26\condition\Fchange\center.mat")
+load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\case26\condition\Fchange\near_almost_homogenious.mat")
 % ‰¹‘¬’l
 v_fat        = 1450;%[m/s]
 v_muscle = 1580;%[m/s]
