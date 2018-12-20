@@ -12,7 +12,7 @@ load("H:/data/kwave/config/t_pos_2board.mat");
 load("H:\data\kwave\medium\2018_09_28_realisticScatter_variousIMCL\corrected\case26_IMCL0.0_pure.mat")
 load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\rfdata.mat")
 load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\kgrid.mat")
-load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\case26\condition\Fchange\center.mat")
+load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\case26\condition\Fchange\near_almost_homogenious.mat")
 % âπë¨íl
 v_fat        = 1450;%[m/s]
 v_muscle = 1580;%[m/s]
@@ -140,10 +140,10 @@ end
                 
         % âÊëúï€ë∂%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         cat_dst_path = sprintf('IMCL%d%%',IMCL_rate(nn));
-        dst_path = [dst_path,cat_dst_path]; %#ok<AGROW>
+        dst_path1 = [dst_path,cat_dst_path];
         
-        if ~exist(dst_path, 'dir')
-            mkdir(dst_path);
+        if ~exist(dst_path1, 'dir')
+            mkdir(dst_path1);
         end
         
         figure;
@@ -154,8 +154,8 @@ end
         title({'Correlation of delay curve';titlename})
         colorbar
         savefilename = sprintf('/correlation');
-        savefig([dst_path,savefilename,'.fig'])
-        exportfig([dst_path,savefilename],'png',[300,200])
+        savefig([dst_path1,savefilename,'.fig'])
+        exportfig([dst_path1,savefilename],'png',[300,200])
         close gcf
         
         figure;
@@ -170,13 +170,13 @@ end
         title(titlename)
         colorbar
         savefilename = sprintf('/solved_delay_curve');
-        savefig([dst_path,savefilename,'.fig'])
-        exportfig([dst_path,savefilename],'png',[350,300])
+        savefig([dst_path1,savefilename,'.fig'])
+        exportfig([dst_path1,savefilename],'png',[350,300])
         close gcf
         
         % ïœêîï€ë∂
         savefilename = '/result';
-        save([dst_path,savefilename],'correlation','focused_rfdata','ind_estimate_d','ind_estimate_v');
+        save([dst_path1,savefilename],'correlation','focused_rfdata','ind_estimate_d','ind_estimate_v');
     end
 
 %% ï€ë∂ïî
