@@ -13,7 +13,7 @@ load("H:/data/kwave/config/t_pos_2board.mat");
 load("H:\data\kwave\medium\2018_09_28_realisticScatter_variousIMCL\corrected\case26_IMCL0.0_pure.mat")
 load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\rfdata.mat")
 load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\kgrid.mat")
-
+load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\case26\condition\Fchange\center.mat")
 % ‰¹‘¬’l
 v_fat        = 1450;%[m/s]
 v_muscle = 1580;%[m/s]
@@ -25,14 +25,14 @@ v_muscle_with_IMCL = v_fat * IMCL_rate/100 + v_muscle*(1-IMCL_rate/100);%³‰ğ‰¹‘
 
 % ’TõˆÊ’u
 assumed_depth          = 19e-3:-kgrid.dx:0;
-assumed_distance = 20e-3 - assumed_depth;
+assumed_distance      = 20e-3 - assumed_depth;
 num_assumed_depth = length(assumed_depth);
 ind_assumed_depth   = zeros(num_assumed_depth,1);% kgridã‚Å‚Í‹«ŠEˆÊ’u‚Í‚Ç‚ÌƒCƒ“ƒfƒbƒNƒX‚Å•\‚³‚ê‚é‚©‚ğ‚à‚Æ‚ß‚éD
 for i = 1:num_assumed_depth
     ind_assumed_depth(i) = find(single(kgrid.x_vec) == single(assumed_depth(i)));
 end
 assumed_point         = zeros(2,num_assumed_depth);
-assumed_point(1,:) = t_pos(1,51);%‘—MƒtƒH[ƒJƒX“_
+assumed_point(1,:) = lateral_focus_point;%‘—MƒtƒH[ƒJƒX“_
 assumed_point(2,:) = kgrid.x_vec(ind_assumed_depth);
 
 % ‘fq”z’u
@@ -137,7 +137,9 @@ end
         
                 
         % ‰æ‘œ•Û‘¶%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        dst_path = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_variousF/IMCL%d%%',IMCL_rate(nn));
+        cat_dst_path = sprintf('IMCL%d%%',IMCL_rate(nn));
+        dst_path = [dst_path,cat_dst_path]; %#ok<AGROW>
+        
         if ~exist(dst_path, 'dir')
             mkdir(dst_path);
         end
@@ -176,7 +178,6 @@ end
     end
 
 %% •Û‘¶•”
-dst_path2 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_variousF/figure');
 if ~exist(dst_path2, 'dir')
     mkdir(dst_path2);
 end
@@ -211,7 +212,6 @@ end
     close gcf
     
 
-dst_path3 = sprintf('H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_19_variousF/');
 if ~exist(dst_path3, 'dir')
     mkdir(dst_path3);
 end
@@ -222,7 +222,7 @@ save([dst_path3,savefilename],'estimated_IMCL','estimated_velocity',...
 %% ŠÖ”•”
 
 function target_element = find_target_element(assumed_distance,num_receiver,t_pos,minimum_elementNum,kk)
-       target_element = find((-assumed_distance(1,kk)<=t_pos(1,1:num_receiver))&((t_pos(1,1:num_receiver)<=assumed_distance(1,kk))));
+       target_element = find((-assumed_distance(1,kk) + assumed_point(1,1)<=t_pos(1,1:num_receiver))&((t_pos(1,1:num_receiver)<=assumed_distance(1,kk)+ assumed_point(1,1))));
         if length(target_element) < minimum_elementNum
             target_element = ceil((num_receiver-minimum_elementNum)/2+1):ceil((num_receiver+minimum_elementNum)/2) ;
        end
