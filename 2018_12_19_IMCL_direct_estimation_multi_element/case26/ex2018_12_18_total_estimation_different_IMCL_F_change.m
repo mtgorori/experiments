@@ -8,7 +8,6 @@
 
 %% 初期設定（共通）
 clear
-dst_path = sprintf('H:/result/2018_12_06_IMCL_direct_estimation');
 load("H:/data/kwave/config/t_pos_2board.mat");
 load("H:\data\kwave\medium\2018_09_28_realisticScatter_variousIMCL\corrected\case26_IMCL0.0_pure.mat")
 load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\rfdata.mat")
@@ -18,7 +17,7 @@ load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\case26\cond
 v_fat        = 1450;%[m/s]
 v_muscle = 1580;%[m/s]
 
-% IMCL割合
+% IMCL割合（正解）
 IMCL_rate                  = linspace(1,20,20);%[%]
 num_IMCL                  = length(IMCL_rate);
 v_muscle_with_IMCL = v_fat * IMCL_rate/100 + v_muscle*(1-IMCL_rate/100);%正解音速[m/s]
@@ -49,8 +48,11 @@ distance_round_trip                  = zeros(1,num_transmitter);
 delay_time_assumed                = zeros(1,num_transmitter);
 
 % 推定値
-assumed_SOS           = v_muscle:-1:v_muscle_with_IMCL(end);
-num_assumed_SOS  = length(v_muscle_with_IMCL(end):v_muscle);
+assumed_IMCL_rate                  = linspace(1,25,25);%[%]
+num_assumed_IMCL                  = length(assumed_IMCL_rate);
+v_muscle_with_assumed_IMCL = v_fat * assumed_IMCL_rate/100 + v_muscle*(1-assumed_IMCL_rate/100);%正解音速[m/s]
+assumed_SOS = linspace(v_muscle,v_muscle_with_assumed_IMCL(end),num_assumed_IMCL);
+num_assumed_SOS  = length(assumed_SOS);
 correlation                = zeros(num_assumed_depth,num_assumed_SOS);
 estimated_velocity   = zeros(1,num_IMCL);
 estimated_IMCL       = zeros(1,num_IMCL);
@@ -145,7 +147,7 @@ end
         end
         
         figure;
-        imagesc(IMCL_rate,20-assumed_depth*1e3,correlation);
+        imagesc(assumed_IMCL_rate,20-assumed_depth*1e3,correlation);
         xlabel('IMCL content[%]')
         ylabel('depth[mm]')
         titlename = sprintf('IMCL: %0.1f %%',IMCL_rate(nn));
