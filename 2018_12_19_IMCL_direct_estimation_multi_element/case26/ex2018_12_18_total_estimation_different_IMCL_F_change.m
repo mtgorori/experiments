@@ -90,7 +90,7 @@ end
         % 音速推定%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         for  kk = 1:num_assumed_depth
             % 駆動素子の選択
-                target_element = find_target_element(assumed_distance,assumed_point,num_receiver,t_pos,minimum_elementNum,kk);
+                target_element = find_target_element(assumed_distance,assumed_point,lateral_focus_point,num_receiver,t_pos,minimum_elementNum,kk);
             
             for ll = 1:num_assumed_SOS
                 
@@ -132,7 +132,7 @@ end
         estimated_IMCL(1,nn) = 100*((v_muscle-estimated_velocity(1,nn))/(v_muscle-v_fat));
         
         % delay sourcewave と rfdata を重ねて表示するための処理．%%%%%%
-        target_element = find_target_element(assumed_distance,assumed_point,num_receiver,t_pos,minimum_elementNum,ind_estimate_d);
+        target_element = find_target_element(assumed_distance,assumed_point,lateral_focus_point,num_receiver,t_pos,minimum_elementNum,ind_estimate_d);
         [focused_rfdata,distance_from_assumed_point] = transmit_focusing(num_transmitter,assumed_point,t_pos,ind_estimate_d,ind_estimate_v,assumed_SOS,kgrid,rfdata_echo_only,target_element,num_sample,num_receiver);
         distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
         delay_time_assumed = round(distance_round_trip / assumed_SOS(ind_estimate_v) / (kgrid.dt/4));%[sample]
@@ -223,10 +223,11 @@ save([dst_path3,savefilename],'estimated_IMCL','estimated_velocity',...
 
 %% 関数部
 
-function target_element = find_target_element(assumed_distance,assumed_point,num_receiver,t_pos,minimum_elementNum,kk)
+function target_element = find_target_element(assumed_distance,assumed_point,lateral_focus_point,num_receiver,t_pos,minimum_elementNum,kk)
        target_element = find((-assumed_distance(1,kk) + assumed_point(1,1)<=t_pos(1,1:num_receiver))&((t_pos(1,1:num_receiver)<=assumed_distance(1,kk)+ assumed_point(1,1))));
         if length(target_element) < minimum_elementNum
-            target_element = ceil((num_receiver-minimum_elementNum)/2+1):ceil((num_receiver+minimum_elementNum)/2) ;
+            [~,ind_central_element] = min(abs(t_pos(1,:)-lateral_focus_point));
+            target_element = ceil(ind_central_element-minimum_elementNum/2+1):ceil(ind_central_element+minimum_elementNum/2);
        end
 end
 
