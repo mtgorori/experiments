@@ -60,7 +60,7 @@ num_assumed_IMCL                  = length(assumed_IMCL_rate);
 v_muscle_with_assumed_IMCL = v_fat * assumed_IMCL_rate/100 + v_muscle*(1-assumed_IMCL_rate/100);%ê≥ââπë¨[m/s]
 assumed_SOS = linspace(v_muscle,v_muscle_with_assumed_IMCL(end),num_assumed_IMCL);
 num_assumed_SOS  = length(assumed_SOS);
-correlation                = zeros(num_assumed_depth,num_assumed_SOS,num_lateral);
+correlation                = zeros(num_assumed_SOS,num_assumed_depth,num_lateral);
 estimated_velocity   = zeros(1,num_IMCL);
 estimated_IMCL       = zeros(1,num_IMCL);
 best_lateral              = zeros(1,num_IMCL);
@@ -136,9 +136,9 @@ for nn = 1:num_IMCL
         end
     end
     
-    [~,ind_estimate_v] = max(max(max(correlation)));
-    [~,ind_estimate_d] = max(max(correlation(:,:,ind_estimate_v)));
-    [~,ind_estimate_l]  = max(correlation(:,ind_estimate_d,ind_estimate_v));
+    [~,ind_estimate_l] = max(max(max(correlation)));
+    [~,ind_estimate_d] = max(max(correlation(:,:,ind_estimate_l)));
+    [~,ind_estimate_v]  = max(correlation(:,ind_estimate_d,ind_estimate_l));
     estimated_velocity(1,nn) = assumed_SOS(1,ind_estimate_v);
     estimated_IMCL(1,nn) = 100*((v_muscle-estimated_velocity(1,nn))/(v_muscle-v_fat));
     best_lateral(1,nn) = lateral_focus_point(1,ind_estimate_l);
