@@ -122,11 +122,11 @@ for nn = 1:num_IMCL
                     source_wave2cat(isnan(source_wave2cat)) = [];
                     delay_sourcewave(:,target_element(ii)) = cat(1,zeros(delay_time_assumed(target_element(ii)),1),source_wave2cat);
                     % ëäå›ëää÷ÇÃêœéZ
-                    correlation(kk,ll,mm) = correlation(kk,ll,mm) + (focused_rfdata(:,target_element(ii)).'*delay_sourcewave(:,target_element(ii))...
+                    correlation(ll,kk,mm) = correlation(ll,kk,mm) + (focused_rfdata(:,target_element(ii)).'*delay_sourcewave(:,target_element(ii))...
                         /sqrt(auto_correlation_rfdata(target_element(ii),1)*auto_correlation_source_wave(target_element(ii),1)));
                 end
                 
-                correlation(kk,ll,mm) = correlation(kk,ll,mm)/length(target_element);
+                correlation(ll,kk,mm) = correlation(ll,kk,mm)/length(target_element);
                 
             end
             
