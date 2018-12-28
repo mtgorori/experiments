@@ -157,7 +157,7 @@ for nn = 1:num_IMCL
     end
     
     figure;
-    imagesc(assumed_IMCL_rate,20-assumed_depth*1e3,correlation(:,:,ind_estimate_l));
+    imagesc(assumed_IMCL_rate,20-assumed_depth*1e3,correlation(:,:,ind_estimate_l)');
     xlabel('IMCL content[%]')
     ylabel('depth[mm]')
     titlename = sprintf('IMCL: %0.1f %%, lateral: %0.1f mm',IMCL_rate(nn),lateral_focus_point(ind_estimate_l));
