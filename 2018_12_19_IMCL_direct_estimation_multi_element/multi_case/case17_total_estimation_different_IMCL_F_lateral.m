@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%
-% 対象：case26
+% 対象：case17
 % 波面遅延プロファイルにより音速推定
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関
 % を用いて音速を推定する
@@ -12,7 +12,7 @@ load("H:/data/kwave/config/t_pos_2board.mat");
 load("H:\data\kwave\medium\2018_09_28_realisticScatter_variousIMCL\corrected\case26_IMCL0.0_pure.mat")
 load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\rfdata.mat")
 load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\kgrid.mat")
-load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\case26\condition\F&lateralchange\2018_12_28_case26.mat")
+load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\multi_case\condition\2018_12_28_case17.mat")
 
 % 音速値
 v_fat        = 1450;%[m/s]
@@ -75,7 +75,7 @@ end
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
 for nn = 1:num_IMCL
     
-    loadpath = sprintf('H:/data/kwave/result/2018_11_11_case26_variousIMCL/case26_IMCL%0.1f_pure',IMCL_rate(nn));
+    loadpath = sprintf('H:/data/kwave/result/2018_12_28_other_case_variousIMCL/case17_IMCL%0.1f',IMCL_rate(nn));
     load([loadpath,'/rfdata.mat'])
     load([loadpath,'/kgrid.mat'])
     load([loadpath,'/sourse_wave.mat'])
