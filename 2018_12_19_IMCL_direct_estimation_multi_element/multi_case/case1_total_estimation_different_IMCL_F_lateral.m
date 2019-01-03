@@ -70,10 +70,10 @@ correct_velocity = zeros(1,num_IMCL);
 for i = 1:num_IMCL
     correct_velocity(:,i) = v_muscle_with_IMCL(i);
 end
-
+load("H:\result\2018_12_19_IMCL_direct_estimation_multi_element\multi_case\2018_12_28_variousF&lateral\case1IMCL0%\result.mat");
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
-for nn = 1:num_IMCL
+for nn = 2:num_IMCL
     
     loadpath = sprintf('H:/data/kwave/result/2018_12_28_other_case_variousIMCL/case1_IMCL%0.1f',IMCL_rate(nn));
     load([loadpath,'/rfdata.mat'])
