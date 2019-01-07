@@ -9,10 +9,10 @@
 %% 初期設定（共通）
 clear
 load("H:/data/kwave/config/t_pos_2board.mat");
-load("H:\data\kwave\medium\2018_09_28_realisticScatter_variousIMCL\corrected\case26_IMCL0.0_pure.mat")
-load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\rfdata.mat")
-load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\kgrid.mat")
-load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\case26\condition\F&lateralchange\2018_12_28_case26.mat")
+load("H:/data/kwave/medium/2018_09_28_realisticScatter_variousIMCL/corrected/case26_IMCL0.0_pure.mat")
+load("H:/data/kwave/result/2018_11_11_case26_variousIMCL/case26_IMCL1.0_pure/rfdata.mat")
+load("H:/data/kwave/result/2018_11_11_case26_variousIMCL/case26_IMCL1.0_pure/kgrid.mat")
+load("H:/experiments/2018_12_19_IMCL_direct_estimation_multi_element/case26/condition/F&lateralchange/2018_12_28_case26.mat")
 
 % 音速値
 v_fat        = 1450;%[m/s]
@@ -70,7 +70,13 @@ correct_velocity = zeros(1,num_IMCL);
 for i = 1:num_IMCL
     correct_velocity(:,i) = v_muscle_with_IMCL(i);
 end
-load("H:\result\2018_12_19_IMCL_direct_estimation_multi_element\case26\2018_12_25_variousF&lateral\2018_12_28\case26IMCL18%\result.mat");
+for nn = 1:num_IMCL-1
+    loadfilename = sprintf("H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_25_variousF&lateral/2018_12_28/case26IMCL%d%%/result.mat",IMCL_rate(nn));
+    load(loadfilename);
+    estimated_velocity(1,nn) = assumed_SOS(1,ind_estimate_v);
+    estimated_IMCL(1,nn) = 100*((v_muscle-estimated_velocity(1,nn))/(v_muscle-v_fat));
+    best_lateral(1,nn) = lateral_focus_point(1,ind_estimate_l);
+end
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
 for nn = num_IMCL

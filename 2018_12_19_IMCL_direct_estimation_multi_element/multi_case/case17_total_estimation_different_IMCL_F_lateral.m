@@ -70,7 +70,14 @@ correct_velocity = zeros(1,num_IMCL);
 for i = 1:num_IMCL
     correct_velocity(:,i) = v_muscle_with_IMCL(i);
 end
-load("H:\result\2018_12_19_IMCL_direct_estimation_multi_element\multi_case\2018_12_28_variousF&lateral\case17IMCL0%\result.mat")
+
+for nn = 1
+    loadfilename = sprintf("H:/result/2018_12_19_IMCL_direct_estimation_multi_element/multi_case/2018_12_28_variousF&lateral/case17IMCL%d%%/result.mat",IMCL_rate(nn));
+    load(loadfilename);
+    estimated_velocity(1,nn) = assumed_SOS(1,ind_estimate_v);
+    estimated_IMCL(1,nn) = 100*((v_muscle-estimated_velocity(1,nn))/(v_muscle-v_fat));
+    best_lateral(1,nn) = lateral_focus_point(1,ind_estimate_l);
+end
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
 for nn = 2:num_IMCL
