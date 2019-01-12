@@ -54,19 +54,23 @@ exportfig('../result/SART_aic_window150_1','png',[800,400]);
 %% 描画用その2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%いったん収束し，その後発散する様子を示す．
 figure
-for i = 1:4
-subplot(2,2,i);
-imagesc(x_grid*1000,y_grid*1000,us(:,:,i));
-colorbar;
+iternum = [1,2,3,10,15,30];
+for i = 1:6
+subplot(2,3,i);
+imagesc(x_grid*1000,y_grid*1000,us(:,:,iternum(i)));
+c=colorbar;
+c.Label.String = '[m/s]';
 axis equal;
 axis tight;
 set(gca,'YDir','normal');
-title(['iteration count:',num2str(i),''])
+title(['iteration count:',num2str(iternum(i)),''])
 xlabel('x方向[mm]')
 ylabel('y方向[mm]')
 caxis([1350 1600])
 end
-exportfig('../result/ART_aic_window120_iter','png',[600,450]);
+
+% exportfig("H:\result\2018_03_03_-SART_validation\SART_itertration",'png',[1000,450]);
+
 %%
 
 figure;
