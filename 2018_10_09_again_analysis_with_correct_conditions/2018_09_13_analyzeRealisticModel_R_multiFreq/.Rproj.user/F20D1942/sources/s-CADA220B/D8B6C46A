@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1548395654310.000,
+    "dirty" : false,
+    "encoding" : "CP932",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "D8B6C46A",
+    "lastKnownWriteTime" : 1548397262,
+    "last_content_update" : 1548397262,
+    "path" : "H:/experiments/2018_10_09_again_analysis_with_correct_conditions/2018_09_13_analyzeRealisticModel_R_multiFreq/2018_09_13_analyzeRealisticModel_R_multiFreq.R",
+    "project_path" : "2018_09_13_analyzeRealisticModel_R_multiFreq.R",
+    "properties" : {
+        "cursorPosition" : "227,17",
+        "scrollLine" : "205"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

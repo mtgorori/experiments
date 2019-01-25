@@ -69,6 +69,7 @@ ylabel('y•ûŒü[mm]')
 caxis([1350 1600])
 end
 
+exportfig("H:\result\2018_04_19-_2board_validation\SART_itertration",'png',[1000,450]);
 % exportfig("H:\result\2018_03_03_-SART_validation\SART_itertration",'png',[1000,450]);
 
 %%

@@ -9,10 +9,10 @@
 %% 初期設定（共通）
 clear
 load("H:/data/kwave/config/t_pos_2board.mat");
-load("H:/data/kwave/medium/2018_09_28_realisticScatter_variousIMCL/corrected/case26_IMCL0.0_pure.mat")
-load("H:/data/kwave/result/2018_11_11_case26_variousIMCL/case26_IMCL1.0_pure/rfdata.mat")
-load("H:/data/kwave/result/2018_11_11_case26_variousIMCL/case26_IMCL1.0_pure/kgrid.mat")
-load("H:/experiments/2018_12_19_IMCL_direct_estimation_multi_element/case26/condition/F&lateralchange/2018_12_28_case26.mat")
+load("H:\data\kwave\medium\2019_01_24_realisticScatter_for_5MHz\case26_IMCL0.0.mat")
+load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case26_IMCL0.0\rfdata.mat")
+load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case26_IMCL0.0\kgrid.mat")
+load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\case26\condition\F&lateralchange\2019_01_25_case26.mat")
 
 % 音速値
 v_fat        = 1450;%[m/s]
@@ -36,8 +36,9 @@ num_lateral = round((lateral_range_max -lateral_range_min) / element_pitch)+1;%0
 lateral_focus_point = linspace(lateral_range_min,lateral_range_max,num_lateral);
 
 % 探索位置
-assumed_depth          = 19e-3:-kgrid.dx:0;
+assumed_depth          = 19e-3:-kgrid.dx*2:0;
 assumed_distance      = 20e-3 - assumed_depth;
+[~,ind_end_point_depth] = min(abs(assumed_depth - 10e-3));
 num_assumed_depth = length(assumed_depth);
 ind_assumed_depth   = zeros(num_assumed_depth,1);% kgrid上では境界位置はどのインデックスで表されるかをもとめる．
 assumed_point         = zeros(2,num_assumed_depth,num_lateral);
@@ -70,16 +71,10 @@ correct_velocity = zeros(1,num_IMCL);
 for i = 1:num_IMCL
     correct_velocity(:,i) = v_muscle_with_IMCL(i);
 end
-for nn = 1:num_IMCL-1
-    loadfilename = sprintf("H:/result/2018_12_19_IMCL_direct_estimation_multi_element/case26/2018_12_25_variousF&lateral/2018_12_28/case26IMCL%d%%/result.mat",IMCL_rate(nn));
-    load(loadfilename);
-    estimated_velocity(1,nn) = assumed_SOS(1,ind_estimate_v);
-    estimated_IMCL(1,nn) = 100*((v_muscle-estimated_velocity(1,nn))/(v_muscle-v_fat));
-    best_lateral(1,nn) = lateral_focus_point(1,ind_estimate_l);
-end
+
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
-for nn = num_IMCL
+for nn = 1:num_IMCL
     
     loadpath = sprintf('H:/data/kwave/result/2018_11_11_case26_variousIMCL/case26_IMCL%0.1f_pure',IMCL_rate(nn));
     load([loadpath,'/rfdata.mat'])
@@ -103,7 +98,7 @@ for nn = num_IMCL
     
     % 音速推定%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     for mm = 1:num_lateral
-        for  kk = 1:num_assumed_depth
+        for  kk = 1:ind_end_point_depth
             % 駆動素子の選択
             target_element = find_target_element(assumed_distance,assumed_point,lateral_focus_point,num_receiver,t_pos,minimum_elementNum,kk,mm);
             
@@ -235,8 +230,8 @@ end
 clear focused_rfdata
 clear rfdata
 clear rfdata_echo_only
-savefilename = sprintf('2018_12_28_all_result');
-save([dst_path3,savefilename]);
+savefilename = sprintf('all_result');
+save([dst_path3, savefilename]);
 
 %% 関数部
 function target_element = find_target_element(assumed_distance,assumed_point,lateral_focus_point,num_receiver,t_pos,minimum_elementNum,kk,mm)

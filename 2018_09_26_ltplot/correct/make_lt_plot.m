@@ -68,7 +68,7 @@ ind_t_pos = zeros(2,200);
 ref_medium = medium;
 %どのグリッドを参照して参照用のltデータを作成しているかを確認する．また，試行的に一番目のモデルに関して参照用のデータを作成する．
 for i = 1:t_num
-    v_reference(i,1) = mean2(ref_medium.sound_speed(ind_t_pos(1,i)-1:ind_t_pos(1,i)+1,ind_t_pos(2,100+i):ind_t_pos(2,i)));
+    v_reference(i,1) = mean(ref_medium.sound_speed(ind_t_pos(1,i),ind_t_pos(2,100+i):ind_t_pos(2,i)));
     ref_medium.sound_speed(ind_t_pos(1,i)-1:ind_t_pos(1,i)+1,ind_t_pos(2,100+i):ind_t_pos(2,i)) = 0;
 end
 figure;
@@ -103,73 +103,73 @@ axis square
 c = colorbar;
 c.Label.String = '平均音速[m/s]';
 exportfig("H:\result\2018_09_26_ltplot\correct\lt_from_medium_imagesc_2MHz",'png',[300,300])
-%% vプロットの比較
-%water-fallプロット
-figure;
-subplot(1,2,1);
-waterfall(v_reference(:,:,1)');
-xlabel('素子番号')
-ylabel('媒質番号')
-zlabel('平均音速[m/s]')
-title({'素子ペアごとの平均音速値';'(媒質データから作成)'})
-axis square
-subplot(1,2,2);
-waterfall(v(:,:,1)');
-xlabel('素子番号')
-ylabel('媒質番号')
-zlabel('平均音速[m/s]')
-title({'素子ペアごとの平均音速値';'(RFデータから作成)'})
-axis square
-exportfig("H:\result\2018_09_26_ltplot\correct\lt_compared_waterfall_2MHz",'png',[800,400])
-%imagescプロット
-figure;
-subplot(2,2,1);
-imagesc(v_reference(:,:,1)');
-xlabel('素子番号')
-ylabel('媒質番号')
-title({'経路平均音速[参照値]';'(媒質データから作成)'})
-axis square
-colorbar
-caxis([1450 1580])
-ax = gca;
-ax.YDir = 'normal';
-subplot(2,2,2);
-imagesc(v(:,:,1)');
-xlabel('素子番号')
-ylabel('媒質番号')
-title({'経路平均音速[推定値]';'(RFデータから作成)'})
-axis square
-colorbar
-caxis([1450 1580])
-ax = gca;
-ax.YDir = 'normal';
-subplot(2,2,[3,4]);
-imagesc(v(:,:,1)'-v_reference(:,:,1)');
-xlabel('素子番号')
-ylabel('媒質番号')
-title('経路平均音速推定誤差')
-axis square
-colorbar
-ax = gca;
-ax.YDir = 'normal';
-exportfig("H:\result\2018_09_26_ltplot\correct\lt_compared_imagesc_2MHz",'png',[800,400])
-
-%imagescプロット
-frq = [2000, 1000, 500, 200, 100, 50];
-figure;
-for i = 1:6
-    subplot(2,3,i)
-    imagesc(v(:,:,i)'-v_reference(:,:,i)');
-    xlabel('素子番号')
-    ylabel('媒質番号')
-    title('経路平均音速推定誤差')
-    axis square
-    colorbar
-    ax = gca;
-    ax.YDir = 'normal';
-    caxis([-35 35])
-    mytitlename = sprintf('中心周波数=%d kHz',frq(i));
-    title({'経路平均音速推定誤差';mytitlename});
-end
-exportfig("H:\result\2018_09_26_ltplot\correct\lt_compared_imagesc_multi_freq",'png',[900,500])
+% %% vプロットの比較
+% %water-fallプロット
+% figure;
+% subplot(1,2,1);
+% waterfall(v_reference(:,:,1)');
+% xlabel('素子番号')
+% ylabel('媒質番号')
+% zlabel('平均音速[m/s]')
+% title({'素子ペアごとの平均音速値';'(媒質データから作成)'})
+% axis square
+% subplot(1,2,2);
+% waterfall(v(:,:,1)');
+% xlabel('素子番号')
+% ylabel('媒質番号')
+% zlabel('平均音速[m/s]')
+% title({'素子ペアごとの平均音速値';'(RFデータから作成)'})
+% axis square
+% exportfig("H:\result\2018_09_26_ltplot\correct\lt_compared_waterfall_2MHz",'png',[800,400])
+% %imagescプロット
+% figure;
+% subplot(2,2,1);
+% imagesc(v_reference(:,:,1)');
+% xlabel('素子番号')
+% ylabel('媒質番号')
+% title({'経路平均音速[参照値]';'(媒質データから作成)'})
+% axis square
+% colorbar
+% caxis([1450 1580])
+% ax = gca;
+% ax.YDir = 'normal';
+% subplot(2,2,2);
+% imagesc(v(:,:,1)');
+% xlabel('素子番号')
+% ylabel('媒質番号')
+% title({'経路平均音速[推定値]';'(RFデータから作成)'})
+% axis square
+% colorbar
+% caxis([1450 1580])
+% ax = gca;
+% ax.YDir = 'normal';
+% subplot(2,2,[3,4]);
+% imagesc(v(:,:,1)'-v_reference(:,:,1)');
+% xlabel('素子番号')
+% ylabel('媒質番号')
+% title('経路平均音速推定誤差')
+% axis square
+% colorbar
+% ax = gca;
+% ax.YDir = 'normal';
+% exportfig("H:\result\2018_09_26_ltplot\correct\lt_compared_imagesc_2MHz",'png',[800,400])
+% 
+% %imagescプロット
+% frq = [2000, 1000, 500, 200, 100, 50];
+% figure;
+% for i = 1:6
+%     subplot(2,3,i)
+%     imagesc(v(:,:,i)'-v_reference(:,:,i)');
+%     xlabel('素子番号')
+%     ylabel('媒質番号')
+%     title('経路平均音速推定誤差')
+%     axis square
+%     colorbar
+%     ax = gca;
+%     ax.YDir = 'normal';
+%     caxis([-35 35])
+%     mytitlename = sprintf('中心周波数=%d kHz',frq(i));
+%     title({'経路平均音速推定誤差';mytitlename});
+% end
+% exportfig("H:\result\2018_09_26_ltplot\correct\lt_compared_imagesc_multi_freq",'png',[900,500])
 %% 各種データ保存

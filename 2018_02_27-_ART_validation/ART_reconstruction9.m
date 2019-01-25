@@ -199,7 +199,8 @@ figure
 for i = 1:4
 subplot(2,3,i);
 imagesc(x_grid*1000,y_grid*1000,us(:,:,i));
-colorbar;
+c=colorbar;
+c.Label.String = '[m/s]';
 axis equal;
 axis tight;
 set(gca,'YDir','normal');
@@ -208,10 +209,11 @@ xlabel('x方向[mm]')
 ylabel('y方向[mm]')
 caxis([1350 1600])
 end
-i = 7;
+i = 10;
 subplot(2,3,5);
 imagesc(x_grid*1000,y_grid*1000,us(:,:,i));
-colorbar;
+c=colorbar;
+c.Label.String = '[m/s]';
 axis equal;
 axis tight;
 set(gca,'YDir','normal');
@@ -219,10 +221,11 @@ title(['iteration count:',num2str(i),''])
 xlabel('x方向[mm]')
 ylabel('y方向[mm]')
 caxis([1350 1600])
-i = 10;
+i = 15;
 subplot(2,3,6);
 imagesc(x_grid*1000,y_grid*1000,us(:,:,i));
-colorbar;
+c=colorbar;
+c.Label.String = '[m/s]';
 axis equal;
 axis tight;
 set(gca,'YDir','normal');
@@ -230,7 +233,8 @@ title(['iteration count:',num2str(i),''])
 xlabel('x方向[mm]')
 ylabel('y方向[mm]')
 caxis([1350 1600])
-exportfig('../result/ART_reconstruction_AIC200_iter','png',[1000,450]);
+exportfig("H:\result\2018_02_27-_ART_validation\ART_reconstruction5_iter",'png',[1000,450]);
+% exportfig('../result/ART_reconstruction_AIC200_iter','png',[1000,450]);
 % %%%% 描画用その3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%正解音速分布と再構成音速分布の差のヒストグラムを表示させる．
 % figure

@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1548223116556.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "697E4001",
+    "lastKnownWriteTime" : 7235441155895157876,
+    "last_content_update" : 1548223116556,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "CA17D6B8",
+        "caption" : "std_residuals",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=std_residuals&cache_key=CA17D6B8",
+        "displayedObservations" : 6,
+        "environment" : "",
+        "object" : "std_residuals",
+        "preview" : 0,
+        "totalObservations" : 6,
+        "variables" : 1
+    },
+    "relative_order" : 10,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
