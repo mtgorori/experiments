@@ -5,15 +5,13 @@
 % を用いて音速を推定する
 % 媒質   IMCL0%
 %%%%%%%%%%%%%%%%%%%%
-
 %% 初期設定（共通）
 clear
 load("H:/data/kwave/config/t_pos_2board.mat");
-load("H:\data\kwave\medium\2018_09_28_realisticScatter_variousIMCL\corrected\case26_IMCL0.0_pure.mat")
-load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\rfdata.mat")
-load("H:\data\kwave\result\2018_11_11_case26_variousIMCL\case26_IMCL1.0_pure\kgrid.mat")
-load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\multi_case\condition\2018_12_28_case1.mat")
-
+load("H:\data\kwave\medium\2019_01_24_realisticScatter_for_5MHz\case1_IMCL0.0.mat")
+load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case1_IMCL0.0\rfdata.mat")
+load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case1_IMCL0.0\kgrid.mat")
+load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\multi_case\condition\2019_01_25_case1.mat")
 % 音速値
 v_fat        = 1450;%[m/s]
 v_muscle = 1580;%[m/s]
@@ -36,7 +34,8 @@ num_lateral = round((lateral_range_max -lateral_range_min) / element_pitch)+1;%0
 lateral_focus_point = linspace(lateral_range_min,lateral_range_max,num_lateral);
 
 % 探索位置
-assumed_depth          = 19e-3:-kgrid.dx:0;
+assumed_depth          = 19e-3:-kgrid.dx*2:0;
+[~,ind_end_point_depth] = min(abs(assumed_depth - 10e-3));
 assumed_distance      = 20e-3 - assumed_depth;
 num_assumed_depth = length(assumed_depth);
 ind_assumed_depth   = zeros(num_assumed_depth,1);% kgrid上では境界位置はどのインデックスで表されるかをもとめる．
@@ -53,6 +52,8 @@ end
 distance_from_assumed_point = zeros(1,num_transmitter);
 distance_round_trip                  = zeros(1,num_transmitter);
 delay_time_assumed                = zeros(1,num_transmitter);
+window_left = 128;%相関窓
+window_right = 301;
 
 % 推定値
 assumed_IMCL_rate                  = linspace(1,20,20);%[%]
@@ -60,7 +61,7 @@ num_assumed_IMCL                  = length(assumed_IMCL_rate);
 v_muscle_with_assumed_IMCL = v_fat * assumed_IMCL_rate/100 + v_muscle*(1-assumed_IMCL_rate/100);%正解音速[m/s]
 assumed_SOS = linspace(v_muscle,v_muscle_with_assumed_IMCL(end),num_assumed_IMCL);
 num_assumed_SOS  = length(assumed_SOS);
-correlation                = zeros(num_assumed_SOS,num_assumed_depth,num_lateral);
+correlation                = zeros(num_assumed_SOS,ind_end_point_depth,num_lateral);
 estimated_velocity   = zeros(1,num_IMCL);
 estimated_IMCL       = zeros(1,num_IMCL);
 best_lateral              = zeros(1,num_IMCL);
@@ -71,18 +72,12 @@ for i = 1:num_IMCL
     correct_velocity(:,i) = v_muscle_with_IMCL(i);
 end
 
-for nn = 1
-    loadfilename = sprintf("H:/result/2018_12_19_IMCL_direct_estimation_multi_element/multi_case/2018_12_28_variousF&lateral/case1IMCL%d%%/result.mat",IMCL_rate(nn));
-    load(loadfilename);
-    estimated_velocity(1,nn) = assumed_SOS(1,ind_estimate_v);
-    estimated_IMCL(1,nn) = 100*((v_muscle-estimated_velocity(1,nn))/(v_muscle-v_fat));
-    best_lateral(1,nn) = lateral_focus_point(1,ind_estimate_l);
-end
+
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
-for nn = 2:num_IMCL
+for nn = 1:num_IMCL
     
-    loadpath = sprintf('H:/data/kwave/result/2018_12_28_other_case_variousIMCL/case1_IMCL%0.1f',IMCL_rate(nn));
+    loadpath = sprintf('H:/data/kwave/result/2019_01_24_realisticScatter_for_5MHz/case1_IMCL%0.1f',IMCL_rate(nn));
     load([loadpath,'/rfdata.mat'])
     load([loadpath,'/kgrid.mat'])
     load([loadpath,'/sourse_wave.mat'])
@@ -104,33 +99,34 @@ for nn = 2:num_IMCL
     
     % 音速推定%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     for mm = 1:num_lateral
-        for  kk = 1:num_assumed_depth
+        for  kk = 1:ind_end_point_depth
             % 駆動素子の選択
             target_element = find_target_element(assumed_distance,assumed_point,lateral_focus_point,num_receiver,t_pos,minimum_elementNum,kk,mm);
-            
             for ll = 1:num_assumed_SOS
-                
                 % 送信フォーカス
                 [focused_rfdata,distance_from_assumed_point] = transmit_focusing(num_transmitter,assumed_point,t_pos,kk,ll,mm,assumed_SOS,kgrid,rfdata_echo_only,target_element,num_sample,num_receiver);
-                
-                % 自己相関係数の最大値を各信号で求める（rfdata, source wave）
-                auto_correlation_rfdata            = diag(focused_rfdata.' * focused_rfdata);
-                auto_correlation_source_wave = interp_sourcewave.' * interp_sourcewave;
-                auto_correlation_source_wave = repmat(auto_correlation_source_wave,num_receiver,1);
-                
+
                 % 遅延プロファイルの仮定
                 distance_round_trip   = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
                 delay_time_assumed = round(distance_round_trip / assumed_SOS(ll) / (kgrid.dt/4));%[sample]
-                delay_sourcewave     = zeros(num_sample*4, num_receiver);
                 
                 for ii = 1:length(target_element)
+                    tmp_delay = delay_time_assumed(target_element(ii));
                     source_wave2cat = interp_sourcewave;
-                    source_wave2cat(num_sample*4-delay_time_assumed(target_element(ii))+1:end,1)=NaN;
+                    source_wave2cat(num_sample*4-tmp_delay+1:end,1)=NaN;
                     source_wave2cat(isnan(source_wave2cat)) = [];
-                    delay_sourcewave(:,target_element(ii)) = cat(1,zeros(delay_time_assumed(target_element(ii)),1),source_wave2cat);
+                    delay_sourcewave = cat(1,zeros(tmp_delay,1),source_wave2cat);
+                    % 自己相関係数の最大値を各信号で求める（rfdata, source wave）
+                    hilb_focused_rfdata = hilbert(focused_rfdata(:,target_element(ii)));
+                    hilb_delay_sourcewave = hilbert(delay_sourcewave);
+                    delay_sourcewave_trim = hilb_delay_sourcewave(tmp_delay+window_left:tmp_delay+window_right);
+                    focused_rfdata_trim = hilb_focused_rfdata(tmp_delay+window_left:tmp_delay+window_right);
+                    auto_correlation_rfdata            =  focused_rfdata_trim' * focused_rfdata_trim;
+                    auto_correlation_source_wave = delay_sourcewave_trim' * delay_sourcewave_trim;
+                    tmp_xcorr = (focused_rfdata_trim' * delay_sourcewave_trim) / sqrt(auto_correlation_rfdata * auto_correlation_source_wave);
+                    tmp_xcorr = abs(tmp_xcorr) * sign(real(tmp_xcorr));
                     % 相互相関の積算
-                    correlation(ll,kk,mm) = correlation(ll,kk,mm) + (focused_rfdata(:,target_element(ii)).'*delay_sourcewave(:,target_element(ii))...
-                        /sqrt(auto_correlation_rfdata(target_element(ii),1)*auto_correlation_source_wave(target_element(ii),1)));
+                    correlation(ll,kk,mm) = correlation(ll,kk,mm) + tmp_xcorr;%...
                 end
                 
                 correlation(ll,kk,mm) = correlation(ll,kk,mm)/length(target_element);
@@ -154,7 +150,12 @@ for nn = 2:num_IMCL
     [focused_rfdata,distance_from_assumed_point] = transmit_focusing(num_transmitter,assumed_point,t_pos,ind_estimate_d,ind_estimate_v,ind_estimate_l,assumed_SOS,kgrid,rfdata_echo_only,target_element,num_sample,num_receiver);
     distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
     delay_time_assumed = round(distance_round_trip / assumed_SOS(ind_estimate_v) / (kgrid.dt/4));%[sample]
-    
+    tmp_delay = delay_time_assumed(round(median(target_element)));
+    source_wave2cat = interp_sourcewave;
+    source_wave2cat(num_sample*4-tmp_delay+1:end,1)=NaN;
+    source_wave2cat(isnan(source_wave2cat)) = [];
+    delay_sourcewave = cat(1,zeros(tmp_delay,1),source_wave2cat);
+    t_array = interp1(kgrid.t_array,linspace(1,num_sample,num_sample*4)','spline');
     % 画像保存%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     cat_dst_path = sprintf('IMCL%d%%',IMCL_rate(nn));
     dst_path1 = [dst_path,cat_dst_path];
@@ -164,7 +165,7 @@ for nn = 2:num_IMCL
     end
     
     figure;
-    imagesc(assumed_IMCL_rate,20-assumed_depth*1e3,correlation(:,:,ind_estimate_l)');
+    imagesc(assumed_IMCL_rate,20-assumed_depth(1:ind_end_point_depth)*1e3,correlation(:,:,ind_estimate_l)');
     xlabel('IMCL content[%]')
     ylabel('depth[mm]')
     titlename = sprintf('IMCL: %0.1f %%, lateral: %0.1f mm',IMCL_rate(nn),lateral_focus_point(ind_estimate_l));
@@ -189,6 +190,24 @@ for nn = 2:num_IMCL
     savefilename = sprintf('/solved_delay_curve');
     savefig([dst_path1,savefilename,'.fig'])
     exportfig([dst_path1,savefilename],'png',[350,300])
+    close gcf
+    
+    figure;
+    plot(t_array(tmp_delay+window_left:tmp_delay+window_right),...
+        focused_rfdata(tmp_delay+window_left:tmp_delay+window_right,round(median(target_element)))...
+        /max(abs(focused_rfdata(tmp_delay+window_left:tmp_delay+window_right,round(median(target_element))))))
+    hold on
+    plot(t_array(tmp_delay+window_left:tmp_delay+window_right),...
+        delay_sourcewave(tmp_delay+window_left:tmp_delay+window_right)...
+        /max(abs(delay_sourcewave(tmp_delay+window_left:tmp_delay+window_right))))
+    xlabel('時刻[sample]')
+    ylabel('音圧[a.u.]')
+    xlim([t_array(tmp_delay+window_left) t_array(tmp_delay+window_right)])
+    title(titlename)
+    legend('実信号','仮定遅延信号','Location','bestoutside')
+    savefilename = sprintf('/singal_match');
+    savefig([dst_path1,savefilename,'.fig'])
+    exportfig([dst_path1,savefilename],'png',[500,200])
     close gcf
     
     % 変数保存
@@ -236,17 +255,17 @@ end
 clear focused_rfdata
 clear rfdata
 clear rfdata_echo_only
-savefilename = sprintf('2018_12_28_all_result');
+savefilename = sprintf('all_result');
 save([dst_path3,savefilename]);
 
 %% 関数部
 function target_element = find_target_element(assumed_distance,assumed_point,lateral_focus_point,num_receiver,t_pos,minimum_elementNum,kk,mm)
-    target_element = find((-assumed_distance(1,kk) + assumed_point(1,1,mm)<=t_pos(1,1:num_receiver))&...
-        ((t_pos(1,1:num_receiver)<=assumed_distance(1,kk)+ assumed_point(1,1,mm))));
-    if length(target_element) < minimum_elementNum
-        [~,ind_central_element] = min(abs(t_pos(1,:)-lateral_focus_point(mm)));
-        target_element = ceil(ind_central_element-minimum_elementNum/2+1):ceil(ind_central_element+minimum_elementNum/2);
-    end
+target_element = find((-assumed_distance(1,kk) + assumed_point(1,1,mm)<=t_pos(1,1:num_receiver))&...
+    ((t_pos(1,1:num_receiver)<=assumed_distance(1,kk)+ assumed_point(1,1,mm))));
+if length(target_element) < minimum_elementNum
+    [~,ind_central_element] = min(abs(t_pos(1,:)-lateral_focus_point(mm)));
+    target_element = ceil(ind_central_element-minimum_elementNum/2+1):ceil(ind_central_element+minimum_elementNum/2);
+end
 end
 
 

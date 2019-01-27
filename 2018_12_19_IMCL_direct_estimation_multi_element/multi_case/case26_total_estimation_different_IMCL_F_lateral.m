@@ -8,10 +8,10 @@
 %% 初期設定（共通）
 clear
 load("H:/data/kwave/config/t_pos_2board.mat");
-load("H:\data\kwave\medium\2019_01_24_realisticScatter_for_5MHz\case2_IMCL0.0.mat")
-load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case2_IMCL0.0\rfdata.mat")
-load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case2_IMCL0.0\kgrid.mat")
-load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\multi_case\condition\2019_01_25_case2.mat")
+load("H:\data\kwave\medium\2019_01_24_realisticScatter_for_5MHz\case26_IMCL0.0.mat")
+load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case26_IMCL0.0\rfdata.mat")
+load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case26_IMCL0.0\kgrid.mat")
+load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\multi_case\condition\2019_01_25_case26.mat")
 % 音速値
 v_fat        = 1450;%[m/s]
 v_muscle = 1580;%[m/s]
@@ -76,7 +76,7 @@ end
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
 for nn = 1:num_IMCL
     
-    loadpath = sprintf('H:/data/kwave/result/2019_01_24_realisticScatter_for_5MHz/case2_IMCL%0.1f',IMCL_rate(nn));
+    loadpath = sprintf('H:/data/kwave/result/2019_01_24_realisticScatter_for_5MHz/case26_IMCL%0.1f',IMCL_rate(nn));
     load([loadpath,'/rfdata.mat'])
     load([loadpath,'/kgrid.mat'])
     load([loadpath,'/sourse_wave.mat'])

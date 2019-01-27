@@ -6,12 +6,12 @@
 % 媒質   IMCL0%
 %%%%%%%%%%%%%%%%%%%%
 %% 初期設定（共通）
-clear
+% clear
 load("H:/data/kwave/config/t_pos_2board.mat");
-load("H:\data\kwave\medium\2019_01_24_realisticScatter_for_5MHz\case2_IMCL0.0.mat")
-load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case2_IMCL0.0\rfdata.mat")
-load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case2_IMCL0.0\kgrid.mat")
-load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\multi_case\condition\2019_01_25_case2.mat")
+load("H:\data\kwave\medium\2019_01_24_realisticScatter_for_5MHz\case1_IMCL0.0.mat")
+load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case1_IMCL0.0\rfdata.mat")
+load("H:\data\kwave\result\2019_01_24_realisticScatter_for_5MHz\case1_IMCL0.0\kgrid.mat")
+load("H:\experiments\2018_12_19_IMCL_direct_estimation_multi_element\multi_case\condition\2019_01_25_case1.mat")
 % 音速値
 v_fat        = 1450;%[m/s]
 v_muscle = 1580;%[m/s]
@@ -54,6 +54,7 @@ distance_round_trip                  = zeros(1,num_transmitter);
 delay_time_assumed                = zeros(1,num_transmitter);
 window_left = 128;%相関窓
 window_right = 301;
+
 % 推定値
 assumed_IMCL_rate                  = linspace(1,20,20);%[%]
 num_assumed_IMCL                  = length(assumed_IMCL_rate);
@@ -74,14 +75,13 @@ end
 
 %% 音速推定処理部
 % 仮定遅延プロファイルと実測遅延プロファイルの相互相関を求める
-for nn = 1:num_IMCL
+for nn = 1%:num_IMCL
     
-    loadpath = sprintf('H:/data/kwave/result/2019_01_24_realisticScatter_for_5MHz/case2_IMCL%0.1f',IMCL_rate(nn));
+    loadpath = sprintf('H:/data/kwave/result/2019_01_24_realisticScatter_for_5MHz/case1_IMCL%0.1f',IMCL_rate(nn));
     load([loadpath,'/rfdata.mat'])
     load([loadpath,'/kgrid.mat'])
     load([loadpath,'/sourse_wave.mat'])
     [num_sample,~,~] = size(rfdata);
-    
     
     % rfデータ整形%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % サンプル数を4倍にするためにスプライン補間
@@ -98,15 +98,18 @@ for nn = 1:num_IMCL
     end
     
     % 音速推定%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    for mm = 1:num_lateral
-        for  kk = 1:ind_end_point_depth
+    for mm = ind_estimate_l%1%:num_lateral
+        for  kk = ind_estimate_d%1%:ind_end_point_depth
             % 駆動素子の選択
             target_element = find_target_element(assumed_distance,assumed_point,lateral_focus_point,num_receiver,t_pos,minimum_elementNum,kk,mm);
             
-            for ll = 1:num_assumed_SOS
+            for ll = 1:num_assumed_SOS%ind_estimate_v
+                
                 % 送信フォーカス
                 [focused_rfdata,distance_from_assumed_point] = transmit_focusing(num_transmitter,assumed_point,t_pos,kk,ll,mm,assumed_SOS,kgrid,rfdata_echo_only,target_element,num_sample,num_receiver);
-
+                
+                
+                
                 % 遅延プロファイルの仮定
                 distance_round_trip   = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
                 delay_time_assumed = round(distance_round_trip / assumed_SOS(ll) / (kgrid.dt/4));%[sample]
@@ -124,10 +127,13 @@ for nn = 1:num_IMCL
                     focused_rfdata_trim = hilb_focused_rfdata(tmp_delay+window_left:tmp_delay+window_right);
                     auto_correlation_rfdata            =  focused_rfdata_trim' * focused_rfdata_trim;
                     auto_correlation_source_wave = delay_sourcewave_trim' * delay_sourcewave_trim;
-                    tmp_xcorr = (focused_rfdata_trim' * delay_sourcewave_trim) / sqrt(auto_correlation_rfdata * auto_correlation_source_wave);
+                    tmp_xcorr = focused_rfdata_trim' * delay_sourcewave_trim
                     tmp_xcorr = abs(tmp_xcorr) * sign(real(tmp_xcorr));
                     % 相互相関の積算
                     correlation(ll,kk,mm) = correlation(ll,kk,mm) + tmp_xcorr;%...
+                    %                         (hilb_focused_rfdata(tmp_delay+window_left:tmp_delay+window_right)'*...
+                    %                         hilb_delay_sourcewave(tmp_delay+window_left:tmp_delay+window_right)...
+                    %                         /sqrt(auto_correlation_rfdata*auto_correlation_source_wave));
                 end
                 
                 correlation(ll,kk,mm) = correlation(ll,kk,mm)/length(target_element);
@@ -140,124 +146,124 @@ for nn = 1:num_IMCL
         end
     end
     
-    [~,ind_estimate_l] = max(max(max(correlation)));
-    [~,ind_estimate_d] = max(max(correlation(:,:,ind_estimate_l)));
-    [~,ind_estimate_v]  = max(correlation(:,ind_estimate_d,ind_estimate_l));
-    estimated_velocity(1,nn) = assumed_SOS(1,ind_estimate_v);
-    estimated_IMCL(1,nn) = 100*((v_muscle-estimated_velocity(1,nn))/(v_muscle-v_fat));
-    best_lateral(1,nn) = lateral_focus_point(1,ind_estimate_l);
-    % delay sourcewave と rfdata を重ねて表示するための処理．%%%%%%
-    target_element = find_target_element(assumed_distance,assumed_point,lateral_focus_point,num_receiver,t_pos,minimum_elementNum,ind_estimate_d,ind_estimate_l);
-    [focused_rfdata,distance_from_assumed_point] = transmit_focusing(num_transmitter,assumed_point,t_pos,ind_estimate_d,ind_estimate_v,ind_estimate_l,assumed_SOS,kgrid,rfdata_echo_only,target_element,num_sample,num_receiver);
-    distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
-    delay_time_assumed = round(distance_round_trip / assumed_SOS(ind_estimate_v) / (kgrid.dt/4));%[sample]
-    tmp_delay = delay_time_assumed(round(median(target_element)));
-    source_wave2cat = interp_sourcewave;
-    source_wave2cat(num_sample*4-tmp_delay+1:end,1)=NaN;
-    source_wave2cat(isnan(source_wave2cat)) = [];
-    delay_sourcewave = cat(1,zeros(tmp_delay,1),source_wave2cat);
-    t_array = interp1(kgrid.t_array,linspace(1,num_sample,num_sample*4)','spline');
-    % 画像保存%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    cat_dst_path = sprintf('IMCL%d%%',IMCL_rate(nn));
-    dst_path1 = [dst_path,cat_dst_path];
-    
-    if ~exist(dst_path1, 'dir')
-        mkdir(dst_path1);
-    end
-    
-    figure;
-    imagesc(assumed_IMCL_rate,20-assumed_depth(1:ind_end_point_depth)*1e3,correlation(:,:,ind_estimate_l)');
-    xlabel('IMCL content[%]')
-    ylabel('depth[mm]')
-    titlename = sprintf('IMCL: %0.1f %%, lateral: %0.1f mm',IMCL_rate(nn),lateral_focus_point(ind_estimate_l));
-    title({'Correlation of delay curve';titlename})
-    colorbar
-    savefilename = sprintf('/correlation');
-    savefig([dst_path1,savefilename,'.fig'])
-    exportfig([dst_path1,savefilename],'png',[300,200])
-    close gcf
-    
-    figure;
-    imagesc(focused_rfdata);
-    hold on
-    scatter(target_element,delay_time_assumed(target_element)+offset_interp_sourcewave,'r.')
-    caxis([min(min(focused_rfdata))/5 max(max(focused_rfdata))/5])
-    ylim([min(delay_time_assumed(target_element)) max(delay_time_assumed(target_element)+2*offset_interp_sourcewave)])
-    xlabel('element number')
-    ylabel('time[sample]')
-    axis square
-    title(titlename)
-    colorbar
-    savefilename = sprintf('/solved_delay_curve');
-    savefig([dst_path1,savefilename,'.fig'])
-    exportfig([dst_path1,savefilename],'png',[350,300])
-    close gcf
-    
-    figure;
-    plot(t_array(tmp_delay+window_left:tmp_delay+window_right),...
-        focused_rfdata(tmp_delay+window_left:tmp_delay+window_right,round(median(target_element)))...
-        /max(abs(focused_rfdata(tmp_delay+window_left:tmp_delay+window_right,round(median(target_element))))))
-    hold on
-    plot(t_array(tmp_delay+window_left:tmp_delay+window_right),...
-        delay_sourcewave(tmp_delay+window_left:tmp_delay+window_right)...
-        /max(abs(delay_sourcewave(tmp_delay+window_left:tmp_delay+window_right))))
-    xlabel('時刻[sample]')
-    ylabel('音圧[a.u.]')
-    xlim([t_array(tmp_delay+window_left) t_array(tmp_delay+window_right)])
-    title(titlename)
-    legend('実信号','仮定遅延信号','Location','bestoutside')
-    savefilename = sprintf('/singal_match');
-    savefig([dst_path1,savefilename,'.fig'])
-    exportfig([dst_path1,savefilename],'png',[500,200])
-    close gcf
-    
-    % 変数保存
-    savefilename = '/result';
-    save([dst_path1,savefilename],'correlation','focused_rfdata','ind_estimate_d','ind_estimate_v','ind_estimate_l');
+%     [~,ind_estimate_l] = max(max(max(correlation)));
+%     [~,ind_estimate_d] = max(max(correlation(:,:,ind_estimate_l)));
+%     [~,ind_estimate_v]  = max(correlation(:,ind_estimate_d,ind_estimate_l));
+%     estimated_velocity(1,nn) = assumed_SOS(1,ind_estimate_v);
+%     estimated_IMCL(1,nn) = 100*((v_muscle-estimated_velocity(1,nn))/(v_muscle-v_fat));
+%     best_lateral(1,nn) = lateral_focus_point(1,ind_estimate_l);
+%     % delay sourcewave と rfdata を重ねて表示するための処理．%%%%%%
+%     target_element = find_target_element(assumed_distance,assumed_point,lateral_focus_point,num_receiver,t_pos,minimum_elementNum,ind_estimate_d,ind_estimate_l);
+%     [focused_rfdata,distance_from_assumed_point] = transmit_focusing(num_transmitter,assumed_point,t_pos,ind_estimate_d,ind_estimate_v,ind_estimate_l,assumed_SOS,kgrid,rfdata_echo_only,target_element,num_sample,num_receiver);
+%     distance_round_trip = distance_from_assumed_point + min(distance_from_assumed_point);%[m]
+%     delay_time_assumed = round(distance_round_trip / assumed_SOS(ind_estimate_v) / (kgrid.dt/4));%[sample]
+%     tmp_delay = delay_time_assumed(round(median(target_element)));
+%     source_wave2cat = interp_sourcewave;
+%     source_wave2cat(num_sample*4-tmp_delay+1:end,1)=NaN;
+%     source_wave2cat(isnan(source_wave2cat)) = [];
+%     delay_sourcewave = cat(1,zeros(tmp_delay,1),source_wave2cat);
+%     t_array = interp1(kgrid.t_array,linspace(1,num_sample,num_sample*4)','spline');
+%     % 画像保存%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     cat_dst_path = sprintf('IMCL%d%%',IMCL_rate(nn));
+%     dst_path1 = [dst_path,cat_dst_path];
+%     
+%     if ~exist(dst_path1, 'dir')
+%         mkdir(dst_path1);
+%     end
+%     
+%     figure;
+%     imagesc(assumed_IMCL_rate,20-assumed_depth(1:ind_end_point_depth)*1e3,correlation(:,:,ind_estimate_l)');
+%     xlabel('IMCL content[%]')
+%     ylabel('depth[mm]')
+%     titlename = sprintf('IMCL: %0.1f %%, lateral: %0.1f mm',IMCL_rate(nn),lateral_focus_point(ind_estimate_l));
+%     title({'Correlation of delay curve';titlename})
+%     colorbar
+%     savefilename = sprintf('/correlation');
+%     savefig([dst_path1,savefilename,'.fig'])
+%     exportfig([dst_path1,savefilename],'png',[300,200])
+%     close gcf
+%     
+%     figure;
+%     imagesc(focused_rfdata);
+%     hold on
+%     scatter(target_element,delay_time_assumed(target_element)+offset_interp_sourcewave,'r.')
+%     caxis([min(min(focused_rfdata))/5 max(max(focused_rfdata))/5])
+%     ylim([min(delay_time_assumed(target_element)) max(delay_time_assumed(target_element)+2*offset_interp_sourcewave)])
+%     xlabel('element number')
+%     ylabel('time[sample]')
+%     axis square
+%     title(titlename)
+%     colorbar
+%     savefilename = sprintf('/solved_delay_curve');
+%     savefig([dst_path1,savefilename,'.fig'])
+%     exportfig([dst_path1,savefilename],'png',[350,300])
+%     close gcf
+%     
+%     figure;
+%     plot(t_array(tmp_delay+window_left:tmp_delay+window_right),...
+%         focused_rfdata(tmp_delay+window_left:tmp_delay+window_right,round(median(target_element)))...
+%         /max(abs(focused_rfdata(tmp_delay+window_left:tmp_delay+window_right,round(median(target_element))))))
+%     hold on
+%     plot(t_array(tmp_delay+window_left:tmp_delay+window_right),...
+%         delay_sourcewave(tmp_delay+window_left:tmp_delay+window_right)...
+%         /max(abs(delay_sourcewave(tmp_delay+window_left:tmp_delay+window_right))))
+%     xlabel('時刻[sample]')
+%     ylabel('音圧[a.u.]')
+%     xlim([t_array(tmp_delay+window_left) t_array(tmp_delay+window_right)])
+%     title(titlename)
+%     legend('実信号','仮定遅延信号','Location','bestoutside')
+%     savefilename = sprintf('/singal_match');
+%     savefig([dst_path1,savefilename,'.fig'])
+%     exportfig([dst_path1,savefilename],'png',[500,200])
+%     close gcf
+%     
+%     % 変数保存
+%     savefilename = '/result';
+%     save([dst_path1,savefilename],'correlation','focused_rfdata','ind_estimate_d','ind_estimate_v','ind_estimate_l');
 end
 
 %% 保存部
-if ~exist(dst_path2, 'dir')
-    mkdir(dst_path2);
-end
-
-figure;
-plot(correct_velocity(1,:),estimated_velocity(1,:),'LineWidth',1);
-hold on
-plot(correct_velocity(1,:),correct_velocity(1,:),'k--','LineWidth',0.25);
-hold off
-xlabel('correct velocity [m/s]')
-ylabel('estimated velocity [m/s]')
-xlim([v_fat*0.2+v_muscle*0.8 v_muscle])
-ylim([v_fat*0.2+v_muscle*0.8 v_muscle])
-savefilename = sprintf('/velocity');
-savefig([dst_path2,savefilename,'.fig'])
-exportfig([dst_path2,savefilename],'png',[300,300])
-close gcf
-
-figure;
-plot(IMCL_rate(1,:),estimated_IMCL(1,:),'LineWidth',1);
-hold on
-plot(IMCL_rate(1,:),IMCL_rate(1,:),'k--','LineWidth',0.25);
-hold off
-xlabel('correct IMCL content [%]')
-ylabel('estimated IMCL content [%]')
-xlim([0 20])
-ylim([0 20])
-savefilename = sprintf('/IMCL');
-savefig([dst_path2,savefilename,'.fig'])
-exportfig([dst_path2,savefilename],'png',[300,300])
-close gcf
-
-
-if ~exist(dst_path3, 'dir')
-    mkdir(dst_path3);
-end
-clear focused_rfdata
-clear rfdata
-clear rfdata_echo_only
-savefilename = sprintf('all_result');
-save([dst_path3,savefilename]);
+% if ~exist(dst_path2, 'dir')
+%     mkdir(dst_path2);
+% end
+% 
+% figure;
+% plot(correct_velocity(1,:),estimated_velocity(1,:),'LineWidth',1);
+% hold on
+% plot(correct_velocity(1,:),correct_velocity(1,:),'k--','LineWidth',0.25);
+% hold off
+% xlabel('correct velocity [m/s]')
+% ylabel('estimated velocity [m/s]')
+% xlim([v_fat*0.2+v_muscle*0.8 v_muscle])
+% ylim([v_fat*0.2+v_muscle*0.8 v_muscle])
+% savefilename = sprintf('/velocity');
+% savefig([dst_path2,savefilename,'.fig'])
+% exportfig([dst_path2,savefilename],'png',[300,300])
+% close gcf
+% 
+% figure;
+% plot(IMCL_rate(1,:),estimated_IMCL(1,:),'LineWidth',1);
+% hold on
+% plot(IMCL_rate(1,:),IMCL_rate(1,:),'k--','LineWidth',0.25);
+% hold off
+% xlabel('correct IMCL content [%]')
+% ylabel('estimated IMCL content [%]')
+% xlim([0 20])
+% ylim([0 20])
+% savefilename = sprintf('/IMCL');
+% savefig([dst_path2,savefilename,'.fig'])
+% exportfig([dst_path2,savefilename],'png',[300,300])
+% close gcf
+% 
+% 
+% if ~exist(dst_path3, 'dir')
+%     mkdir(dst_path3);
+% end
+% clear focused_rfdata
+% clear rfdata
+% clear rfdata_echo_only
+% savefilename = sprintf('all_result');
+% save([dst_path3,savefilename]);
 
 %% 関数部
 function target_element = find_target_element(assumed_distance,assumed_point,lateral_focus_point,num_receiver,t_pos,minimum_elementNum,kk,mm)
